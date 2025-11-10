@@ -1,0 +1,36 @@
+<div class="chat-window">
+  <div class="chat-header">
+    <h3>{{ request.requestType }} — Room {{ request.roomNumber }}</h3>
+    <div>
+      <button mat-icon-button (click)="openInNewTab()">
+        <mat-icon>open_in_new</mat-icon>
+      </button>
+      <button mat-icon-button color="warn" (click)="closeChat.emit()">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+  </div>
+
+  <div class="chat-body" id="chat-body">
+    <div
+      *ngFor="let msg of messages"
+      class="message"
+      [ngClass]="{
+        left: msg.senderId === 'bot',
+        right: msg.senderId.startsWith(role)
+      }"
+    >
+      <div class="bubble">{{ msg.text }}</div>
+    </div>
+  </div>
+
+  <div class="chat-input">
+    <input
+      matInput
+      placeholder="Type your message..."
+      [(ngModel)]="newMessage"
+      (keyup.enter)="sendMessage()"
+    />
+    <button mat-raised-button color="primary" (click)="sendMessage()">Send</button>
+  </div>
+</div>
