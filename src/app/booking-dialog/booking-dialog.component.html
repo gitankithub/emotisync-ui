@@ -1,0 +1,62 @@
+<div class="dialog-container">
+  <!-- Close Icon -->
+  <button class="close-icon" mat-icon-button (click)="close()">
+    <mat-icon>close</mat-icon>
+  </button>
+
+  <img [src]="data.imageUrl" alt="{{ data.hotelName }}" class="dialog-image" />
+
+  <h2>{{ data.hotelName }}</h2>
+  <p class="details">
+    {{ data.checkIn | date: 'd MMMM y' }} – {{ data.checkOut | date: 'd MMMM y' }}
+  </p>
+  <p class="details">
+    {{ data.roomType }} • {{ data.bedrooms }} bedroom • {{ data.guests }} guests
+  </p>
+  <p class="details">
+    Status: {{ data.status }}
+  </p>
+
+  <!-- Only show rating and feedback if checkout is past -->
+  <div class="rating-section" *ngIf="checkoutPassed()">
+    <h3>We Value Your Feedback!</h3>
+
+    <!-- Emoji Rating Bar -->
+    <div class="emoji-bar">
+      <button
+        *ngFor="let r of ratings"
+        (click)="setRating(r.value)"
+        [class.active]="r.value === selectedRating"
+        [attr.aria-label]="r.label"
+      >
+        {{ r.emoji }}
+      </button>
+    </div>
+
+    <!-- Material Feedback Textarea -->
+    <mat-form-field appearance="outline" class="feedback-field">
+      <mat-label>feedback</mat-label>
+      <textarea
+        matInput
+        [(ngModel)]="feedbackText"
+        placeholder="Please share your experience..."
+      ></textarea>
+    </mat-form-field>
+  </div>
+
+  <div class="actions">
+    <button
+      *ngIf="checkoutPassed()"
+      mat-flat-button
+      class="action-btn"
+      (click)="submitFeedback()"
+      [disabled]="!selectedRating && !feedbackText"
+    >
+      Submit
+    </button>
+    <button mat-flat-button class="action-btn">
+      <mat-icon>chat</mat-icon>
+      Help?
+    </button>
+  </div>
+</div>

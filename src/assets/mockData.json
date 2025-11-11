@@ -1,0 +1,272 @@
+{
+  "reservations": [
+    {
+    "hotelName": "BW Hotel Turismo",
+    "checkIn": "2025-11-10",
+    "checkOut": "2025-11-15",
+    "roomType": "Kings Suite",
+    "bedrooms": 1,
+    "guests": 2,
+    "imageUrl": "assets/images/bw-hotel-turismo.jpg",
+    "status": "checkedin"
+  },
+  {
+    "hotelName": "Hotel Princeton",
+    "checkIn": "2025-10-21",
+    "checkOut": "2025-10-29",
+    "roomType": "Kings Suite",
+    "bedrooms": 1,
+    "guests": 2,
+    "imageUrl": "assets/images/princeton.jpg",
+    "status": "completed"
+  },
+  {
+    "hotelName": "Bly Manor Hotel",
+    "checkIn": "2025-10-23",
+    "checkOut": "2025-10-29",
+    "roomType": "Kings Suite",
+    "bedrooms": 1,
+    "guests": 2,
+    "imageUrl": "assets/images/blymanor.jpg",
+    "status": "completed"
+  },
+  {
+    "hotelName": "Hill View Resort",
+    "checkIn": "2025-12-01",
+    "checkOut": "2025-12-03",
+    "roomType": "Kings Suite",
+    "bedrooms": 2,
+    "guests": 4,
+    "imageUrl": "assets/images/hillview.jpg",
+    "status": "upcoming"
+  }
+],
+  "users": [
+    {
+      "userId": "guest-001",
+      "name": "Alice Johnson",
+      "role": "guest"
+    },
+    {
+      "userId": "staff-101",
+      "name": "Mike Chen",
+      "role": "staff"
+    },
+    {
+      "userId": "admin-901",
+      "name": "Sarah Patel",
+      "role": "admin"
+    }
+  ],
+ 
+  "requests": [
+    {
+      "requestId": "req-1a2b3c",
+      "guestId": "guest-001",
+      "roomNumber": "512",
+      "requestType": "Room Cleaning",
+      "status": "in_progress",
+      "createdAt": "2025-11-10T14:22:00Z",
+      "updatedAt": "2025-11-10T16:45:00Z",
+      "guestThreadId": "guest-req-1a2b3c",
+      "staffThreadId": "staff-req-1a2b3c",
+      "adminThreadId": "admin-req-1a2b3c"
+    },
+    {
+      "requestId": "req-4d5e6f",
+      "guestId": "guest-001",
+      "roomNumber": "512",
+      "requestType": "Towel Replacement",
+      "status": "assigned",
+      "createdAt": "2025-11-11T01:10:00Z",
+      "updatedAt": "2025-11-11T01:30:00Z",
+      "guestThreadId": "guest-req-4d5e6f",
+      "staffThreadId": "staff-req-4d5e6f",
+      "adminThreadId": "admin-req-4d5e6f"
+    },
+    {
+      "requestId": "req-7g8h9i",
+      "guestId": "guest-001",
+      "roomNumber": "512",
+      "requestType": "WiFi Issue",
+      "status": "open",
+      "createdAt": "2025-11-11T02:05:00Z",
+      "updatedAt": "2025-11-11T02:05:00Z",
+      "guestThreadId": "guest-req-7g8h9i",
+      "staffThreadId": "staff-req-7g8h9i",
+      "adminThreadId": "admin-req-7g8h9i"
+    }
+  ],
+ 
+  "threads": [
+    {
+      "threadId": "guest-req-1a2b3c",
+      "requestId": "req-1a2b3c",
+      "participants": ["guest-001"],
+      "type": "guest"
+    },
+    {
+      "threadId": "staff-req-1a2b3c",
+      "requestId": "req-1a2b3c",
+      "participants": ["staff-101"],
+      "type": "staff"
+    },
+    {
+      "threadId": "admin-req-1a2b3c",
+      "requestId": "req-1a2b3c",
+      "participants": ["admin-901"],
+      "type": "admin"
+    },
+    {
+      "threadId": "guest-req-4d5e6f",
+      "requestId": "req-4d5e6f",
+      "participants": ["guest-001"],
+      "type": "guest"
+    },
+    {
+      "threadId": "staff-req-4d5e6f",
+      "requestId": "req-4d5e6f",
+      "participants": ["staff-101"],
+      "type": "staff"
+    },
+    {
+      "threadId": "admin-req-4d5e6f",
+      "requestId": "req-4d5e6f",
+      "participants": ["admin-901"],
+      "type": "admin"
+    },
+    {
+      "threadId": "guest-req-7g8h9i",
+      "requestId": "req-7g8h9i",
+      "participants": ["guest-001"],
+      "type": "guest"
+    },
+    {
+      "threadId": "staff-req-7g8h9i",
+      "requestId": "req-7g8h9i",
+      "participants": ["staff-101"],
+      "type": "staff"
+    },
+    {
+      "threadId": "admin-req-7g8h9i",
+      "requestId": "req-7g8h9i",
+      "participants": ["admin-901"],
+      "type": "admin"
+    }
+  ],
+ 
+  "messages": [
+    {
+      "messageId": "msg-101",
+      "threadId": "guest-req-1a2b3c",
+      "senderId": "guest-001",
+      "text": "Hi, the room needs cleaning. There are stains on the carpet and the bathroom hasn't been serviced.",
+      "time": "2025-11-10T14:22:00Z",
+      "messageType": "user"
+    },
+    {
+      "messageId": "msg-102",
+      "threadId": "guest-req-1a2b3c",
+      "senderId": "bot",
+      "text": "Thank you, Alice. We've notified housekeeping. Someone will be with you shortly.",
+      "time": "2025-11-10T14:22:05Z",
+      "messageType": "bot"
+    },
+    {
+      "messageId": "msg-103",
+      "threadId": "staff-req-1a2b3c",
+      "senderId": "bot",
+      "text": "Cleaning request from Room 512 (Alice Johnson). Please assign a cleaner.",
+      "time": "2025-11-10T14:22:05Z",
+      "messageType": "system"
+    },
+    {
+      "messageId": "msg-104",
+      "threadId": "staff-req-1a2b3c",
+      "senderId": "staff-101",
+      "text": "Assigned to Maria. ETA 15 mins.",
+      "time": "2025-11-10T14:30:00Z",
+      "messageType": "user"
+    },
+    {
+      "messageId": "msg-105",
+      "threadId": "guest-req-1a2b3c",
+      "senderId": "bot",
+      "text": "Housekeeping is on the way and will arrive in about 15 minutes.",
+      "time": "2025-11-10T14:30:05Z",
+      "messageType": "bot"
+    },
+    {
+      "messageId": "msg-106",
+      "threadId": "staff-req-1a2b3c",
+      "senderId": "staff-101",
+      "text": "Cleaning in progress.",
+      "time": "2025-11-10T16:45:00Z",
+      "messageType": "user"
+    },
+    {
+      "messageId": "msg-107",
+      "threadId": "guest-req-4d5e6f",
+      "senderId": "guest-001",
+      "text": "We need fresh towels please. Ran out after shower.",
+      "time": "2025-11-11T01:10:00Z",
+      "messageType": "user"
+    },
+    {
+      "messageId": "msg-108",
+      "threadId": "guest-req-4d5e6f",
+      "senderId": "bot",
+      "text": "Staff has been notified and is attending your request.",
+      "time": "2025-11-11T01:10:05Z",
+      "messageType": "bot"
+    },
+    {
+      "messageId": "msg-109",
+      "threadId": "staff-req-4d5e6f",
+      "senderId": "bot",
+      "text": "Towel request from Room 512. Please deliver 4 bath towels and 2 hand towels.",
+      "time": "2025-11-11T01:10:05Z",
+      "messageType": "system"
+    },
+    {
+      "messageId": "msg-110",
+      "threadId": "staff-req-4d5e6f",
+      "senderId": "staff-101",
+      "text": "Assigned to James. On the way.",
+      "time": "2025-11-11T01:30:00Z",
+      "messageType": "user"
+    },
+    {
+      "messageId": "msg-111",
+      "threadId": "guest-req-7g8h9i",
+      "senderId": "guest-001",
+      "text": "The WiFi is not working. It says 'No Internet' even though connected.",
+      "time": "2025-11-11T02:05:00Z",
+      "messageType": "user"
+    },
+    {
+      "messageId": "msg-112",
+      "threadId": "guest-req-7g8h9i",
+      "senderId": "bot",
+      "text": "Thank you for your message. We will get back to you.",
+      "time": "2025-11-11T02:05:05Z",
+      "messageType": "bot"
+    },
+    {
+      "messageId": "msg-113",
+      "threadId": "admin-req-7g8h9i",
+      "senderId": "bot",
+      "text": "WiFi issue reported in Room 512. Guest reports 'No Internet' despite connection.",
+      "time": "2025-11-11T02:05:05Z",
+      "messageType": "system"
+    },
+    {
+      "messageId": "msg-114",
+      "threadId": "admin-req-7g8h9i",
+      "senderId": "admin-901",
+      "text": "Checking network logs. Possible AP restart needed.",
+      "time": "2025-11-11T02:10:00Z",
+      "messageType": "user"
+    }
+  ]
+}

@@ -19,11 +19,8 @@ export class LoginComponent {
   constructor(private router: Router) {}
 
   login() {
-    if (!this.username) {
-      this.error = 'Username is required';
-      return;
-    }
-    // Navigate to dashboard and pass username as state
-    this.router.navigate(['/dashboard'], { state: { username: this.username } });
+    if (!this.username) return;
+    // Navigate to reservations and pass username as state
+    this.router.navigate(['/reservations'], { state: { username: this.username } });
   }
 }

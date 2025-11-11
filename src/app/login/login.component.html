@@ -1,7 +1,7 @@
 <div class="login-container">
   <div class="login-box">
     <div class="logo-container">
-      <img src="assets/ai-bot.png" alt="AI Bot Logo" class="logo" />
+      <img src="assets/images/ai-bot.png" alt="AI Bot Logo" class="logo" />
       <span class="logo-text">EmotiSync</span>
     </div>
 
@@ -10,7 +10,8 @@
 
     <mat-form-field appearance="fill" class="full-width">
       <mat-label>Username/ Email</mat-label>
-      <input matInput placeholder="Enter your user name or email" [(ngModel)]="username"  />
+      <input matInput placeholder="Enter your user name or email" [(ngModel)]="username" required #usernameInput="ngModel" />
+      <mat-error *ngIf="usernameInput.invalid && usernameInput.touched">Username/Email is required</mat-error>
     </mat-form-field>
     <button mat-raised-button (click)="login()">
       LOGIN
