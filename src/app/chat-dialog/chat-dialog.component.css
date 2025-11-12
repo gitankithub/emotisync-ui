@@ -113,3 +113,7 @@
 .chat-body::-webkit-scrollbar-thumb:hover {
   background: #999;
 }
+
+.mat-mdc-icon-button .mdc-button__label, .mat-mdc-icon-button .mat-icon {
+    color: white;
+}

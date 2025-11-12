@@ -3,14 +3,18 @@
   <!-- LEFT PANEL: Requests List -->
   <div class="left-panel">
     <div class="top-bar">
-      <h2>Open Requests</h2>
+      <h2 class="title"><mat-icon>pending_actions</mat-icon> Open Requests</h2>
+      <div class="action-bar">
       <button
         *ngIf="role === 'guest'"
         mat-raised-button
         (click)="newRequest()"
+        style="left: 28%;"
       >
         New Request
       </button>
+      <button class="home" (click)="redirectToHome()"><mat-icon>home</mat-icon></button>
+      </div>
     </div>
 
     <div class="request-list">

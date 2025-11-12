@@ -7,6 +7,7 @@ import { BookingDialogComponent } from '../booking-dialog/booking-dialog.compone
 import { Reservation } from '../models/reservations.model';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-reservations',
@@ -29,10 +30,17 @@ export class ReservationsComponent implements OnInit {
   reservations: Reservation[] = [];
   loading = true;
 
+  activeReservations: Reservation[] = [];
+  pastReservations: Reservation[] = [];
+  upcomingReservations: Reservation[] = [];
+
+  constructor(private router: Router) {}
+
   ngOnInit() {
     this.http.get<{ reservations: Reservation[] }>('assets/mockData.json').subscribe({
       next: (res) => {
         this.reservations = res.reservations;
+        this.splitReservations();
         this.loading = false;
       },
       error: (err) => {
@@ -42,10 +50,24 @@ export class ReservationsComponent implements OnInit {
     });
   }
 
+  splitReservations() {
+  const now = new Date();
+
+  this.upcomingReservations = this.reservations.filter(r => r.status === 'upcoming');
+  this.activeReservations = this.reservations.filter(r => r.status === 'checkedin');
+  this.pastReservations = this.reservations.filter(r =>
+    r.status === 'completed' || r.status === 'cancelled'
+  );
+}
+
   openBooking(booking: Reservation) {
     this.dialog.open(BookingDialogComponent, {
       data: booking,
-      width: '700px'
+      width: '700px',
+      maxHeight: '600px'
     });
   }
+  redirectToReq(){
+    this.router.navigate(['/dashboard']);
+}
 }

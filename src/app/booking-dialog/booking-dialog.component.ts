@@ -28,7 +28,7 @@ export class BookingDialogComponent {
   private dialogRef = inject(MatDialogRef<BookingDialogComponent>);
   data = inject(MAT_DIALOG_DATA);
 
-  selectedRating: number | null = null;
+  selectedRating: number = 0;
   feedbackText: string = '';
 
   ratings = [
@@ -59,9 +59,8 @@ export class BookingDialogComponent {
     this.dialogRef.close();
   }
 
-  checkoutPassed(): boolean {
-    const checkoutDate = new Date(this.data.checkOut);
-    const today = new Date();
-    return today >= checkoutDate;
+  redirectToHelp(){
+    this.close();
+    this.router.navigate(['/dashboard']);
   }
 }

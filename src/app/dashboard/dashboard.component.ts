@@ -6,11 +6,12 @@ import { ApiService } from '../services/api.service';
 import { Request } from '../models/request.model';
 import { ChatComponent } from '../chat-dialog/chat-dialog.component';
 import { Router } from '@angular/router';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, MatCardModule, MatButtonModule, ChatComponent],
+  imports: [CommonModule, MatCardModule, MatButtonModule, ChatComponent,MatIconModule],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css']
 })
@@ -51,5 +52,9 @@ export class DashboardComponent {
     const req = await this.api.createRequest(this.userId, '999', 'General Help');
     this.requests.push(req);
     this.selectedRequest = req;
+  }
+
+  redirectToHome(){
+    this.router.navigate(['/reservations']);
   }
 }

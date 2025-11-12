@@ -1,18 +1,20 @@
 <section class="booking-section" *ngIf="!loading; else loadingTemplate">
-  <h2 class="title"><mat-icon>dashboard</mat-icon> Reservation Dashboard</h2>
-
+<h2 class="title header-row">
+  <span>Reservations Dashboard</span>
+  <button class="right-section" (click)="redirectToReq()" mat-flat-button>
+    <mat-icon>history</mat-icon>
+    Your requests
+  </button>
+</h2>
+  <!-- Active Reservations -->
+  <h4 class="title"><mat-icon>dashboard</mat-icon> Active </h4>
   <div class="booking-list">
     <button
       class="booking-card"
-      *ngFor="let booking of reservations"
+      *ngFor="let booking of activeReservations"
       (click)="openBooking(booking)"
     >
-      <img
-        [src]="booking.imageUrl"
-        [alt]="booking.hotelName"
-        class="booking-image"
-      />
-
+      <img [src]="booking.imageUrl" [alt]="booking.hotelName" class="booking-image" />
       <div class="booking-details">
         <div class="hotel-name">{{ booking.hotelName }}</div>
         <div class="dates">
@@ -21,15 +23,67 @@
         </div>
         <div class="meta">
           <span>{{ booking.roomType | lowercase }}</span>
-          <span>{{ booking.bedrooms }} bedroom</span>
-          <span>{{ booking.guests }} guests</span>
+          <span>{{ booking.bedrooms }} bedroom(s)</span>
+          <span>{{ booking.guests }} guest(s)</span>
         </div>
       </div>
-       <div
+      <div class="status-badge status-checkedin">
+        <span>Status: {{ booking.status | titlecase }}</span>
+      </div>
+    </button>
+  </div>
+
+  <!-- Upcoming Reservations -->
+  <h4 class="title"><mat-icon>event</mat-icon> Upcoming </h4>
+  <div class="booking-list">
+    <button
+      class="booking-card"
+      *ngFor="let booking of upcomingReservations"
+      (click)="openBooking(booking)"
+    >
+      <img [src]="booking.imageUrl" [alt]="booking.hotelName" class="booking-image" />
+      <div class="booking-details">
+        <div class="hotel-name">{{ booking.hotelName }}</div>
+        <div class="dates">
+          {{ booking.checkIn | date:'d MMMM y' }} to
+          {{ booking.checkOut | date:'d MMMM y' }}
+        </div>
+        <div class="meta">
+          <span>{{ booking.roomType | lowercase }}</span>
+          <span>{{ booking.bedrooms }} bedroom(s)</span>
+          <span>{{ booking.guests }} guest(s)</span>
+        </div>
+      </div>
+      <div class="status-badge status-upcoming">
+        <span>Status: {{ booking.status | titlecase }}</span>
+      </div>
+    </button>
+  </div>
+
+  <!-- Past Reservations -->
+  <h4 class="title"><mat-icon>history</mat-icon> Past </h4>
+  <div class="booking-list">
+    <button
+      class="booking-card"
+      *ngFor="let booking of pastReservations"
+      (click)="openBooking(booking)"
+    >
+      <img [src]="booking.imageUrl" [alt]="booking.hotelName" class="booking-image" />
+      <div class="booking-details">
+        <div class="hotel-name">{{ booking.hotelName }}</div>
+        <div class="dates">
+          {{ booking.checkIn | date:'d MMMM y' }} to
+          {{ booking.checkOut | date:'d MMMM y' }}
+        </div>
+        <div class="meta">
+          <span>{{ booking.roomType | lowercase }}</span>
+          <span>{{ booking.bedrooms }} bedroom(s)</span>
+          <span>{{ booking.guests }} guest(s)</span>
+        </div>
+      </div>
+      <div
         class="status-badge"
         [ngClass]="{
-          'status-upcoming': booking.status === 'upcoming',
-          'status-checkedin': booking.status === 'checkedin',
           'status-completed': booking.status === 'completed',
           'status-cancelled': booking.status === 'cancelled'
         }"

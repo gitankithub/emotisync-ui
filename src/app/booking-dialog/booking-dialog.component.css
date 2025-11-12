@@ -5,13 +5,12 @@
   font-family: "Inter", sans-serif;
 }
 
-/* Close icon top-right */
 .close-icon {
   position: absolute;
   top: 8px;
   right: 8px;
   color: #fff;
-  background-color: #084c3f; /* green */
+  background-color: #084c3f; 
   border-radius: 50%;
 }
 
