@@ -27,7 +27,13 @@
           <span>{{ booking.guests }} guest(s)</span>
         </div>
       </div>
-      <div class="status-badge status-checkedin">
+      <div class="status-badge"
+           [ngClass]="{
+             'status-upcoming': booking.status === 'upcoming',
+             'status-checkedin': booking.status === 'checkedin',
+             'status-completed': booking.status === 'completed',
+             'status-cancelled': booking.status === 'cancelled'
+           }">
         <span>Status: {{ booking.status | titlecase }}</span>
       </div>
     </button>

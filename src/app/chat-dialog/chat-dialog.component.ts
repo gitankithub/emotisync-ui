@@ -57,4 +57,8 @@ export class ChatComponent implements OnInit {
     const url = `${window.location.origin}/chat/${this.threadId}`;
     window.open(url, '_blank');
   }
+
+  async openNewReq(){
+    // your logic here
+  }
 }

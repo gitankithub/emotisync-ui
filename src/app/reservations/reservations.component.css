@@ -96,6 +96,11 @@
   white-space: nowrap;
 }
 
+.status-upcoming { background: #fff3cd; color: #856404; }
+.status-checkedin { background: #d1e7dd; color: #0f5132; }
+.status-completed { background: #e2e3e5; color: #6c757d; }
+.status-cancelled { background: #f8d7da; color: #842029; }
+
 .header-row {
   display: flex;
   align-items: center;

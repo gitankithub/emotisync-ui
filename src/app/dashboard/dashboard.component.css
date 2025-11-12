@@ -11,7 +11,7 @@
 }
 
 .left-panel {
-  flex: 1.5;
+  flex: 0.5;
   padding: 24px;
   overflow-y: auto;
   border-right: 1px solid #e0e0e0;
