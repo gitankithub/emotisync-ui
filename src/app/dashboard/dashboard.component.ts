@@ -4,13 +4,14 @@ import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { ApiService } from '../services/api.service';
 import { Request } from '../models/request.model';
-import { ChatComponent } from '../chat-dialog/chat-dialog.component';
+import { ChatDialogComponent } from '../chat-dialog/chat-dialog.component';
 import { Router } from '@angular/router';
+import { LoginService } from '../services/login.service';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, MatCardModule, MatButtonModule, ChatComponent],
+  imports: [CommonModule, MatCardModule, MatButtonModule, ChatDialogComponent],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css']
 })
@@ -20,9 +21,9 @@ export class DashboardComponent {
   requests: Request[] = [];
   selectedRequest: Request | null = null;
 
-  constructor(private api: ApiService, private router: Router) {
+  constructor(private api: ApiService, private router: Router, private loginService: LoginService) {
     const navState: any = this.router.getCurrentNavigation()?.extras.state;
-    this.userId = navState?.username || 'guest1';
+    this.userId = navState?.username || loginService.getUser() || 'guest-001';
     this.role = this.userId.startsWith('staff') ? 'staff' : this.userId.startsWith('admin') ? 'admin' : 'guest';
     this.loadRequests();
   }
@@ -44,12 +45,5 @@ export class DashboardComponent {
     if (this.role === 'guest') return req.guestThreadId;
     if (this.role === 'staff') return req.staffThreadId;
     return req.adminThreadId;
-  }
-
-  async newRequest() {
-    if (this.role !== 'guest') return;
-    const req = await this.api.createRequest(this.userId, '999', 'General Help');
-    this.requests.push(req);
-    this.selectedRequest = req;
   }
 }

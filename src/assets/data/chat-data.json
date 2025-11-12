@@ -1,0 +1,12 @@
+{
+  "messages": [
+    {
+      "messageId": "msg-001",
+      "senderId": "bot",
+      "text": "👋 Hello! How are you feeling today?",
+      "time": "2025-11-11T09:00:00Z",
+      "messageType": "bot",
+      "options": ["😄", "🙂", "😐", "🙁", "😢"]
+    }
+  ]
+}

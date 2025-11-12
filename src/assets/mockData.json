@@ -1,7 +1,8 @@
 {
   "reservations": [
     {
-    "hotelName": "BW Hotel Turismo",
+      "guestId": "guest-001",
+    "hotelName": "BW Hotel Tourism",
     "checkIn": "2025-11-10",
     "checkOut": "2025-11-15",
     "roomType": "Kings Suite",
@@ -11,6 +12,7 @@
     "status": "checkedin"
   },
   {
+    "guestId": "guest-001",
     "hotelName": "Hotel Princeton",
     "checkIn": "2025-10-21",
     "checkOut": "2025-10-29",
@@ -21,6 +23,7 @@
     "status": "completed"
   },
   {
+    "guestId": "guest-001",
     "hotelName": "Bly Manor Hotel",
     "checkIn": "2025-10-23",
     "checkOut": "2025-10-29",
@@ -31,6 +34,7 @@
     "status": "completed"
   },
   {
+    "guestId": "guest-001",
     "hotelName": "Hill View Resort",
     "checkIn": "2025-12-01",
     "checkOut": "2025-12-03",

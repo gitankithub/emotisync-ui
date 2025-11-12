@@ -14,7 +14,7 @@ import { Message } from '../models/message.model';
   templateUrl: './chat-dialog.component.html',
   styleUrls: ['./chat-dialog.component.css']
 })
-export class ChatComponent implements OnInit {
+export class ChatDialogComponent implements OnInit {
   @Input() request: any;
   @Input() threadId = '';
   @Input() username = '';
@@ -35,14 +35,13 @@ export class ChatComponent implements OnInit {
 
   async sendMessage() {
     if (!this.newMessage.trim()) return;
-
     const msg = await this.api.postMessage({
       threadId: this.threadId,
       senderId: this.username,
-      text: this.newMessage,
+      text: this.newMessage.trim(),
+      time: new Date().toISOString(), 
       messageType: 'user'
     });
-
     this.messages.push(msg);
     this.newMessage = '';
     setTimeout(() => this.scrollBottom(), 100);

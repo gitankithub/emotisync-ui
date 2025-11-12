@@ -1,13 +1,11 @@
 import { Injectable } from '@angular/core';
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable({ providedIn: 'root' })
 export class LoginService {
   private currentUser: string | null = null;
 
   setUser(username: string) {
-    this.currentUser = username.toLowerCase();
+    this.currentUser = username;
   }
 
   getUser(): string | null {
@@ -15,6 +13,6 @@ export class LoginService {
   }
 
   isStaffOrAdmin(): boolean {
-    return this.currentUser === 'staff' || this.currentUser === 'admin';
+    return this.currentUser?.startsWith('staff') || this.currentUser === 'admin' || false;
   }
 }

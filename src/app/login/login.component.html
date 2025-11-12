@@ -9,12 +9,10 @@
     <p>Sign in to continue</p>
 
     <mat-form-field appearance="fill" class="full-width">
-      <mat-label>Username/ Email</mat-label>
-      <input matInput placeholder="Enter your user name or email" [(ngModel)]="username" required #usernameInput="ngModel" />
-      <mat-error *ngIf="usernameInput.invalid && usernameInput.touched">Username/Email is required</mat-error>
+      <mat-label>Username</mat-label>
+      <input matInput placeholder="guest-001 or staff-101" [(ngModel)]="username" />
     </mat-form-field>
-    <button mat-raised-button (click)="login()">
-      LOGIN
-    </button>
+
+    <button mat-raised-button color="primary" (click)="login()">LOGIN</button>
   </div>
 </div>

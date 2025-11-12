@@ -1,28 +1,19 @@
 <div class="dashboard" [class.split-view]="selectedRequest">
-
-  <!-- LEFT PANEL: Requests List -->
   <div class="left-panel">
     <div class="top-bar">
       <h2>Open Requests</h2>
-      <button
-        *ngIf="role === 'guest'"
-        mat-raised-button
-        (click)="newRequest()"
-      >
-        New Request
-      </button>
+      <div *ngIf="role === 'guest'">
+        <button mat-raised-button (click)="loadRequests()">Refresh</button>
+      </div>
     </div>
 
     <div class="request-list">
-      <mat-card
-        *ngFor="let req of requests"
-        (click)="selectRequest(req)"
-        [class.active]="req.requestId === selectedRequest?.requestId"
-        class="req-card"
-      >
+      <mat-card *ngFor="let req of requests" (click)="selectRequest(req)" [class.active]="req.requestId === selectedRequest?.requestId" class="req-card">
         <div class="req-content">
-          <div class="req-id">{{ req.requestId }}</div>
-          <div class="req-type">{{ req.requestType }}</div>
+          <div>
+            <div class="req-id">{{ req.requestId }}</div>
+            <div class="req-type">{{ req.requestType }}</div>
+          </div>
           <div class="req-room">Room: {{ req.roomNumber }}</div>
         </div>
       </mat-card>
@@ -31,7 +22,6 @@
     </div>
   </div>
 
-  <!-- RIGHT PANEL: Chat -->
   <div class="right-panel" *ngIf="selectedRequest">
     <app-chat
       [request]="selectedRequest"
@@ -41,5 +31,4 @@
       (closeChat)="closeChat()"
     ></app-chat>
   </div>
-
 </div>

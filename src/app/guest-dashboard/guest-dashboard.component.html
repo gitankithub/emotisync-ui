@@ -1,0 +1,35 @@
+<div class="dashboard">
+  <!-- Left Panel: Request List -->
+  <div class="left-panel">
+    <h2>My Service Requests</h2>
+
+    <div class="request-list">
+      <mat-card
+        *ngFor="let req of requests"
+        (click)="selectRequest(req)"
+        [class.active]="req.requestId === selectedRequest?.requestId"
+        class="req-card"
+      >
+        <div class="req-content">
+          <div>
+            <div class="req-id">{{ req.requestId }}</div>
+            <div class="req-type">{{ req.requestType }}</div>
+          </div>
+          <div class="req-status">Status: {{ req.status | titlecase }}</div>
+        </div>
+      </mat-card>
+
+      <p *ngIf="!requests.length" class="no-data">No active service requests.</p>
+    </div>
+  </div>
+
+  <!-- Right Panel: Chat Questionnaire -->
+  <div class="right-panel">
+    <app-chat-questionnaire
+      [reservation]="selectedReservation"
+      [activeRequest]="selectedRequest"
+      (requestCreated)="handleRequestCreated($event)"
+      (requestClosed)="handleRequestClosed($event)"
+    ></app-chat-questionnaire>
+  </div>
+</div>

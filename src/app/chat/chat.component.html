@@ -1,0 +1,28 @@
+<div class="chat-container">
+  <div class="chat-header">
+    <div class="chat-title">
+      <mat-icon>support_agent</mat-icon>
+      <span>Chat Assistance</span>
+    </div>
+    <button mat-icon-button class="close-btn" (click)="close()">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <div class="chat-body">
+    <div *ngFor="let msg of messages" [ngClass]="msg.sender">
+      <div class="msg">{{ msg.text }}</div>
+    </div>
+
+    <div *ngIf="isTyping" class="typing">
+      <span></span><span></span><span></span>
+    </div>
+  </div>
+
+  <div class="chat-input">
+    <input [(ngModel)]="userInput" (keyup.enter)="sendMessage()" placeholder="Type your message..." />
+    <button mat-icon-button color="primary" (click)="sendMessage()">
+      <mat-icon>send</mat-icon>
+    </button>
+  </div>
+</div>

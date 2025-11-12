@@ -4,50 +4,46 @@
   align-items: center;
   height: 100vh;
   background-image: url('/assets/images/back-ground.png');
+  background-size: cover;
 }
 
 .login-box {
   background: white;
-  padding: 3rem;
+  padding: 2.5rem;
   border-radius: 10px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.12);
   text-align: center;
-  width: 350px;
+  width: 360px;
+}
+
+/* ✅ Proper alignment for logo and text */
+.logo-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.8rem;
+  margin-bottom: 1.5rem;
 }
 
 .logo {
-  width: 80px;
-  height: 80px;
+  width: 64px;
+  height: 64px;
   border-radius: 50%;
-  background-color: #084c3f;
-  padding: 10px;
-  margin-bottom: 1.2rem;
+  background: #084c3f;
+  padding: 8px;
+  object-fit: contain;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
 }
 
-h2 {
-  font-weight: 600;
-  margin-bottom: 0.5rem;
-  color: #333;
-}
-
-p {
-  color: #666;
-  margin-bottom: 1.5rem;
+.logo-text {
+  font-weight: 700;
+  color: #084c3f;
+  font-size: 1.6rem;
+  letter-spacing: 0.5px;
+  margin-top: 4px; /* ✅ Slightly centers text with round logo visually */
 }
 
 .full-width {
   width: 100%;
-}
-
-.logo-text {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: #084c3f; 
-}
-
-.logo-container {
-  display: flex;
-  align-items: center; 
-  gap: 0.5rem;
-  padding-left: 45px;
+  margin-bottom: 1rem;
 }

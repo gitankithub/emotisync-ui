@@ -1,60 +1,37 @@
 import { Injectable } from '@angular/core';
+import { Reservation } from '../models/reservations.model';
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable({ providedIn: 'root' })
 export class ChatService {
-  private chatData: Record<string, { sender: string; text: string }[]> = {};
+  private context: { reservation?: Reservation | null; rating?: number | null } = {
+    reservation: null,
+    rating: null
+  };
 
-  // Each request belongs to a user
-  private requests = [
-    { id: 'REQ-001', details: 'Chat about refund policy', owner: 'guest1' },
-    { id: 'REQ-002', details: 'Product inquiry chat', owner: 'guest2' },
-    { id: 'REQ-003', details: 'Order tracking discussion', owner: 'guest1' },
-    { id: 'REQ-004', details: 'Support bot conversation', owner: 'guest2' },
-    { id: 'REQ-005', details: 'General feedback chat', owner: 'guest1' }
-  ];
-
-  getAllRequests() {
-    return this.requests;
+  setReservationContext(reservation: Reservation, rating: number | null) {
+    this.context = { reservation, rating };
+    localStorage.setItem(
+    'reservationContext',
+    JSON.stringify({ reservation, rating })
+  );
   }
 
-  getRequestsForUser(username: string) {
-    if (username === 'staff' || username === 'admin') {
-      return this.requests;
-    }
-    return this.requests.filter(r => r.owner === username);
+  getReservationContext() {
+   const data = localStorage.getItem('reservationContext');
+  return data ? JSON.parse(data) : null;
   }
 
-  initRequest(requestId: string) {
-    this.chatData[requestId] = [
-      { sender: 'Bot', text: 'Hello! How can I help you today?' },
-      { sender: 'Guest', text: 'Hi, I just have a quick question.' }
-    ];
+  clearContext() {
+    this.context = { reservation: null, rating: null };
+    localStorage.removeItem('chatContext');
   }
 
-  getMessages(requestId: string) {
-    return this.chatData[requestId] || [];
-  }
-
-  addMessage(requestId: string, sender: string, text: string) {
-    if (!this.chatData[requestId]) this.chatData[requestId] = [];
-    this.chatData[requestId].push({ sender, text });
-  }
-
-  getUserRoleMessages(requestId: string, role: string) {
-  return this.chatData[requestId]?.filter(msg => msg.sender === role) || [];
+  saveContext(context: any) {
+  localStorage.setItem('chatContext', JSON.stringify(context));
+}
+getSavedContext() {
+  const data = localStorage.getItem('chatContext');
+  return data ? JSON.parse(data) : null;
 }
 
-  
-
-  createNewRequest(username: string) {
-    const newId = 'REQ-' + Math.floor(Math.random() * 10000);
-    const newReq = { id: newId, details: 'New chat request', owner: username };
-    this.requests.unshift(newReq);
-    this.chatData[newId] = [
-      { sender: 'Bot', text: 'Hello! This is a new request chat.' }
-    ];
-    return newReq;
-  }
 }

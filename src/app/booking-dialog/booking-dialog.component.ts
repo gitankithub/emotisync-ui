@@ -7,6 +7,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { ChatService } from '../services/chat.service'; // ✅ Required for passing context
 
 @Component({
   selector: 'app-booking-dialog',
@@ -27,8 +28,10 @@ import { Router } from '@angular/router';
 export class BookingDialogComponent {
   private dialogRef = inject(MatDialogRef<BookingDialogComponent>);
   data = inject(MAT_DIALOG_DATA);
+  private router = inject(Router);
+  private chatService = inject(ChatService); // ✅ For guest chat handoff
 
-  selectedRating: number | null = null;
+  selectedRating: number = 0;
   feedbackText: string = '';
 
   ratings = [
@@ -38,8 +41,6 @@ export class BookingDialogComponent {
     { value: 4, emoji: '😃', label: 'Great' },
     { value: 5, emoji: '🤩', label: 'Excellent' }
   ];
-
-  constructor(private router: Router) {}
 
   setRating(value: number) {
     this.selectedRating = value;
@@ -59,9 +60,18 @@ export class BookingDialogComponent {
     this.dialogRef.close();
   }
 
-  checkoutPassed(): boolean {
-    const checkoutDate = new Date(this.data.checkOut);
-    const today = new Date();
-    return today >= checkoutDate;
+  /** ✅ Help button action — redirects to Guest Dashboard with reservation context */
+  redirectToHelp() {
+    // Store the current booking in ChatService context for continuity
+    this.chatService.setReservationContext(this.data, this.selectedRating ?? 0);
+    this.dialogRef.close();
+
+    // Redirect to Guest Dashboard with username & reservation state
+    this.router.navigate(['/guest-dashboard'], {
+      state: {
+        username: this.data.guestId,
+        reservation: this.data
+      }
+    });
   }
 }

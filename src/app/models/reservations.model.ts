@@ -7,6 +7,7 @@ export class Reservation {
     public bedrooms: number,
     public guests: number,
     public imageUrl: string,
-    public status?: 'upcoming' | 'checkedin' | 'completed' | 'cancelled'
+    public status?: 'upcoming' | 'checkedin' | 'completed' | 'cancelled',
+    public guestId?: string
   ) {}
 }
