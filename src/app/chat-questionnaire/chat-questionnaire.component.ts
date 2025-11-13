@@ -40,6 +40,8 @@ export class ChatQuestionnaireComponent implements OnInit, OnDestroy, AfterViewI
   botTimer: any;
   loggedUser = 'guest-001';
   userChatInput = '';
+  ratingGiven: boolean = false;
+  selectedRating: number = 0;
   // stage: while request in progress or final rating
   stage: 'questionnaire' | 'in_progress' | 'final' = 'questionnaire';
   private messageDelay = 6000;
@@ -286,6 +288,9 @@ startNewRequest() {
   this.otherIssue = '';
 }
 
+setRating(value: number) {
+    this.selectedRating = value;
+  }
 
 
 

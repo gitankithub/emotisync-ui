@@ -94,8 +94,8 @@
 }
 
 .submit-btn {
-  background-color: #084c3f;
-  color: white;
+  background-color: #084c3f !important;
+  color: white !important;
   width: 120px;
 }
 
@@ -321,3 +321,21 @@
   transform: scale(1.05);
 }
 
+.initial-rating, .final-section {
+  text-align: center;
+  margin: 20px 0;
+}
+
+.emoji-bar button {
+  font-size: 1.8rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  margin: 0 5px;
+}
+
+.feedback-response {
+  margin-top: 15px;
+  font-size: 1rem;
+  color: #444;
+}

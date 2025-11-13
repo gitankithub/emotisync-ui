@@ -35,11 +35,12 @@ export class BookingDialogComponent {
   feedbackText: string = '';
 
   ratings = [
-    { value: 1, emoji: '😞', label: 'Very Bad' },
-    { value: 2, emoji: '😐', label: 'Okay' },
-    { value: 3, emoji: '🙂', label: 'Good' },
-    { value: 4, emoji: '😃', label: 'Great' },
-    { value: 5, emoji: '🤩', label: 'Excellent' }
+    { value: 1, emoji: '😡', label: 'Angry' },
+    { value: 2, emoji: '😞', label: 'Very Bad' },
+    { value: 3, emoji: '😐', label: 'Okay' },
+    { value: 4, emoji: '🙂', label: 'Good' },
+    { value: 5, emoji: '😃', label: 'Great' },
+    { value: 6, emoji: '🤩', label: 'Excellent' }
   ];
 
   setRating(value: number) {

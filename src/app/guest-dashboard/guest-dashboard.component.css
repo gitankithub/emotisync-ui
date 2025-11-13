@@ -5,7 +5,7 @@
 }
 
 .left-panel {
-  flex: 1;
+  flex: 0.8;
   background: #fff;
   padding: 1rem 1.5rem;
   border-right: 1px solid #ddd;
@@ -78,4 +78,30 @@
 @keyframes highlight {
   0% { background-color: #c8f7d0; }
   100% { background-color: #e3f2fd; }
+}
+
+.home {
+  color: #fff;
+  background-color: #084c3f; 
+  border-radius: 50%;
+  height: 40px;
+  width: 45px;
+}
+
+.action-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 28px;
+  position: relative;
+  z-index: 1000; 
+}
+
+.title {
+  font-weight: 600;
+  margin: 1rem 0;
+  color: #084c3f;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }

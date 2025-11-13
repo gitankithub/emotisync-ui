@@ -8,11 +8,12 @@ import { ChatQuestionnaireComponent } from '../chat-questionnaire/chat-questionn
 import { LoginService } from '../services/login.service';
 import { Request } from '../models/request.model';
 import { Reservation } from '../models/reservations.model';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-guest-dashboard',
   standalone: true,
-  imports: [CommonModule, MatCardModule, MatButtonModule, ChatQuestionnaireComponent],
+  imports: [CommonModule, MatCardModule, MatButtonModule, ChatQuestionnaireComponent, MatIconModule],
   templateUrl: './guest-dashboard.component.html',
   styleUrls: ['./guest-dashboard.component.css']
 })
@@ -78,5 +79,9 @@ export class GuestDashboardComponent implements OnInit, OnDestroy {
     await this.api.updateRequestStatus(reqId, 'completed');
     await this.loadRequests();
     if (this.selectedRequest?.requestId === reqId) this.selectedRequest = null;
+  }
+
+   redirectToHome(){
+    this.router.navigate(['/reservations']);
   }
 }

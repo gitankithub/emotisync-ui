@@ -1,6 +1,6 @@
 .booking-section {
   padding: 2rem;
-  max-width: 950px;
+  max-width: 800px;
   margin: auto;
   font-family: "Inter", sans-serif;
 }
@@ -53,17 +53,6 @@
 .right-section:hover {
   background-color: #0a5a4b !important;
   transform: translateY(-2px);
-}
-
-
-/* Section Container (Active, Upcoming, Past) */
-.booking-category {
-  border: 1.5px solid #dcdcdc;
-  border-radius: 10px;
-  padding: 1rem 1.5rem;
-  margin-bottom: 2rem;
-  background: #fafafa;
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.04);
 }
 
 /* Booking Cards */

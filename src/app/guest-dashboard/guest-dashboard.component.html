@@ -1,15 +1,13 @@
 <div class="dashboard">
   <!-- Left Panel: Request List -->
   <div class="left-panel">
-    <h2>My Service Requests</h2>
-
+    <div class="action-bar">
+      <h3>My Service Requests</h3>
+      <button class="home" (click)="redirectToHome()"><mat-icon>home</mat-icon></button>
+    </div>
     <div class="request-list">
-      <mat-card
-        *ngFor="let req of requests"
-        (click)="selectRequest(req)"
-        [class.active]="req.requestId === selectedRequest?.requestId"
-        class="req-card"
-      >
+      <mat-card *ngFor="let req of requests" (click)="selectRequest(req)"
+        [class.active]="req.requestId === selectedRequest?.requestId" class="req-card">
         <div class="req-content">
           <div>
             <div class="req-id">{{ req.requestId }}</div>
@@ -25,11 +23,8 @@
 
   <!-- Right Panel: Chat Questionnaire -->
   <div class="right-panel">
-    <app-chat-questionnaire
-      [reservation]="selectedReservation"
-      [activeRequest]="selectedRequest"
+    <app-chat-questionnaire [reservation]="selectedReservation" [activeRequest]="selectedRequest"
       (requestCreated)="handleRequestCreated($event)"
-      (requestClosed)="handleRequestClosed($event)"
-    ></app-chat-questionnaire>
+      (requestClosed)="handleRequestClosed($event)"></app-chat-questionnaire>
   </div>
 </div>

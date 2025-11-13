@@ -41,9 +41,9 @@ export class DashboardComponent {
     this.loadRequests();
   }
 
-  getThreadId(req: Request) {
-    if (this.role === 'guest') return req.guestThreadId;
-    if (this.role === 'staff') return req.staffThreadId;
-    return req.adminThreadId;
-  }
+  getThreadId(req: Request): string {
+  if (this.role === 'guest') return req.guestThreadId ?? '';
+  if (this.role === 'staff') return req.staffThreadId ?? '';
+  return req.adminThreadId ?? '';
+}
 }

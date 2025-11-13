@@ -8,7 +8,7 @@
   </h2>
 
   <!-- Active Reservations -->
-  <div class="booking-category">
+  <div>
     <h4 class="title"><mat-icon>dashboard</mat-icon> Active</h4>
     <div class="booking-list" *ngIf="activeReservations.length; else noActive">
       <button
@@ -37,7 +37,7 @@
   </div>
 
   <!-- Upcoming Reservations -->
-  <div class="booking-category">
+  <div>
     <h4 class="title"><mat-icon>event</mat-icon> Upcoming</h4>
     <div class="booking-list" *ngIf="upcomingReservations.length; else noUpcoming">
       <button
@@ -66,7 +66,7 @@
   </div>
 
   <!-- Past Reservations -->
-  <div class="booking-category">
+  <div>
     <h4 class="title"><mat-icon>history</mat-icon> Past</h4>
     <div class="booking-list" *ngIf="pastReservations.length; else noPast">
       <button
