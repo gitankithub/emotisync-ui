@@ -84,4 +84,22 @@ export class GuestDashboardComponent implements OnInit, OnDestroy {
    redirectToHome(){
     this.router.navigate(['/reservations']);
   }
+
+  getStatusStyle(status: string) {
+  switch (status) {
+    case 'open':
+      return { background: '#1E88E5', color: '#fff' };  // Blue
+    case 'assigned':
+      return { background: '#8E24AA', color: '#fff' };  // Purple
+    case 'in_progress':
+      return { background: '#FB8C00', color: '#fff' };  // Orange
+    case 'completed':
+      return { background: '#43A047', color: '#fff' };  // Green
+    case 'escalated':
+      return { background: '#E53935', color: '#fff' };  // Red
+    default:
+      return { background: '#777', color: '#fff' };  
+  }
+}
+
 }
