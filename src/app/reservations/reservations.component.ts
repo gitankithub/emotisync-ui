@@ -1,82 +1,156 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatDialog, MatDialogModule } from '@angular/material/dialog';
-import { MatCardModule } from '@angular/material/card';
-import { MatIconModule } from '@angular/material/icon';
+import { Router } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
-import { Reservation } from '../models/reservations.model';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatIconModule } from '@angular/material/icon';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+
+import { LoginService } from '../services/login.service';
 import { ApiService } from '../services/api.service';
 import { BookingDialogComponent } from '../booking-dialog/booking-dialog.component';
-import { ActivatedRoute, Router } from '@angular/router';
-import { LoginService } from '../services/login.service';
+import { MatCardModule } from '@angular/material/card';
+
+
 
 @Component({
   selector: 'app-reservations',
   standalone: true,
   imports: [
     CommonModule,
-    MatProgressSpinnerModule,
+    MatButtonModule,
     MatDialogModule,
-    MatCardModule,
     MatIconModule,
-    MatButtonModule
+    MatProgressSpinnerModule,
+    MatCardModule
   ],
   templateUrl: './reservations.component.html',
   styleUrls: ['./reservations.component.css']
 })
 export class ReservationsComponent implements OnInit {
-  private api = inject(ApiService);
-  private dialog = inject(MatDialog);
-  private router = inject(Router);
-  private route = inject(ActivatedRoute);
-  private login = inject(LoginService);
 
-  reservations: Reservation[] = [];
-  activeReservations: Reservation[] = [];
-  upcomingReservations: Reservation[] = [];
-  pastReservations: Reservation[] = [];
+  guestId: string = '';
+  reservations: any[] = [];
 
-  loading = true;
-  username = 'guest-001';
+  activeReservations: any[] = [];
+  upcomingReservations: any[] = [];
+  pastReservations: any[] = [];
 
-  async ngOnInit() {
-    const navState: any = this.router.getCurrentNavigation()?.extras.state;
-    if (navState?.username) this.username = navState.username;
+  hasOpenRequests: boolean = false;
+  loading: boolean = true;
 
-    this.reservations = await this.api.getReservationsForUser(this.username);
-    this.categorizeReservations();
-    this.loading = false;
+  constructor(
+    private loginService: LoginService,
+    private api: ApiService,
+    private router: Router,
+    private dialog: MatDialog
+  ) {}
+
+  ngOnInit() {
+    const user = this.loginService.getUser();
+    if (!user) {
+      this.router.navigate(['/login']);
+      return;
+    }
+
+    this.guestId = user.id;
+
+    this.loadReservations();
+    this.loadRequests();
   }
 
-  /** 🔹 Divide reservations into Active, Upcoming, and Past groups */
-  categorizeReservations() {
-    const now = new Date();
-    this.activeReservations = this.reservations.filter(r =>
-      r.status === 'checkedin' ||
-      (new Date(r.checkIn) <= now && new Date(r.checkOut) >= now)
-    );
+  // ==================================================
+  // 1️⃣ LOAD RESERVATIONS
+  // ==================================================
+  loadReservations() {
+    this.loading = true;
 
-    this.upcomingReservations = this.reservations.filter(r =>
-      r.status === 'upcoming' || new Date(r.checkIn) > now
-    );
+    this.api.getGuestReservations(this.guestId).subscribe({
+      next: (res: any[]) => {
+        this.reservations = res || [];
+        this.sortReservations();
+        this.loading = false;
+      },
+      error: (err) => {
+        console.warn("Reservation API down. Using fallback.", err);
 
-    this.pastReservations = this.reservations.filter(r =>
-      r.status === 'completed' || r.status === 'cancelled' || new Date(r.checkOut) < now
-    );
-  }
+        // Fallback reservation
+        this.reservations = [
+          {
+            _id: "04e2c98b-02d4-4b48-b3e9-ac42beb457ef",
+            propertyName: "Best Western Country Woods Resort",
+            roomNumber: "1203",
+            roomType: "SUITE",
+            numberOfOccupants: 2,
+            guestId: this.guestId,
+            status: "CHECKED_IN",
+            checkInDate: "2025-11-12T15:00:00Z",
+            checkOutDate: "2025-11-25T11:00:00Z"
+          }
+        ];
 
-  /** 🔹 Open reservation details */
-  openBooking(booking: Reservation) {
-    this.dialog.open(BookingDialogComponent, {
-      data: booking,
-      width: '700px',
-      panelClass: 'booking-dialog-panel'
+        this.sortReservations();
+        this.loading = false;
+      }
     });
   }
 
-  /** 🔹 Redirect to guest dashboard (Your Requests) */
-  redirectToReq() {
-    this.router.navigate(['/guest-dashboard'], { state: { username: this.username } });
+  // ==================================================
+  // 2️⃣ SORT RESERVATIONS
+  // ==================================================
+  sortReservations() {
+    const now = new Date();
+
+    this.activeReservations = this.reservations.filter(r =>
+      r.status === "CHECKED_IN"
+    );
+
+    this.upcomingReservations = this.reservations.filter(r =>
+      new Date(r.checkInDate) > now
+    );
+
+    this.pastReservations = this.reservations.filter(r =>
+      new Date(r.checkOutDate) < now
+    );
+  }
+
+  // ==================================================
+  // 3️⃣ LOAD REQUESTS FOR "YOUR REQUESTS" BUTTON
+  // ==================================================
+  loadRequests() {
+    this.api.getGuestRequests(this.guestId).subscribe({
+      next: (requests: any[]) => {
+        this.hasOpenRequests = requests.some(r => r.status === "OPEN");
+      },
+      error: (err) => {
+        console.warn("Requests API down. Using fallback.", err);
+
+        // Fallback open request
+        this.hasOpenRequests = true;
+      }
+    });
+  }
+
+  // ==================================================
+  // 4️⃣ OPEN BOOKING DIALOG (STAYS SAME AS BEFORE)
+  // ==================================================
+  openBooking(booking: any) {
+  this.dialog.open(BookingDialogComponent, {
+    width: '600px',
+    data: {
+      ...booking,
+      imageUrl: booking.imageUrl || 'assets/hotel-placeholder.jpg'
+    }
+  });
+}
+
+
+  // ==================================================
+  // 5️⃣ GO TO REQUESTS PAGE
+  // ==================================================
+  goToRequests() {
+    this.router.navigate(['/guest-dashboard'], {
+      state: { guestId: this.guestId }
+    });
   }
 }

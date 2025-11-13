@@ -1,7 +1,7 @@
 <section class="booking-section" *ngIf="!loading; else loadingTemplate">
   <h2 class="title header-row">
     <span>Reservations Dashboard</span>
-    <button class="right-section" (click)="redirectToReq()" mat-flat-button color="primary">
+    <button class="right-section" (click)="goToRequests()" mat-flat-button color="primary">
       <mat-icon>history</mat-icon>
       Your Requests
     </button>
@@ -16,16 +16,16 @@
         *ngFor="let booking of activeReservations"
         (click)="openBooking(booking)"
       >
-        <img [src]="booking.imageUrl" [alt]="booking.hotelName" class="booking-image" />
+        <img [src]="booking.imageUrl" [alt]="booking.propertyName" class="booking-image" />
         <div class="booking-details">
-          <div class="hotel-name">{{ booking.hotelName }}</div>
+          <div class="hotel-name">{{ booking.propertyName }}</div>
           <div class="dates">
-            {{ booking.checkIn | date:'d MMM y' }} - {{ booking.checkOut | date:'d MMM y' }}
+            {{ booking.checkInDate | date:'d MMM y' }} - {{ booking.checkOutDate | date:'d MMM y' }}
           </div>
           <div class="meta">
             <span>{{ booking.roomType | lowercase }}</span>
-            <span>{{ booking.bedrooms }} bedroom(s)</span>
-            <span>{{ booking.guests }} guest(s)</span>
+            <span>{{ booking.numberOfOccupants }} occupant(s)</span>
+            <span>Room: {{ booking.roomNumber }}</span>
           </div>
         </div>
         <div class="status-badge status-checkedin">
@@ -45,16 +45,16 @@
         *ngFor="let booking of upcomingReservations"
         (click)="openBooking(booking)"
       >
-        <img [src]="booking.imageUrl" [alt]="booking.hotelName" class="booking-image" />
+        <img [src]="booking.imageUrl" [alt]="booking.propertyName" class="booking-image" />
         <div class="booking-details">
-          <div class="hotel-name">{{ booking.hotelName }}</div>
+          <div class="hotel-name">{{ booking.propertyName }}</div>
           <div class="dates">
-            {{ booking.checkIn | date:'d MMM y' }} - {{ booking.checkOut | date:'d MMM y' }}
+            {{ booking.checkInDate | date:'d MMM y' }} - {{ booking.checkOutDate | date:'d MMM y' }}
           </div>
           <div class="meta">
             <span>{{ booking.roomType | lowercase }}</span>
-            <span>{{ booking.bedrooms }} bedroom(s)</span>
-            <span>{{ booking.guests }} guest(s)</span>
+            <span>{{ booking.numberOfOccupants }} occupant(s)</span>
+            <span>Room: {{ booking.roomNumber }}</span>
           </div>
         </div>
         <div class="status-badge status-upcoming">
@@ -74,23 +74,23 @@
         *ngFor="let booking of pastReservations"
         (click)="openBooking(booking)"
       >
-        <img [src]="booking.imageUrl" [alt]="booking.hotelName" class="booking-image" />
+        <img [src]="booking.imageUrl" [alt]="booking.propertyName" class="booking-image" />
         <div class="booking-details">
-          <div class="hotel-name">{{ booking.hotelName }}</div>
+          <div class="hotel-name">{{ booking.propertyName }}</div>
           <div class="dates">
-            {{ booking.checkIn | date:'d MMM y' }} - {{ booking.checkOut | date:'d MMM y' }}
+            {{ booking.checkInDate | date:'d MMM y' }} - {{ booking.checkOutDate | date:'d MMM y' }}
           </div>
           <div class="meta">
             <span>{{ booking.roomType | lowercase }}</span>
-            <span>{{ booking.bedrooms }} bedroom(s)</span>
-            <span>{{ booking.guests }} guest(s)</span>
+            <span>{{ booking.numberOfOccupants }} occupant(s)</span>
+            <span>Room: {{ booking.roomNumber }}</span>
           </div>
         </div>
         <div
           class="status-badge"
           [ngClass]="{
-            'status-completed': booking.status === 'completed',
-            'status-cancelled': booking.status === 'cancelled'
+            'status-completed': booking.status === 'COMPLETED' || booking.status === 'completed',
+            'status-cancelled': booking.status === 'CANCELLED' || booking.status === 'cancelled'
           }"
         >
           <span>Status: {{ booking.status | titlecase }}</span>

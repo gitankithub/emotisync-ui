@@ -2,17 +2,21 @@ import { Injectable } from '@angular/core';
 
 @Injectable({ providedIn: 'root' })
 export class LoginService {
-  private currentUser: string | null = null;
+  private currentUser: any = null;
 
-  setUser(username: string) {
-    this.currentUser = username;
+  setUser(user: any) {
+    this.currentUser = user;
+    localStorage.setItem("currentUser", JSON.stringify(user));
   }
 
-  getUser(): string | null {
-    return this.currentUser;
+  getUser() {
+    if (this.currentUser) return this.currentUser;
+    const saved = localStorage.getItem("currentUser");
+    return saved ? JSON.parse(saved) : null;
   }
 
-  isStaffOrAdmin(): boolean {
-    return this.currentUser?.startsWith('staff') || this.currentUser === 'admin' || false;
+  clearUser() {
+    this.currentUser = null;
+    localStorage.removeItem("currentUser");
   }
 }

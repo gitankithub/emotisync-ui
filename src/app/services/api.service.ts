@@ -150,5 +150,24 @@ export class ApiService {
   const data = await fetch('assets/mockData.json').then(res => res.json());
   return data.requests.filter((req: any) => req.userId === userId);
 }
+getAllUsers() {
+  return this.http.get<any[]>("http://localhost:8080/api/users");
+}
+
+getGuestReservations(guestId: string) {
+  return this.http.get<any[]>(
+    `http://localhost:8080/api/reservations/guestid=${guestId}`
+  );
+}
+
+getGuestRequests(guestId: string) {
+  return this.http.get<any[]>(
+    `http://localhost:8080/api/requests/guestid=${guestId}`
+  );
+}
+
+
+
+
 
 }
