@@ -73,12 +73,13 @@ export class ApiService {
     return this.requests.filter(r => r.guestId === userId);
   }
 
-  async createRequest(guestId: string, roomNumber: string, requestType: string, description?: string): Promise<Request> {
+  async createRequest(guestId: string, requestTitle: string, roomNumber: string, requestType: string, description?: string): Promise<Request> {
     await this.initIfNeeded();
     const id = 'REQ' + Math.floor(1000 + Math.random() * 9000);
     const now = this.nowIso();
     const req: Request = {
       requestId: id,
+      requestTitle,
       guestId,
       roomNumber,
       requestType,
@@ -151,23 +152,34 @@ export class ApiService {
   return data.requests.filter((req: any) => req.userId === userId);
 }
 getAllUsers() {
-  return this.http.get<any[]>("http://localhost:8080/api/users");
+  return this.http.get<any[]>('http://localhost:8080/api/users');
 }
 
 getGuestReservations(guestId: string) {
   return this.http.get<any[]>(
-    `http://localhost:8080/api/reservations/guestid=${guestId}`
+    `http://localhost:8080/api/reservations/user/${guestId}`
   );
 }
 
 getGuestRequests(guestId: string) {
   return this.http.get<any[]>(
-    `http://localhost:8080/api/requests/guestid=${guestId}`
+    `http://localhost:8080/api/requests/user/${guestId}`
   );
 }
+// getMessages(threadId: string){
+//  console.log('get');
+// }
 
+// postMessages(threadId: string){
+//   console.log('post');
+// }
 
+// getRequests(userId: string){
 
+// }
 
+// createRequest(userId: string,'N/A', issue, summary){
+
+// }
 
 }

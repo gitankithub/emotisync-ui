@@ -5,6 +5,7 @@ export interface StatusType {
 
 export interface Request {
   requestId: string;
+  requestTitle: string;
   guestId: string;
   roomNumber: string;
   requestType: string;

@@ -5,13 +5,11 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-
+import { MatCardModule } from '@angular/material/card';
+import { User } from '../models/user.model';
 import { LoginService } from '../services/login.service';
 import { ApiService } from '../services/api.service';
 import { BookingDialogComponent } from '../booking-dialog/booking-dialog.component';
-import { MatCardModule } from '@angular/material/card';
-
-
 
 @Component({
   selector: 'app-reservations',
@@ -38,6 +36,7 @@ export class ReservationsComponent implements OnInit {
 
   hasOpenRequests: boolean = false;
   loading: boolean = true;
+  errorMessage: string = '';
 
   constructor(
     private loginService: LoginService,
@@ -47,21 +46,18 @@ export class ReservationsComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    const user = this.loginService.getUser();
+    const user: User = this.loginService.getUser();
     if (!user) {
       this.router.navigate(['/login']);
       return;
     }
 
-    this.guestId = user.id;
-
+    this.guestId = user.userId;
     this.loadReservations();
     this.loadRequests();
   }
 
-  // ==================================================
-  // 1️⃣ LOAD RESERVATIONS
-  // ==================================================
+  // load reservations
   loadReservations() {
     this.loading = true;
 
@@ -71,33 +67,14 @@ export class ReservationsComponent implements OnInit {
         this.sortReservations();
         this.loading = false;
       },
-      error: (err) => {
-        console.warn("Reservation API down. Using fallback.", err);
-
-        // Fallback reservation
-        this.reservations = [
-          {
-            _id: "04e2c98b-02d4-4b48-b3e9-ac42beb457ef",
-            propertyName: "Best Western Country Woods Resort",
-            roomNumber: "1203",
-            roomType: "SUITE",
-            numberOfOccupants: 2,
-            guestId: this.guestId,
-            status: "CHECKED_IN",
-            checkInDate: "2025-11-12T15:00:00Z",
-            checkOutDate: "2025-11-25T11:00:00Z"
-          }
-        ];
-
-        this.sortReservations();
+      error: () => {
+        this.errorMessage = "Unable to load reservations. Please try again later.";
         this.loading = false;
       }
     });
   }
 
-  // ==================================================
-  // 2️⃣ SORT RESERVATIONS
-  // ==================================================
+  // sort reservations
   sortReservations() {
     const now = new Date();
 
@@ -114,43 +91,39 @@ export class ReservationsComponent implements OnInit {
     );
   }
 
-  // ==================================================
-  // 3️⃣ LOAD REQUESTS FOR "YOUR REQUESTS" BUTTON
-  // ==================================================
+  // load requests
   loadRequests() {
     this.api.getGuestRequests(this.guestId).subscribe({
       next: (requests: any[]) => {
-        this.hasOpenRequests = requests.some(r => r.status === "OPEN");
+        if(requests)
+          this.hasOpenRequests = true;
       },
-      error: (err) => {
-        console.warn("Requests API down. Using fallback.", err);
-
-        // Fallback open request
-        this.hasOpenRequests = true;
+      error: () => {
+        this.errorMessage = "Unable to load guest requests.";
       }
     });
   }
 
-  // ==================================================
-  // 4️⃣ OPEN BOOKING DIALOG (STAYS SAME AS BEFORE)
-  // ==================================================
+  // open booking details
   openBooking(booking: any) {
-  this.dialog.open(BookingDialogComponent, {
-    width: '600px',
-    data: {
-      ...booking,
-      imageUrl: booking.imageUrl || 'assets/hotel-placeholder.jpg'
-    }
-  });
-}
+    this.dialog.open(BookingDialogComponent, {
+      width: '600px',
+      data: {
+        ...booking,
+        imageUrl: booking.imageUrl || 'assets/hotel-placeholder.jpg'
+      }
+    });
+  }
 
-
-  // ==================================================
-  // 5️⃣ GO TO REQUESTS PAGE
-  // ==================================================
+  // navigate to requests
   goToRequests() {
     this.router.navigate(['/guest-dashboard'], {
       state: { guestId: this.guestId }
     });
+  }
+
+  //get hotel image by hotel id
+  getImagePath(reservationId: string): string {
+    return `assets/images/${reservationId}.jpg`;
   }
 }

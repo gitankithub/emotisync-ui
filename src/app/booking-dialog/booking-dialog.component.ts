@@ -7,7 +7,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { ChatService } from '../services/chat.service'; // ✅ Required for passing context
+import { ChatService } from '../services/chat.service';
 
 @Component({
   selector: 'app-booking-dialog',
@@ -29,7 +29,7 @@ export class BookingDialogComponent {
   private dialogRef = inject(MatDialogRef<BookingDialogComponent>);
   data = inject(MAT_DIALOG_DATA);
   private router = inject(Router);
-  private chatService = inject(ChatService); // ✅ For guest chat handoff
+  private chatService = inject(ChatService);
 
   selectedRating: number = 0;
   feedbackText: string = '';
@@ -61,18 +61,21 @@ export class BookingDialogComponent {
     this.dialogRef.close();
   }
 
-  /** ✅ Help button action — redirects to Guest Dashboard with reservation context */
+  //Help button action — redirects to Guest Dashboard with reservation context
   redirectToHelp() {
-    // Store the current booking in ChatService context for continuity
     this.chatService.setReservationContext(this.data, this.selectedRating ?? 0);
     this.dialogRef.close();
-
-    // Redirect to Guest Dashboard with username & reservation state
     this.router.navigate(['/guest-dashboard'], {
       state: {
         username: this.data.guestId,
-        reservation: this.data
+        reservation: this.data,
+        selectedRating: this.selectedRating
       }
     });
+  }
+
+  //get hotel image by hotel id
+  getImagePath(reservationId: string): string {
+    return `assets/images/${reservationId}.jpg`;
   }
 }

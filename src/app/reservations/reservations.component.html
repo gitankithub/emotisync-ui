@@ -1,7 +1,7 @@
 <section class="booking-section" *ngIf="!loading; else loadingTemplate">
   <h2 class="title header-row">
     <span>Reservations Dashboard</span>
-    <button class="right-section" (click)="goToRequests()" mat-flat-button color="primary">
+    <button *ngIf="this.hasOpenRequests" class="right-section" (click)="goToRequests()" mat-flat-button color="primary">
       <mat-icon>history</mat-icon>
       Your Requests
     </button>
@@ -16,7 +16,7 @@
         *ngFor="let booking of activeReservations"
         (click)="openBooking(booking)"
       >
-        <img [src]="booking.imageUrl" [alt]="booking.propertyName" class="booking-image" />
+        <img [src]="getImagePath(booking.id)" [alt]="booking.propertyName" class="booking-image" />
         <div class="booking-details">
           <div class="hotel-name">{{ booking.propertyName }}</div>
           <div class="dates">
@@ -45,7 +45,7 @@
         *ngFor="let booking of upcomingReservations"
         (click)="openBooking(booking)"
       >
-        <img [src]="booking.imageUrl" [alt]="booking.propertyName" class="booking-image" />
+        <img [src]="getImagePath(booking.id)" [alt]="booking.propertyName" class="booking-image" />
         <div class="booking-details">
           <div class="hotel-name">{{ booking.propertyName }}</div>
           <div class="dates">
@@ -74,7 +74,7 @@
         *ngFor="let booking of pastReservations"
         (click)="openBooking(booking)"
       >
-        <img [src]="booking.imageUrl" [alt]="booking.propertyName" class="booking-image" />
+        <img [src]="getImagePath(booking.id)" [alt]="booking.propertyName" class="booking-image" />
         <div class="booking-details">
           <div class="hotel-name">{{ booking.propertyName }}</div>
           <div class="dates">

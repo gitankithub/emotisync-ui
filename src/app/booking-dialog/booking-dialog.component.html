@@ -6,7 +6,7 @@
 
   <!-- Full-width Image -->
   <div class="image-wrapper">
-    <img [src]="data.imageUrl" alt="{{ data.propertyName }}" class="dialog-image" />
+    <img [src]="getImagePath(data.id)" alt="{{ data.propertyName }}" class="dialog-image" />
   </div>
 
   <!-- Content -->
@@ -53,7 +53,7 @@
         <textarea matInput [(ngModel)]="feedbackText"
                   placeholder="Please share your experience..."></textarea>
       </mat-form-field>
-    </div>
+    </div>&nbsp;
 
     <!-- Feedback Response -->
     <p *ngIf="selectedRating >= 4 && data.status !== 'completed' && data.status !== 'COMPLETED'">
@@ -68,7 +68,7 @@
 
     <!-- Actions -->
     <div class="actions">
-      <button *ngIf="data.status === 'completed' || data.status === 'checkedin' || data.status === 'CHECKED_IN'"
+      <button *ngIf="selectedRating >= 4"
               mat-flat-button class="action-btn"
               (click)="submitFeedback()"
               [disabled]="!selectedRating && !feedbackText">

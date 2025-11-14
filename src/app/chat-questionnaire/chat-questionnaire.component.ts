@@ -27,6 +27,7 @@ import { Router } from '@angular/router';
 export class ChatQuestionnaireComponent implements OnInit, OnDestroy, AfterViewInit {
   @Input() reservation!: Reservation | null;
   @Input() activeRequest: Request | null = null;
+  @Input() selectedRating: number = 0;
   @Output() requestCreated = new EventEmitter<Request>();
   @Output() requestClosed = new EventEmitter<string>();
   @ViewChild('popupScroll') popupScroll!: ElementRef;
@@ -41,7 +42,6 @@ export class ChatQuestionnaireComponent implements OnInit, OnDestroy, AfterViewI
   loggedUser = 'guest-001';
   userChatInput = '';
   ratingGiven: boolean = false;
-  selectedRating: number = 0;
   // stage: while request in progress or final rating
   stage: 'questionnaire' | 'in_progress' | 'final' = 'questionnaire';
   private messageDelay = 6000;
@@ -58,6 +58,7 @@ export class ChatQuestionnaireComponent implements OnInit, OnDestroy, AfterViewI
   constructor(private api: ApiService, private chatService: ChatService,private router: Router) {}
 
   ngOnInit() {
+    console.log('selectedRating on init:', this.selectedRating);
     const ctx = this.chatService.getReservationContext();
     if (ctx?.reservation) this.reservation = ctx.reservation;
     this.loggedUser = this.reservation?.guestId || 'guest-001';

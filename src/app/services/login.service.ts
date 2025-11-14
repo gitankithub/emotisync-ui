@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
+import { User } from '../models/user.model';
 
 @Injectable({ providedIn: 'root' })
 export class LoginService {
-  private currentUser: any = null;
+  private currentUser!: User;
 
   setUser(user: any) {
     this.currentUser = user;
@@ -16,7 +17,6 @@ export class LoginService {
   }
 
   clearUser() {
-    this.currentUser = null;
     localStorage.removeItem("currentUser");
   }
 }

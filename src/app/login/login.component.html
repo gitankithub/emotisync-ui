@@ -10,7 +10,7 @@
 
     <mat-form-field appearance="fill" class="full-width">
       <mat-label>Username</mat-label>
-      <input matInput placeholder="guest-001 or staff-101" [(ngModel)]="username" />
+      <input matInput placeholder="Please enter your email" [(ngModel)]="username" />
       <p *ngIf="errorMessage" style="color:red; margin: 8px 0;">
   {{ errorMessage }}
 </p>

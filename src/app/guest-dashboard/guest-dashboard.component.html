@@ -19,7 +19,7 @@
 
         <div class="req-content">
           <div>
-            <div class="req-id">{{ req.requestId }} - {{ req.requestType }}</div>
+            <div class="req-id">{{ req.requestTitle }}</div>
           </div>
 
           <div class="req-status" [ngStyle]="getStatusStyle(req.status)">
@@ -38,7 +38,7 @@
 
   <!-- RIGHT PANEL: Chat + Questionnaire -->
   <div class="right-panel">
-    <app-chat-questionnaire [reservation]="selectedReservation" [activeRequest]="selectedRequest"
+    <app-chat-questionnaire [reservation]="selectedReservation" [selectedRating]="selectedRating" [activeRequest]="selectedRequest"
       (requestCreated)="handleRequestCreated($event)" (requestClosed)="handleRequestClosed($event)">
     </app-chat-questionnaire>
   </div>

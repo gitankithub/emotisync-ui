@@ -9,6 +9,7 @@ import { LoginService } from '../services/login.service';
 import { Request } from '../models/request.model';
 import { Reservation } from '../models/reservations.model';
 import { MatIconModule } from '@angular/material/icon';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-guest-dashboard',
@@ -23,13 +24,15 @@ export class GuestDashboardComponent implements OnInit, OnDestroy {
   selectedRequest: Request | null = null;
   selectedReservation: Reservation | null = null;
   private pollInterval: any;
+  selectedRating: number = 0;
 
-  constructor(private api: ApiService, private router: Router, private loginService: LoginService) {}
+  constructor(private api: ApiService, private router: Router, private loginService: LoginService) { }
 
   async ngOnInit() {
-    const navState: any = this.router.getCurrentNavigation()?.extras.state;
-    this.userId = navState?.username || this.loginService.getUser() || 'guest-001';
+    const navState: any = history.state;
+    this.userId = navState?.username || this.loginService.getUser() || '6916598b2dea9cced0f1da33';
     if (navState?.reservation) this.selectedReservation = navState.reservation;
+    if (navState?.rating) this.selectedRating = navState.rating;
     await this.loadRequests();
     this.pollInterval = setInterval(() => this.loadRequests(true), 5000);
   }
@@ -37,7 +40,8 @@ export class GuestDashboardComponent implements OnInit, OnDestroy {
   ngOnDestroy() { clearInterval(this.pollInterval); }
 
   async loadRequests(isSilent = false) {
-    const all = await this.api.getRequests(this.userId);
+
+    const all = await firstValueFrom(this.api.getGuestRequests(this.userId));
     const open = all.filter(r => r.status !== 'completed' && r.status !== 'escalated');
 
     // merge update statuses & new ones
@@ -50,10 +54,15 @@ export class GuestDashboardComponent implements OnInit, OnDestroy {
         this.requests.unshift(r);
       }
     }
+
     // remove closed
-    this.requests = this.requests.filter(r => open.find(x => x.requestId === r.requestId));
+    this.requests = this.requests.filter(r =>
+      open.find(x => x.requestId === r.requestId)
+    );
+
     if (!isSilent) console.log('requests loaded', this.requests);
   }
+
 
   selectRequest(req: Request) { this.selectedRequest = req; }
 
@@ -81,25 +90,25 @@ export class GuestDashboardComponent implements OnInit, OnDestroy {
     if (this.selectedRequest?.requestId === reqId) this.selectedRequest = null;
   }
 
-   redirectToHome(){
+  redirectToHome() {
     this.router.navigate(['/reservations']);
   }
 
   getStatusStyle(status: string) {
-  switch (status) {
-    case 'open':
-      return { background: '#1E88E5', color: '#fff' };  // Blue
-    case 'assigned':
-      return { background: '#8E24AA', color: '#fff' };  // Purple
-    case 'in_progress':
-      return { background: '#FB8C00', color: '#fff' };  // Orange
-    case 'completed':
-      return { background: '#43A047', color: '#fff' };  // Green
-    case 'escalated':
-      return { background: '#E53935', color: '#fff' };  // Red
-    default:
-      return { background: '#777', color: '#fff' };  
+    switch (status) {
+      case 'open':
+        return { background: '#1E88E5', color: '#fff' };  // Blue
+      case 'assigned':
+        return { background: '#8E24AA', color: '#fff' };  // Purple
+      case 'in_progress':
+        return { background: '#FB8C00', color: '#fff' };  // Orange
+      case 'completed':
+        return { background: '#43A047', color: '#fff' };  // Green
+      case 'escalated':
+        return { background: '#E53935', color: '#fff' };  // Red
+      default:
+        return { background: '#777', color: '#fff' };
+    }
   }
-}
 
 }
