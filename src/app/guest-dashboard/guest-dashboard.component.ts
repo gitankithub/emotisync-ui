@@ -32,7 +32,7 @@ export class GuestDashboardComponent implements OnInit, OnDestroy {
     const navState: any = history.state;
     this.userId = navState?.username || this.loginService.getUser() || '6916598b2dea9cced0f1da33';
     if (navState?.reservation) this.selectedReservation = navState.reservation;
-    if (navState?.rating) this.selectedRating = navState.rating;
+    if (navState?.selectedRating) this.selectedRating = navState.selectedRating;
     await this.loadRequests();
     this.pollInterval = setInterval(() => this.loadRequests(true), 5000);
   }
@@ -107,7 +107,7 @@ export class GuestDashboardComponent implements OnInit, OnDestroy {
       case 'escalated':
         return { background: '#E53935', color: '#fff' };  // Red
       default:
-        return { background: '#777', color: '#fff' };
+        return { background: '#084c3f', color: '#fff' };
     }
   }
 

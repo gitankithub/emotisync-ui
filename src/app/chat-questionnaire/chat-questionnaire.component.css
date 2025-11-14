@@ -73,15 +73,10 @@
   align-items: center;
 }
 
-/* .other-box textarea {
-  width: 100%;
-  min-height: 200px;
-  padding: 1rem;
-  border: 2px solid #084c3f;
-  border-radius: 10px;
-  font-size: 1rem;
-  resize: none;
-} */
+.emoji-bar button.active {
+  transform: scale(1.25);
+  filter: drop-shadow(0 0 5px rgba(0, 0, 0, 0.2));
+}
 
 .submit-large {
   margin-top: 1rem;

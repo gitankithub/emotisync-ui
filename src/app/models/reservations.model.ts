@@ -1,11 +1,12 @@
 export class Reservation {
   constructor(
-    public hotelName: string,
-    public checkIn: string,
-    public checkOut: string,
+    public propertyName: string,
+    public roomNuber: number,
+    public checkInDate: string,
+    public checkOutDate: string,
     public roomType: string,
     public bedrooms: number,
-    public guests: number,
+    public numberOfOccupants: number,
     public imageUrl: string,
     public status?: 'upcoming' | 'checkedin' | 'completed' | 'cancelled',
     public guestId?: string

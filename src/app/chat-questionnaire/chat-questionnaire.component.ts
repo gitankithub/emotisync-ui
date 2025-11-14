@@ -1,6 +1,6 @@
 import {
   Component, Input, Output, EventEmitter, ElementRef, ViewChild, OnInit, OnDestroy, AfterViewInit,
-  inject
+  inject 
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -11,7 +11,6 @@ import { ApiService } from '../services/api.service';
 import { ChatService } from '../services/chat.service';
 import { Reservation } from '../models/reservations.model';
 import { Request } from '../models/request.model';
-import { ChatDialogComponent } from '../chat-dialog/chat-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
 import { ChatComponent } from '../chat/chat.component';
 import { Router } from '@angular/router';
@@ -20,7 +19,7 @@ import { Router } from '@angular/router';
 @Component({
   selector: 'app-chat-questionnaire',
   standalone: true,
-  imports: [CommonModule, FormsModule, MatButtonModule, MatIconModule, MatInputModule,ChatComponent],
+  imports: [CommonModule, FormsModule, MatButtonModule, MatIconModule, MatInputModule, ChatComponent],
   templateUrl: './chat-questionnaire.component.html',
   styleUrls: ['./chat-questionnaire.component.css']
 })
@@ -53,17 +52,20 @@ export class ChatQuestionnaireComponent implements OnInit, OnDestroy, AfterViewI
     'Service completed! We hope you’re satisfied with your stay.'
   ];
 
-    private dialog = inject(MatDialog);
+  ratings = [
+    { value: 1, emoji: '😡', label: 'Very Bad' },
+    { value: 2, emoji: '😞', label: 'Bad' },
+    { value: 3, emoji: '😐', label: 'Neutral' },
+    { value: 4, emoji: '🙂', label: 'Good' },
+    { value: 5, emoji: '😃', label: 'Very Good' },
+    { value: 6, emoji: '🤩', label: 'Excellent' }
+  ];
 
-  constructor(private api: ApiService, private chatService: ChatService,private router: Router) {}
+  private dialog = inject(MatDialog);
+  constructor(private api: ApiService, private chatService: ChatService, private router: Router) { }
+
 
   ngOnInit() {
-    console.log('selectedRating on init:', this.selectedRating);
-    const ctx = this.chatService.getReservationContext();
-    if (ctx?.reservation) this.reservation = ctx.reservation;
-    this.loggedUser = this.reservation?.guestId || 'guest-001';
-
-    // If we already have an activeRequest on init, load conversation
     if (this.activeRequest) this.loadConversation();
   }
 
@@ -81,7 +83,7 @@ export class ChatQuestionnaireComponent implements OnInit, OnDestroy, AfterViewI
   /** Submit new issue — create Request and start bot sequence */
   async submitIssue() {
     const issue = this.selectedOption === 'Others' ? (this.otherIssue || 'Other issue') : (this.selectedOption ?? '');
-    const summary = `Guest ${this.loggedUser} reported: ${issue} (booking: ${this.reservation?.hotelName || 'N/A'})`;
+    const summary = `Guest ${this.loggedUser} reported: ${issue} (booking: ${this.reservation?.propertyName || 'N/A'})`;
 
     // create request via ApiService (persists to localStorage)
     const newReq = await this.api.createRequest(this.loggedUser, 'N/A', issue, summary);
@@ -265,34 +267,32 @@ export class ChatQuestionnaireComponent implements OnInit, OnDestroy, AfterViewI
       if (this.popupScroll?.nativeElement) {
         try {
           this.popupScroll.nativeElement.scrollTop = this.popupScroll.nativeElement.scrollHeight;
-        } catch {}
+        } catch { }
       }
     }, 100);
   }
 
   isChatVisible = false;
 
-openMiniChat() {
-  this.isChatVisible = true;
-}
-
-closeMiniChat() {
-  this.isChatVisible = false;
-}
-
-startNewRequest() {
-  // Clear any active request and reset UI
-  this.activeRequest = null;
-  this.chatMessages = [];
-  this.stage = 'in_progress'; // directly open as chat view (no options)
-  this.selectedOption = null;
-  this.otherIssue = '';
-}
-
-setRating(value: number) {
-    this.selectedRating = value;
+  openMiniChat() {
+    this.isChatVisible = true;
   }
 
+  closeMiniChat() {
+    this.isChatVisible = false;
+  }
 
+  startNewRequest() {
+    // Clear any active request and reset UI
+    this.activeRequest = null;
+    this.chatMessages = [];
+    this.stage = 'in_progress'; // directly open as chat view (no options)
+    this.selectedOption = null;
+    this.otherIssue = '';
+  }
+
+  setRating(rating: number) {
+    this.selectedRating = rating;
+  }
 
 }

@@ -1,103 +1,87 @@
 <div class="chat-wrapper">
   <div class="chat-header">
     <div class="header-details">
-      <h2>{{ reservation?.hotelName }}</h2>
+      <h2>{{ reservation?.propertyName }}</h2>
       <p>
-        Check-in: {{ reservation?.checkIn | date:'mediumDate' }} |
-        Check-out: {{ reservation?.checkOut | date:'mediumDate' }}
+        Check-in: {{ reservation?.checkInDate | date:'mediumDate' }} |
+        Check-out: {{ reservation?.checkOutDate | date:'mediumDate' }}
       </p>
-      <p>Room: {{ reservation?.roomType }} | Guests: {{ reservation?.guests }}</p>
+      <p>Room: {{ reservation?.roomType }} | Guests: {{ reservation?.numberOfOccupants }}</p>
       <p *ngIf="activeRequest">
         Request: {{ activeRequest.requestId }} — {{ activeRequest.requestType }} |
         Status: {{ activeRequest.status | titlecase }}
       </p>
     </div>
 
-   <div class="new-request">
-    <button class="new-request-btn" (click)="startNewRequest()">+ Additional Help?</button>
-  </div>
+    <div class="new-request">
+      <button class="new-request-btn" (click)="startNewRequest()">+ Additional Help?</button>
+    </div>
   </div>
 
   <div class="chat-body" #popupScroll>
-  
-  <!-- Step 1: Rating first -->
-  <div  class="initial-rating">
-    <h3>How are you feeling today?</h3>
-    <div class="emoji-bar">
-      <button *ngFor="let r of [1,2,3,4,5,6]" (click)="setRating(r)" [class.active]="r === selectedRating">
-        {{ ['😡','😞','😐','🙂','😃','🤩'][r-1] }}
-      </button>
-    </div>
-  </div>
 
-  <!-- Feedback Response -->
-   <div  *ngIf="selectedRating">
-    <p *ngIf="selectedRating >= 4">Thank you for your feedback! 🙏</p>
-    <p *ngIf="selectedRating < 4">
-      We’re sorry for any inconvenience. Our team will assist you.
-    </p>
-  </div>
-
-  <!-- Step 2: Once rating given, show options -->
-  <!-- <div *ngIf="ratingGiven && !activeRequest"> -->
-    <h3>How can we help you today?</h3>
-
-    <div class="options">
-      <button *ngFor="let opt of options"
-              [class.selected]="selectedOption === opt"
-              (click)="selectOption(opt)"
-              class="option-btn">
-        {{ opt }}
-      </button>
-    </div>
-
-    <!-- Other box -->
-    <div *ngIf="selectedOption === 'Others'" class="other-box">
-      <textarea [(ngModel)]="otherIssue" placeholder="Describe your issue..."></textarea>
-    </div>
-
- <!-- Submit button visible only when no activeRequest exists -->
-    <div *ngIf="!activeRequest" class="submit-section">
-      <button mat-flat-button (click)="submitIssue()" [disabled]="!selectedOption && !otherIssue">Submit </button>
-    </div>
-  <!-- </div> -->
-
-  <!-- Step 3: Bot active -->
-  <div *ngIf="activeRequest" class="bot-section">
-    <div *ngFor="let m of chatMessages"
-         [class.user]="m.sender === 'user'"
-         [class.bot]="m.sender === 'bot'">
-      <div class="msg-bubble">{{ m.text }}</div>
-    </div>
-
-    <div *ngIf="isTyping" class="typing-indicator">
-      <span></span><span></span><span></span>
-    </div>
-
-    <div *ngIf="stage === 'final'" class="final-section">
-      <p>How would you rate this service?</p>
+    <div class="initial-rating">
+      <h3>How are you feeling today?</h3>
       <div class="emoji-bar">
-        <button *ngFor="let r of [1,2,3,4,5]" (click)="selectFinalRating(r)">
-          {{ ['😞','😐','🙂','😃','🤩'][r-1] }}
+        <button *ngFor="let r of ratings" (click)="setRating(r.value)" [class.active]="r.value === selectedRating">
+          {{ r.emoji }}
         </button>
       </div>
+      <div *ngIf="selectedRating">
+        <p *ngIf="selectedRating >= 4">Thank you for your feedback! 🙏</p>
+        <p *ngIf="selectedRating < 4">
+          We’re sorry for any inconvenience. Our team will assist you.
+        </p>
+      </div>
+      <h3>How can we help you today?</h3>
+
+      <div class="options">
+        <button *ngFor="let opt of options" [class.selected]="selectedOption === opt" (click)="selectOption(opt)"
+          class="option-btn">
+          {{ opt }}
+        </button>
+      </div>
+
+      <div *ngIf="selectedOption === 'Others'" class="other-box">
+        <textarea [(ngModel)]="otherIssue" placeholder="Describe your issue..."></textarea>
+      </div>
+
+      <!-- Submit button visible only when no activeRequest exists -->
+      <div *ngIf="!activeRequest" class="submit-section">
+        <button mat-flat-button (click)="submitIssue()" [disabled]="!selectedOption && !otherIssue">Submit </button>
+      </div>
+      <!-- </div> -->
+
+      <!-- Step 3: Bot active -->
+      <div *ngIf="activeRequest" class="bot-section">
+        <div *ngFor="let m of chatMessages" [class.user]="m.sender === 'user'" [class.bot]="m.sender === 'bot'">
+          <div class="msg-bubble">{{ m.text }}</div>
+        </div>
+
+        <div *ngIf="isTyping" class="typing-indicator">
+          <span></span><span></span><span></span>
+        </div>
+
+        <div *ngIf="stage === 'final'" class="final-section">
+          <p>How would you rate this service?</p>
+          <div class="emoji-bar">
+            <button *ngFor="let r of [1,2,3,4,5]" (click)="selectFinalRating(r)">
+              {{ ['😞','😐','🙂','😃','🤩'][r-1] }}
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
+
+    <!-- Floating chat popup (small chat inside) -->
+    <!-- Floating Chat Button -->
+    <button mat-fab class="chat-bot-btn" (click)="openMiniChat()">
+      <mat-icon>chat</mat-icon>
+    </button>
+
+    <!-- CTA Assistance Sliding Chat -->
+    <app-chat *ngIf="isChatVisible" class="slide-in-chat" (closeChat)="closeMiniChat()"></app-chat>
+
+
+
   </div>
-</div>
-
-  <!-- Floating chat popup (small chat inside) -->
-  <!-- Floating Chat Button -->
-<button mat-fab class="chat-bot-btn" (click)="openMiniChat()">
-  <mat-icon>chat</mat-icon>
-</button>
-
-<!-- CTA Assistance Sliding Chat -->
-<app-chat
-  *ngIf="isChatVisible"
-  class="slide-in-chat"
-  (closeChat)="closeMiniChat()"
-></app-chat>
-
-
-
-</div>
