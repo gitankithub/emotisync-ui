@@ -26,11 +26,8 @@ export class ChatDialogComponent implements OnInit {
 
   constructor(private api: ApiService) {}
 
-   ngOnInit() {
-    if (this.threadId) {
-      this.chatMessages = this.loadThreadMessages(this.threadId) ?? [];
-    }
-  }
+  ngOnInit() {}
+  
   ngOnChanges() {
     if (this.threadId) {
       this.chatMessages = this.loadThreadMessages(this.threadId) ?? [];

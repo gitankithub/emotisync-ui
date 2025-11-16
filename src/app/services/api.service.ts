@@ -41,6 +41,12 @@ export class ApiService {
       `http://localhost:8080/api/requests/${guestId}`
     );
   }
+
+   getAllRequests() {
+    return this.http.get<any[]>(
+      `http://localhost:8080/api/requests`
+    );
+  }
   
   getMessagesByThreadId(threadId: string): Observable<Message[]> {
     return this.http.get<Message[]>(`http://localhost:8080/api/messages/thread/${threadId}`);

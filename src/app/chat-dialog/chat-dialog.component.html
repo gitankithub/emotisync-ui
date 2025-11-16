@@ -1,6 +1,6 @@
 <div class="chat-window">
   <div class="chat-header">
-    <h3>{{ request.requestType }} — Room {{ request.roomNumber }}</h3>
+    <h3>{{ request.requestTitle }}</h3>
     <div>
       <button mat-icon-button (click)="openInNewTab()"><mat-icon>open_in_new</mat-icon></button>
       <button mat-icon-button color="warn" (click)="closeChat.emit()"><mat-icon>close</mat-icon></button>

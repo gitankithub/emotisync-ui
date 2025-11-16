@@ -28,7 +28,7 @@
 
     <!-- Rating & Feedback -->
     <div class="rating-section"
-      *ngIf="data.status === 'completed' || data.status === 'checkedin' || data.status === 'CHECKED_IN'">
+      *ngIf="data.status === 'COMPLETED' || data.status === 'CHECKED_IN'">
 
       <h3>
         {{
@@ -48,7 +48,7 @@
       </div>
 
       <mat-form-field appearance="outline" class="feedback-field"
-                      *ngIf="data.status === 'completed' || data.status === 'COMPLETED'">
+                      *ngIf="data.status === 'COMPLETED'">
         <mat-label>Feedback</mat-label>
         <textarea matInput [(ngModel)]="feedbackText"
                   placeholder="Please share your experience..."></textarea>
@@ -56,7 +56,7 @@
     </div>&nbsp;
 
     <!-- Feedback Response -->
-    <p *ngIf="selectedRating >= 4 && data.status !== 'completed' && data.status !== 'COMPLETED'">
+    <p *ngIf="selectedRating >= 4 && data.status !== 'COMPLETED'">
       Thank you for your feedback! 🙏
     </p>
 
@@ -75,7 +75,7 @@
         Submit
       </button>
 
-      <button *ngIf="data.status === 'upcoming' || data.status === 'checkedin' || data.status === 'CHECKED_IN'"
+      <button *ngIf="data.status === 'BOOKED' || data.status === 'CHECKED_IN'"
               mat-flat-button class="action-btn"
               (click)="redirectToHelp()">
         <mat-icon>chat</mat-icon>

@@ -21,17 +21,19 @@
   <div class="chat-body" #popupScroll>
 
     <div class="initial-rating">
-      <h3>How are you feeling today?</h3>
-      <div class="emoji-bar">
-        <button *ngFor="let r of ratings" (click)="setRating(r.value)" [class.active]="r.value === selectedRating">
-          {{ r.emoji }}
-        </button>
+      <div *ngIf="!activeRequest">
+        <h3>How are you feeling today?</h3>
+        <div class="emoji-bar">
+          <button *ngFor="let r of ratings" (click)="setRating(r.value)" [class.active]="r.value === selectedRating">
+            {{ r.emoji }}
+          </button>
+        </div>
+        <div *ngIf="selectedRating">
+          <p *ngIf="selectedRating >= 4">Thank you for your feedback! 🙏</p>
+          <p *ngIf="selectedRating < 4">
+            We’re sorry for any inconvenience. Our team will assist you.
+          </p>
       </div>
-      <div *ngIf="selectedRating">
-        <p *ngIf="selectedRating >= 4">Thank you for your feedback! 🙏</p>
-        <p *ngIf="selectedRating < 4">
-          We’re sorry for any inconvenience. Our team will assist you.
-        </p>
       </div>
       <h3>How can we help you today?</h3>
 

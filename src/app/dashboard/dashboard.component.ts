@@ -38,28 +38,16 @@ export class DashboardComponent {
     // reset requests before loading
     this.requests = [];
 
-    if (user.role === 'STAFF') {
+    if (user.role === 'STAFF' || user.role === 'ADMIN'
+    ) {
       // 🔹 Staff → load staff requests
-      this.api.getStaffRequests("6916598b2dea9cced0f1da33").subscribe({
+      this.api.getAllRequests().subscribe({
         next: (res) => {
           this.requests = res ?? [];
           console.log("Staff Requests:", this.requests);
         },
         error: (err) => {
           console.error("Failed to load staff requests", err);
-          this.requests = [];
-        }
-      });
-
-    } else if (user.role === 'ADMIN') {
-      // 🔹 Admin → load admin requests --change  api call to the get all requests
-      this.api.getGuestRequests(user.userId).subscribe({
-        next: (res) => {
-          this.requests = res ?? [];
-          console.log("Admin Requests:", this.requests);
-        },
-        error: (err) => {
-          console.error("Failed to load admin requests", err);
           this.requests = [];
         }
       });
