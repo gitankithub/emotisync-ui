@@ -48,6 +48,7 @@ export class LoginComponent {
           name: user.name,
           role: user.role
         };
+        console.log(formattedUser)
 
         this.loginService.setUser(formattedUser);
         this.navigateByRole(formattedUser.role, formattedUser.userId);

@@ -1,8 +1,15 @@
+export interface GuestFeedback {
+  feedbackId: string;
+  guestId: string;
+  feedbackText: string;
+  rating: string;
+}
+
 export interface Message {
-  messageId?: string;
-  threadId?: string;
-  senderId: string; // user id or 'bot' or 'system'
-  text: string;
+  threadId: string;
+  userId: string;
+  userRole: string;
+  content: string;
+  guestFeedback?: GuestFeedback;
   time: string;
-  messageType: 'user' | 'bot' | 'system';
 }

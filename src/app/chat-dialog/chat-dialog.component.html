@@ -8,8 +8,8 @@
   </div>
 
   <div class="chat-body" id="chat-body">
-    <div *ngFor="let msg of messages" class="message" [ngClass]="{ left: msg.senderId === 'bot', right: msg.senderId !== 'bot' }">
-      <div class="bubble">{{ msg.text }}</div>
+    <div *ngFor="let msg of chatMessages" class="message" >
+      <div class="bubble">{{ msg}}</div>
     </div>
   </div>
 

@@ -1,6 +1,6 @@
 import {
   Component, Input, Output, EventEmitter, ElementRef, ViewChild, OnInit, OnDestroy, AfterViewInit,
-  inject 
+  inject
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -14,6 +14,7 @@ import { Request } from '../models/request.model';
 import { MatDialog } from '@angular/material/dialog';
 import { ChatComponent } from '../chat/chat.component';
 import { Router } from '@angular/router';
+import { Message } from '../models/message.model';
 
 
 @Component({
@@ -31,16 +32,16 @@ export class ChatQuestionnaireComponent implements OnInit, OnDestroy, AfterViewI
   @Output() requestClosed = new EventEmitter<string>();
   @ViewChild('popupScroll') popupScroll!: ElementRef;
 
-  options = ['Cleaning', 'Laundry', 'AC Repair', 'Need Towels', 'Others'];
+  options = ['Cleaning', 'Laundry', 'AC Repair', 'Need Towels'];
   selectedOption: string | null = null;
-  otherIssue = '';
-  chatMessages: { sender: 'user' | 'bot'; text: string }[] = [];
+  chatMessages: Message[] = [];
   isTyping = false;
   typingInterval: any;
   botTimer: any;
   loggedUser = 'guest-001';
   userChatInput = '';
   ratingGiven: boolean = false;
+  isChatVisible = false;
   // stage: while request in progress or final rating
   stage: 'questionnaire' | 'in_progress' | 'final' = 'questionnaire';
   private messageDelay = 6000;
@@ -66,7 +67,7 @@ export class ChatQuestionnaireComponent implements OnInit, OnDestroy, AfterViewI
 
 
   ngOnInit() {
-    if (this.activeRequest) this.loadConversation();
+    if (this.activeRequest) this.loadThreadMessages(this.activeRequest.userThread?.threadId ?? '');
   }
 
   ngAfterViewInit() { this.scrollToBottomPopup(); }
@@ -76,190 +77,95 @@ export class ChatQuestionnaireComponent implements OnInit, OnDestroy, AfterViewI
     clearInterval(this.botTimer);
   }
 
+  ngOnChanges() {
+    console.log('selectedRating on init:', this.selectedRating);
+    console.log('reservation', this.reservation)
+    console.log('active request', this.activeRequest)
+    if (this.activeRequest) {
+      this.selectedOption = this.getSelectedOption(this.activeRequest.requestDescription)
+      this.loadThreadMessages(this.activeRequest.userThread?.threadId ?? '');
+    }
+  }
+
+  //option selection
   selectOption(opt: string) {
     this.selectedOption = opt;
   }
 
-  /** Submit new issue — create Request and start bot sequence */
-  async submitIssue() {
-    const issue = this.selectedOption === 'Others' ? (this.otherIssue || 'Other issue') : (this.selectedOption ?? '');
-    const summary = `Guest ${this.loggedUser} reported: ${issue} (booking: ${this.reservation?.propertyName || 'N/A'})`;
+  //get the selected option based on the request description
+  getSelectedOption(description: string): string {
+    const desc = description.toLowerCase();
 
-    // create request via ApiService (persists to localStorage)
-    const newReq = await this.api.createRequest(this.loggedUser, 'N/A', issue, summary);
+    if (desc.includes("clean")) return "Cleaning";
+    if (desc.includes("laundry")) return "Laundry";
+    if (desc.includes("towel")) return "Need Towels";
+    if (desc.includes("ac") || desc.includes("air conditioning")) return "AC Repair";
 
-    // set as active and emit so dashboard can add
-    this.activeRequest = newReq;
-    this.requestCreated.emit(newReq);
-
-    // prepare chat and start bot flow
-    this.chatMessages = [{ sender: 'user', text: `Created request: ${newReq.requestId} — ${issue}` }];
-    this.stage = 'in_progress';
-    this.saveConversation();
-    // start bot messages (status updates)
-    this.startBotFlow(newReq.requestId);
+    return ""; // nothing matched
   }
 
-  /** Start bot timeline (status updates + messages). Continues in background. */
-  private startBotFlow(requestId: string) {
-    let idx = 0;
-    const statusMap: ('open' | 'assigned' | 'in_progress' | 'in_progress' | 'completed')[] =
-      ['open', 'assigned', 'in_progress', 'in_progress', 'completed'];
+  //build the description to send to the api
+  buildDescription(): string {
+    const roomType = this.reservation?.roomType
+    const roomNumber = this.reservation?.roomNumber
+    switch (this.selectedOption) {
 
-    const step = async () => {
-      if (idx >= this.sequence.length) {
-        clearInterval(this.botTimer);
-        return;
-      }
-      // send bot message with typewriter effect
-      await this.typewriterAddPopup(this.sequence[idx]);
+      case 'Cleaning':
+        return `Guest requested room cleaning for ${roomType} - ${roomNumber}.`;
 
-      // update request status
-      const newStatus = statusMap[idx];
-      this.activeRequest!.status = newStatus;
-      await this.api.updateRequestStatus(requestId, newStatus);
+      case 'Laundry':
+        return `Guest requested laundry pickup from ${roomType} - ${roomNumber}.`;
 
-      // if last step, ask for rating
-      if (idx === this.sequence.length - 1) {
-        await this.typewriterAddPopup('Can you please rate the service?');
-        this.stage = 'final';
-        this.saveConversation();
-      } else {
-        this.stage = 'in_progress';
-        this.saveConversation();
-      }
-      idx++;
+      case 'AC Repair':
+        return `Guest reports AC not working in ${roomType} - ${roomNumber}. Maintenance required.`;
+
+      case 'Need Towels':
+        return `Guest in ${roomType} - ${roomNumber} requested extra fresh towels.`;
+
+      default:
+        return '';
+    }
+  }
+
+  //submit the request
+  submitRequest() {
+    const payload: Request = {
+      requestDescription: this.buildDescription(),
+      guestId: this.reservation?.guestId ?? ''
     };
 
-    // run first step immediately, then interval for next steps
-    step();
-    this.botTimer = setInterval(step, this.messageDelay);
+    this.api.createRequest(payload).subscribe({
+      next: (res) => {
+        console.log('Request created:', res)
+        this.requestCreated.emit(res);
+        this.loadThreadMessages(res.userThread?.threadId ?? '')
+      },
+      error: (err) => console.error('Error:', err)
+    });
   }
 
-  /** Typewriter for bot messages (pushes to chatMessages) */
-  private async typewriterAddPopup(text: string) {
-    return new Promise<void>(resolve => {
-      let typed = '';
-      let i = 0;
-      this.isTyping = true;
-      this.typingInterval = setInterval(() => {
-        typed += text[i];
-        if (i === text.length - 1) {
-          clearInterval(this.typingInterval);
-          this.isTyping = false;
-          this.chatMessages.push({ sender: 'bot', text: typed });
-          this.scrollToBottomPopup();
-          this.saveConversation();
-          resolve();
-        } else i++;
-      }, 25);
+  //load the messages based on the thread id
+  loadThreadMessages(threadId: string) {
+    this.chatMessages = [];
+    this.api.getMessagesByThreadId(threadId).subscribe({
+      next: (res) => {
+        res.sort((a, b) => new Date(a.time).getTime() - new Date(b.time).getTime());
+        res.forEach(msg => {
+          if (msg.userRole === 'GUEST' && !msg.guestFeedback) {
+            this.chatMessages.push(msg);
+          }
+        });
+        console.log("Messages fetched:", res);
+      },
+      error: (err) => {
+        console.error("Failed to fetch messages", err);
+      }
     });
   }
 
   /** Final rating clicked — close request */
-  async selectFinalRating(r: number) {
-    if (!this.activeRequest) return;
-    await this.typewriterAddPopup(`Thank you for your feedback: ${r}/5`);
-    await this.api.updateRequestStatus(this.activeRequest.requestId, 'completed');
-    this.requestClosed.emit(this.activeRequest.requestId);
-
-    // clear active request to show new questionnaire UI
-    this.activeRequest = null;
-    this.chatMessages = [];
-    this.stage = 'questionnaire';
-    this.selectedOption = null;
-    this.otherIssue = '';
-    this.saveConversation();
-  }
-
-  /** small chat in right-bottom - user messages while request active */
-  async sendChat() {
-    if (!this.userChatInput?.trim()) return;
-    const txt = this.userChatInput.trim();
-    this.chatMessages.push({ sender: 'user', text: txt });
-    this.userChatInput = '';
-    this.saveConversation();
-
-    // bot auto-reply (short)
-    setTimeout(async () => {
-      await this.typewriterAddPopup('Thanks — our staff will assist you shortly.');
-    }, 1000);
-  }
-
-  /** Load saved conversation (by requestId) */
-  private loadConversation() {
-    if (!this.activeRequest) return;
-    try {
-      const key = `conv_${this.activeRequest.requestId}_${this.loggedUser}`;
-      const saved = localStorage.getItem(key);
-      if (saved) {
-        const obj = JSON.parse(saved);
-        this.chatMessages = obj.chatMessages || [];
-        this.stage = obj.stage || (this.chatMessages.length ? 'in_progress' : 'questionnaire');
-      } else {
-        this.chatMessages = [];
-        this.stage = 'in_progress';
-      }
-
-      // resume bot if not completed
-      if (this.stage === 'in_progress' && this.activeRequest.status !== 'completed') {
-        // let resumeBotFlow decide whether to continue from last message count
-        this.resumeBotFlow();
-      }
-    } catch (e) {
-      console.warn('loadConversation error', e);
-    }
-  }
-
-  /** Resume background bot flow based on bot messages count (so it continues) */
-  private resumeBotFlow() {
-    if (!this.activeRequest) return;
-    const botCount = this.chatMessages.filter(m => m.sender === 'bot').length;
-    // determine next index from botCount
-    let nextIdx = Math.min(botCount, this.sequence.length - 1);
-    // If there are still steps remaining, start bot from nextIdx
-    if (botCount < this.sequence.length) {
-      // create a small wrapper to start from proper index: we simply call startBotFlow,
-      // which always executes from idx=0; to avoid repeating messages, we skip sending those already present.
-      // Instead we'll re-run the sequence but skip pushing messages already in chat - simple approach.
-      // For simplicity we start a new flow but first remove already completed sequence items from `sequenceToRun`.
-      const remainingSequence = this.sequence.slice(botCount);
-      // create a small function to step through remainingSequence and update status accordingly
-      let idx = 0;
-      const statusMap: ('open' | 'assigned' | 'in_progress' | 'in_progress' | 'completed')[] =
-        ['open', 'assigned', 'in_progress', 'in_progress', 'completed'];
-
-      const step = async () => {
-        if (idx >= remainingSequence.length) {
-          clearInterval(this.botTimer);
-          return;
-        }
-        await this.typewriterAddPopup(remainingSequence[idx]);
-        // compute the global index to use status map
-        const globalIdx = botCount + idx;
-        const newStatus = statusMap[globalIdx];
-        this.activeRequest!.status = newStatus;
-        await this.api.updateRequestStatus(this.activeRequest!.requestId, newStatus);
-        if (globalIdx === this.sequence.length - 1) {
-          await this.typewriterAddPopup('Can you please rate the service?');
-          this.stage = 'final';
-        }
-        idx++;
-      };
-
-      step();
-      this.botTimer = setInterval(step, this.messageDelay);
-    }
-  }
-
-  private saveConversation() {
-    if (!this.activeRequest) return;
-    const key = `conv_${this.activeRequest.requestId}_${this.loggedUser}`;
-    const obj = {
-      chatMessages: this.chatMessages,
-      stage: this.stage
-    };
-    localStorage.setItem(key, JSON.stringify(obj));
+  selectFinalRating(r: number) {
+    //api call to send the final feedback & close the request and open the new request
   }
 
   private scrollToBottomPopup() {
@@ -271,8 +177,6 @@ export class ChatQuestionnaireComponent implements OnInit, OnDestroy, AfterViewI
       }
     }, 100);
   }
-
-  isChatVisible = false;
 
   openMiniChat() {
     this.isChatVisible = true;
@@ -288,7 +192,6 @@ export class ChatQuestionnaireComponent implements OnInit, OnDestroy, AfterViewI
     this.chatMessages = [];
     this.stage = 'in_progress'; // directly open as chat view (no options)
     this.selectedOption = null;
-    this.otherIssue = '';
   }
 
   setRating(rating: number) {

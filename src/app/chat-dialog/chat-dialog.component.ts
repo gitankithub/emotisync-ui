@@ -8,7 +8,7 @@ import { ApiService } from '../services/api.service';
 import { Message } from '../models/message.model';
 
 @Component({
-  selector: 'app-chat',
+  selector: 'app-chat-dialog',
   standalone: true,
   imports: [CommonModule, FormsModule, MatIconModule, MatButtonModule, MatInputModule],
   templateUrl: './chat-dialog.component.html',
@@ -21,30 +21,44 @@ export class ChatDialogComponent implements OnInit {
   @Input() role: 'guest' | 'staff' | 'admin' = 'guest';
   @Output() closeChat = new EventEmitter<void>();
 
-  messages: Message[] = [];
+  chatMessages: string[] = [];
   newMessage = '';
 
   constructor(private api: ApiService) {}
 
-  async ngOnInit() {
+   ngOnInit() {
     if (this.threadId) {
-      this.messages = await this.api.getMessages(this.threadId);
-      setTimeout(() => this.scrollBottom(), 100);
+      this.chatMessages = this.loadThreadMessages(this.threadId) ?? [];
+    }
+  }
+  ngOnChanges() {
+    if (this.threadId) {
+      this.chatMessages = this.loadThreadMessages(this.threadId) ?? [];
     }
   }
 
-  async sendMessage() {
-    if (!this.newMessage.trim()) return;
-    const msg = await this.api.postMessage({
-      threadId: this.threadId,
-      senderId: this.username,
-      text: this.newMessage.trim(),
-      time: new Date().toISOString(), 
-      messageType: 'user'
+  
+  loadThreadMessages(threadId: string) {
+    this.chatMessages = [];
+    this.api.getMessagesByThreadId(threadId).subscribe({
+      next: (res) => {
+        res.sort((a, b) => new Date(a.time).getTime() - new Date(b.time).getTime());
+        res.forEach(msg => {
+          if (msg.userRole === 'STAFF') {
+            this.chatMessages.push(msg.content);
+          }
+        });
+        console.log("Messages fetched:", res);
+      },
+      error: (err) => {
+        console.error("Failed to fetch messages", err);
+      }
     });
-    this.messages.push(msg);
-    this.newMessage = '';
-    setTimeout(() => this.scrollBottom(), 100);
+  }
+
+  async sendMessage() {
+   //api to send the staff message to the bot
+   this.chatMessages.push(this.newMessage)
   }
 
   scrollBottom() {

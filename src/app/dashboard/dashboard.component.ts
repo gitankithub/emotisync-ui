@@ -7,6 +7,8 @@ import { Request } from '../models/request.model';
 import { ChatDialogComponent } from '../chat-dialog/chat-dialog.component';
 import { Router } from '@angular/router';
 import { LoginService } from '../services/login.service';
+import { User } from '../models/user.model';
+import { Message } from '../models/message.model';
 
 @Component({
   selector: 'app-dashboard',
@@ -20,30 +22,66 @@ export class DashboardComponent {
   role: 'guest' | 'staff' | 'admin' = 'guest';
   requests: Request[] = [];
   selectedRequest: Request | null = null;
+  user: any;
+  chatMessages: Message[] = [];
 
   constructor(private api: ApiService, private router: Router, private loginService: LoginService) {
-    const navState: any = this.router.getCurrentNavigation()?.extras.state;
-    this.userId = navState?.username || loginService.getUser() || 'guest-001';
-    this.role = this.userId.startsWith('staff') ? 'staff' : this.userId.startsWith('admin') ? 'admin' : 'guest';
-    this.loadRequests();
   }
 
-  async loadRequests() {
-    this.requests = await this.api.getRequests(this.userId);
+  ngOnInit() {
+    this.user = this.loginService.getUser()
+    this.loadRequests(this.user)
   }
+
+  loadRequests(user: User) {
+
+    // reset requests before loading
+    this.requests = [];
+
+    if (user.role === 'STAFF') {
+      // 🔹 Staff → load staff requests
+      this.api.getStaffRequests("6916598b2dea9cced0f1da33").subscribe({
+        next: (res) => {
+          this.requests = res ?? [];
+          console.log("Staff Requests:", this.requests);
+        },
+        error: (err) => {
+          console.error("Failed to load staff requests", err);
+          this.requests = [];
+        }
+      });
+
+    } else if (user.role === 'ADMIN') {
+      // 🔹 Admin → load admin requests --change  api call to the get all requests
+      this.api.getGuestRequests(user.userId).subscribe({
+        next: (res) => {
+          this.requests = res ?? [];
+          console.log("Admin Requests:", this.requests);
+        },
+        error: (err) => {
+          console.error("Failed to load admin requests", err);
+          this.requests = [];
+        }
+      });
+
+    } else {
+      console.warn("Unknown role:", user.role);
+      this.requests = [];
+    }
+  }
+
 
   selectRequest(req: Request) {
-    this.selectedRequest = req;
+    this.selectedRequest = {...req};
   }
 
   closeChat() {
     this.selectedRequest = null;
-    this.loadRequests();
+    this.loadRequests(this.user.userId);
   }
 
   getThreadId(req: Request): string {
-  if (this.role === 'guest') return req.guestThreadId ?? '';
-  if (this.role === 'staff') return req.staffThreadId ?? '';
-  return req.adminThreadId ?? '';
-}
+    return req.userThread?.threadId ?? ''
+  }
+
 }

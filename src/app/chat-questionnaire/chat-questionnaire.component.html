@@ -8,7 +8,7 @@
       </p>
       <p>Room: {{ reservation?.roomType }} | Guests: {{ reservation?.numberOfOccupants }}</p>
       <p *ngIf="activeRequest">
-        Request: {{ activeRequest.requestId }} — {{ activeRequest.requestType }} |
+        Request: {{ activeRequest.requestId }} — {{ activeRequest.requestTitle }} |
         Status: {{ activeRequest.status | titlecase }}
       </p>
     </div>
@@ -42,20 +42,16 @@
         </button>
       </div>
 
-      <div *ngIf="selectedOption === 'Others'" class="other-box">
-        <textarea [(ngModel)]="otherIssue" placeholder="Describe your issue..."></textarea>
-      </div>
-
       <!-- Submit button visible only when no activeRequest exists -->
       <div *ngIf="!activeRequest" class="submit-section">
-        <button mat-flat-button (click)="submitIssue()" [disabled]="!selectedOption && !otherIssue">Submit </button>
+        <button mat-flat-button (click)="submitRequest()" [disabled]="!selectedOption">Submit </button>
       </div>
       <!-- </div> -->
 
       <!-- Step 3: Bot active -->
       <div *ngIf="activeRequest" class="bot-section">
-        <div *ngFor="let m of chatMessages" [class.user]="m.sender === 'user'" [class.bot]="m.sender === 'bot'">
-          <div class="msg-bubble">{{ m.text }}</div>
+        <div *ngFor="let m of chatMessages" [class.user]="m.userRole === 'GUEST'" [class.bot]="m.userRole === 'GUEST'">
+          <div class="msg-bubble">{{ m.content }}</div>
         </div>
 
         <div *ngIf="isTyping" class="typing-indicator">

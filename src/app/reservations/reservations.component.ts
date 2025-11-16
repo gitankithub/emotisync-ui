@@ -118,7 +118,11 @@ export class ReservationsComponent implements OnInit {
   // navigate to requests
   goToRequests() {
     this.router.navigate(['/guest-dashboard'], {
-      state: { guestId: this.guestId }
+      state: {
+        username: this.guestId,
+        reservation: this.reservations,
+        selectedRating: null
+      } 
     });
   }
 

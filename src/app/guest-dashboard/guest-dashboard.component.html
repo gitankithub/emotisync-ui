@@ -22,7 +22,7 @@
             <div class="req-id">{{ req.requestTitle }}</div>
           </div>
 
-          <div class="req-status" [ngStyle]="getStatusStyle(req.status)">
+          <div class="req-status" [ngStyle]="getStatusStyle(req.status ?? '')">
   {{ req.status | titlecase }}
 </div>
 

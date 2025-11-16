@@ -29,6 +29,7 @@ export class GuestDashboardComponent implements OnInit, OnDestroy {
   constructor(private api: ApiService, private router: Router, private loginService: LoginService) { }
 
   async ngOnInit() {
+    this.selectedRequest = null
     const navState: any = history.state;
     this.userId = navState?.username || this.loginService.getUser() || '6916598b2dea9cced0f1da33';
     if (navState?.reservation) this.selectedReservation = navState.reservation;
@@ -64,30 +65,21 @@ export class GuestDashboardComponent implements OnInit, OnDestroy {
   }
 
 
-  selectRequest(req: Request) { this.selectedRequest = req; }
+  selectRequest(req: Request) { this.selectedRequest = {...req}; }
 
   async handleRequestCreated(newReq: Request) {
-    // push immediately to left panel and select it
-    if (!this.requests.find(r => r.requestId === newReq.requestId)) {
-      this.requests.unshift(newReq);
-    }
-    this.selectedRequest = newReq;
-    // smooth scroll to item
-    setTimeout(() => {
-      const el = document.querySelector('.req-card.active');
-      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }, 200);
+    this.loadRequests(); 
   }
 
   async handleRequestClosed(reqId: string) {
-    if (reqId === 'new') {
-      this.selectedRequest = null;
-      return;
-    }
-    // update status to completed via API then reload
-    await this.api.updateRequestStatus(reqId, 'completed');
-    await this.loadRequests();
-    if (this.selectedRequest?.requestId === reqId) this.selectedRequest = null;
+    // if (reqId === 'new') {
+    //   this.selectedRequest = null;
+    //   return;
+    // }
+    // // update status to completed via API then reload
+    // await this.api.updateRequestStatus(reqId, 'completed');
+    // await this.loadRequests();
+    // if (this.selectedRequest?.requestId === reqId) this.selectedRequest = null;
   }
 
   redirectToHome() {

@@ -1,7 +1,7 @@
 export class Reservation {
   constructor(
     public propertyName: string,
-    public roomNuber: number,
+    public roomNumber: number,
     public checkInDate: string,
     public checkOutDate: string,
     public roomType: string,

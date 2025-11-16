@@ -3,7 +3,7 @@
     <div class="top-bar">
       <h2>Open Requests</h2>
       <div *ngIf="role === 'guest'">
-        <button mat-raised-button (click)="loadRequests()">Refresh</button>
+        <button mat-raised-button (click)="loadRequests(user.userId)">Refresh</button>
       </div>
     </div>
 
@@ -12,9 +12,9 @@
         <div class="req-content">
           <div>
             <div class="req-id">{{ req.requestId }}</div>
-            <div class="req-type">{{ req.requestType }}</div>
+            <div class="req-type">{{ req.requestTitle }}</div>
           </div>
-          <div class="req-room">Room: {{ req.roomNumber }}</div>
+          <div class="req-room">Room: {{ req.requestUrgency }}</div>
         </div>
       </mat-card>
 
@@ -23,12 +23,12 @@
   </div>
 
   <div class="right-panel" *ngIf="selectedRequest">
-    <app-chat
+    <app-chat-dialog
       [request]="selectedRequest"
       [threadId]="getThreadId(selectedRequest)"
       [username]="userId"
       [role]="role"
       (closeChat)="closeChat()"
-    ></app-chat>
+    ></app-chat-dialog>
   </div>
 </div>
