@@ -1,15 +1,15 @@
 export interface GuestFeedback {
-  feedbackId: string;
+  feedbackId?: string;
   guestId: string;
   feedbackText: string;
   rating: string;
 }
 
 export interface Message {
-  threadId: string;
+  threadId?: string;
   userId: string;
-  userRole: string;
+  createdBy: string;
   content: string;
   guestFeedback?: GuestFeedback;
-  time: string;
+  time?: string;
 }

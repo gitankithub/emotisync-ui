@@ -52,7 +52,7 @@
 
       <!-- Step 3: Bot active -->
       <div *ngIf="activeRequest" class="bot-section">
-        <div *ngFor="let m of chatMessages" [class.user]="m.userRole === 'GUEST'" [class.bot]="m.userRole === 'GUEST'">
+        <div *ngFor="let m of chatMessages" class="bot">
           <div class="msg-bubble">{{ m.content }}</div>
         </div>
 

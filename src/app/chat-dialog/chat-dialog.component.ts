@@ -39,9 +39,9 @@ export class ChatDialogComponent implements OnInit {
     this.chatMessages = [];
     this.api.getMessagesByThreadId(threadId).subscribe({
       next: (res) => {
-        res.sort((a, b) => new Date(a.time).getTime() - new Date(b.time).getTime());
+        res.sort((a, b) => new Date(a.time ?? '').getTime() - new Date(b.time ?? '').getTime());
         res.forEach(msg => {
-          if (msg.userRole === 'STAFF') {
+          if (msg.userId === this.request.assignedTo) {
             this.chatMessages.push(msg.content);
           }
         });
@@ -56,6 +56,19 @@ export class ChatDialogComponent implements OnInit {
   async sendMessage() {
    //api to send the staff message to the bot
    this.chatMessages.push(this.newMessage)
+   const payload: Message = {
+      content: this.newMessage,
+      userId: this.request.assignedTo ?? '',
+      createdBy:"STAFF"
+    };
+
+    this.api.createMessage(payload).subscribe({
+      next: (res) => {
+        console.log('Request created:', res)
+        this.loadThreadMessages(this.threadId ?? '')
+      },
+      error: (err) => console.error('Error:', err)
+    });
   }
 
   scrollBottom() {

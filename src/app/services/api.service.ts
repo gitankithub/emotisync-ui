@@ -20,6 +20,10 @@ export class ApiService {
     return this.http.post<Request>('http://localhost:8080/api/requests', payload);
   }
 
+  createMessage(payload: Message) {
+    return this.http.post<Message>('http://localhost:8080/api/messages', payload);
+  }
+
   getAllUsers() {
     return this.http.get<any[]>('http://localhost:8080/api/users');
   }

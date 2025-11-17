@@ -28,7 +28,7 @@ export class ChatQuestionnaireComponent implements OnInit, OnDestroy, AfterViewI
   @Input() reservation!: Reservation | null;
   @Input() activeRequest: Request | null = null;
   @Input() selectedRating: number = 0;
-  @Output() requestCreated = new EventEmitter<Request>();
+  @Output() requestCreated = new EventEmitter<Message>();
   @Output() requestClosed = new EventEmitter<string>();
   @ViewChild('popupScroll') popupScroll!: ElementRef;
 
@@ -129,16 +129,17 @@ export class ChatQuestionnaireComponent implements OnInit, OnDestroy, AfterViewI
 
   //submit the request
   submitRequest() {
-    const payload: Request = {
-      requestDescription: this.buildDescription(),
-      guestId: this.reservation?.guestId ?? ''
+    const payload: Message = {
+      content: this.buildDescription(),
+      userId: this.reservation?.guestId ?? '',
+      createdBy:"GUEST"
     };
 
-    this.api.createRequest(payload).subscribe({
+    this.api.createMessage(payload).subscribe({
       next: (res) => {
         console.log('Request created:', res)
         this.requestCreated.emit(res);
-        this.loadThreadMessages(res.userThread?.threadId ?? '')
+        this.loadThreadMessages(res.threadId ?? '')
       },
       error: (err) => console.error('Error:', err)
     });
@@ -149,9 +150,9 @@ export class ChatQuestionnaireComponent implements OnInit, OnDestroy, AfterViewI
     this.chatMessages = [];
     this.api.getMessagesByThreadId(threadId).subscribe({
       next: (res) => {
-        res.sort((a, b) => new Date(a.time).getTime() - new Date(b.time).getTime());
+        res.sort((a, b) => new Date(a.time ?? '').getTime() - new Date(b.time ?? '').getTime());
         res.forEach(msg => {
-          if (msg.userRole === 'GUEST' && !msg.guestFeedback) {
+          if (msg.userId === this.reservation?.guestId && !msg.guestFeedback) {
             this.chatMessages.push(msg);
           }
         });
