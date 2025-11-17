@@ -10,6 +10,7 @@ import { Request } from '../models/request.model';
 import { Reservation } from '../models/reservations.model';
 import { MatIconModule } from '@angular/material/icon';
 import { firstValueFrom } from 'rxjs';
+import { Message } from '../models/message.model';
 
 @Component({
   selector: 'app-guest-dashboard',
@@ -43,7 +44,7 @@ export class GuestDashboardComponent implements OnInit, OnDestroy {
   async loadRequests(isSilent = false) {
 
     const all = await firstValueFrom(this.api.getGuestRequests(this.userId));
-    const open = all.filter(r => r.status !== 'completed' && r.status !== 'escalated');
+    const open = all.filter(r => r.status !== 'CLOSED' && r.status !== 'ESCALATED');
 
     // merge update statuses & new ones
     for (const r of open) {
@@ -67,7 +68,7 @@ export class GuestDashboardComponent implements OnInit, OnDestroy {
 
   selectRequest(req: Request) { this.selectedRequest = {...req}; }
 
-  async handleRequestCreated(newReq: Request) {
+  async handleRequestCreated(newReq: Message) {
     this.loadRequests(); 
   }
 

@@ -17,8 +17,8 @@ import { Message } from '../models/message.model';
 export class ChatDialogComponent implements OnInit {
   @Input() request: any;
   @Input() threadId = '';
-  @Input() username = '';
-  @Input() role: 'guest' | 'staff' | 'admin' = 'guest';
+  @Input() userId :string = '';
+  @Input() role: string = '';
   @Output() closeChat = new EventEmitter<void>();
 
   chatMessages: string[] = [];
@@ -37,7 +37,7 @@ export class ChatDialogComponent implements OnInit {
   
   loadThreadMessages(threadId: string) {
     this.chatMessages = [];
-    this.api.getMessagesByThreadId(threadId).subscribe({
+    this.api.getMessagesByThreadId(threadId,this.userId,this.role).subscribe({
       next: (res) => {
         res.sort((a, b) => new Date(a.time ?? '').getTime() - new Date(b.time ?? '').getTime());
         res.forEach(msg => {
@@ -59,7 +59,8 @@ export class ChatDialogComponent implements OnInit {
    const payload: Message = {
       content: this.newMessage,
       userId: this.request.assignedTo ?? '',
-      createdBy:"STAFF"
+      createdBy:"STAFF",
+      threadId : this.threadId,
     };
 
     this.api.createMessage(payload).subscribe({

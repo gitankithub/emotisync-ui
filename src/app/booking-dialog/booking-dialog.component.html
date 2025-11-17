@@ -32,7 +32,7 @@
 
       <h3>
         {{
-          data.status === 'completed' || data.status === 'COMPLETED'
+           data.status === 'CHECKED_IN' || data.status === 'COMPLETED'
             ? 'We Value Your Feedback!'
             : 'We’d love your thoughts on your stay so far!'
         }}
@@ -61,14 +61,14 @@
     </p>
 
     <p *ngIf="(selectedRating ?? 0) < 4 && (selectedRating ?? 0) > 0
-              && (data.status !== 'completed' && data.status !== 'COMPLETED')">
+              && (data.status !== 'COMPLETED')">
       We’re sorry for any inconvenience. Our team will assist you shortly.
       Please click help for further assistance.
     </p>
 
     <!-- Actions -->
     <div class="actions">
-      <button *ngIf="selectedRating >= 4"
+      <button *ngIf="selectedRating >= 4 || data.status === 'COMPLETED'"
               mat-flat-button class="action-btn"
               (click)="submitFeedback()"
               [disabled]="!selectedRating && !feedbackText">

@@ -52,8 +52,9 @@ export class ApiService {
     );
   }
   
-  getMessagesByThreadId(threadId: string): Observable<Message[]> {
-    return this.http.get<Message[]>(`http://localhost:8080/api/messages/thread/${threadId}`);
+  getMessagesByThreadId(threadId: string,userId: string, userType: string): Observable<Message[]> {
+    return this.http.get<Message[]>(`http://localhost:8080/api/messages/thread/${threadId}`,
+    { params: { userId, userType } });
   }
 
   // postMessages(threadId: string){

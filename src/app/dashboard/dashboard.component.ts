@@ -18,8 +18,8 @@ import { Message } from '../models/message.model';
   styleUrls: ['./dashboard.component.css']
 })
 export class DashboardComponent {
-  userId = '';
-  role: 'guest' | 'staff' | 'admin' = 'guest';
+  userId : string = '';
+  role: string = '';
   requests: Request[] = [];
   selectedRequest: Request | null = null;
   user: any;
@@ -30,6 +30,8 @@ export class DashboardComponent {
 
   ngOnInit() {
     this.user = this.loginService.getUser()
+    this.role = this.user.role
+    this.userId = this.user.userId
     this.loadRequests(this.user)
   }
 

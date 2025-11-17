@@ -15,6 +15,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { ChatComponent } from '../chat/chat.component';
 import { Router } from '@angular/router';
 import { Message } from '../models/message.model';
+import { LoginService } from '../services/login.service';
 
 
 @Component({
@@ -42,6 +43,7 @@ export class ChatQuestionnaireComponent implements OnInit, OnDestroy, AfterViewI
   userChatInput = '';
   ratingGiven: boolean = false;
   isChatVisible = false;
+  userId : string = '';
   // stage: while request in progress or final rating
   stage: 'questionnaire' | 'in_progress' | 'final' = 'questionnaire';
   private messageDelay = 6000;
@@ -63,11 +65,12 @@ export class ChatQuestionnaireComponent implements OnInit, OnDestroy, AfterViewI
   ];
 
   private dialog = inject(MatDialog);
-  constructor(private api: ApiService, private chatService: ChatService, private router: Router) { }
+  constructor(private api: ApiService, private chatService: ChatService, private router: Router,private loginService :LoginService) { }
 
 
   ngOnInit() {
     if (this.activeRequest) this.loadThreadMessages(this.activeRequest.userThread?.threadId ?? '');
+    this.userId = this.loginService.getUser().userId
   }
 
   ngAfterViewInit() { this.scrollToBottomPopup(); }
@@ -148,11 +151,11 @@ export class ChatQuestionnaireComponent implements OnInit, OnDestroy, AfterViewI
   //load the messages based on the thread id
   loadThreadMessages(threadId: string) {
     this.chatMessages = [];
-    this.api.getMessagesByThreadId(threadId).subscribe({
+    this.api.getMessagesByThreadId(threadId,this.userId ?? '',"GUEST").subscribe({
       next: (res) => {
         res.sort((a, b) => new Date(a.time ?? '').getTime() - new Date(b.time ?? '').getTime());
         res.forEach(msg => {
-          if (msg.userId === this.reservation?.guestId && !msg.guestFeedback) {
+          if (msg.userId === this.userId && msg.createdBy === "ASSISTANT") {
             this.chatMessages.push(msg);
           }
         });
