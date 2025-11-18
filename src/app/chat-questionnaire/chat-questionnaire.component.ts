@@ -14,7 +14,7 @@ import { ServiceRequest } from '../models/request.model';
 import { MatDialog } from '@angular/material/dialog';
 import { ChatComponent } from '../chat/chat.component';
 import { Router } from '@angular/router';
-import { Message, UserRole } from '../models/message.model';
+import { GuestFeedback, Message, UserRole } from '../models/message.model';
 import { LoginService } from '../services/login.service';
 
 
@@ -130,19 +130,33 @@ export class ChatQuestionnaireComponent implements OnInit, OnDestroy, AfterViewI
     }
   }
 
+  getDefaultFeedbackText(): string {
+  if (this.selectedRating >= 4) {
+    return "Thank you for your feedback!";
+  } else {
+    return "We’re sorry for any inconvenience. Our team will assist you.";
+  }
+}
+
   //submit the request
   submitRequest() {
+    const feedback: GuestFeedback = {
+    guestId: this.reservation?.guestId ?? '',
+    feedbackText: this.getDefaultFeedbackText() || '',
+    rating: String(this.selectedRating)
+  };
     const payload: Message = {
       content: this.buildDescription(),
       userId: this.reservation?.guestId ?? '',
-      createdBy:UserRole.GUEST
+      createdBy:UserRole.GUEST,
+      guestFeedback: feedback
     };
 
     this.api.createMessage(payload).subscribe({
       next: (res) => {
         console.log('Request created:', res)
         this.requestCreated.emit(res);
-        this.loadThreadMessages(res.threadId ?? '')
+        // this.loadThreadMessages(res.threadId ?? '')
       },
       error: (err) => console.error('Error:', err)
     });
@@ -196,6 +210,7 @@ export class ChatQuestionnaireComponent implements OnInit, OnDestroy, AfterViewI
     this.chatMessages = [];
     this.stage = 'in_progress'; // directly open as chat view (no options)
     this.selectedOption = null;
+    this.selectedRating = 0;
   }
 
   setRating(rating: number) {

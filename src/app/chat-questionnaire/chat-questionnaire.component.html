@@ -8,7 +8,7 @@
       </p>
       <p>Room: {{ reservation?.roomType }} | Guests: {{ reservation?.numberOfOccupants }}</p>
       <p *ngIf="activeRequest">
-        Request: {{ activeRequest.requestId }} — {{ activeRequest.requestTitle }} |
+        Request: {{ activeRequest.requestTitle }} |
         Status: {{ activeRequest.status | titlecase }}
       </p>
     </div>
@@ -38,7 +38,7 @@
       <h3>How can we help you today?</h3>
 
       <div class="options">
-        <button *ngFor="let opt of options" [class.selected]="selectedOption === opt" (click)="selectOption(opt)"
+        <button *ngFor="let opt of options" [disabled]="activeRequest" [class.selected]="selectedOption === opt" (click)="selectOption(opt)"
           class="option-btn">
           {{ opt }}
         </button>
