@@ -44,7 +44,7 @@ export class GuestDashboardComponent implements OnInit, OnDestroy {
   async loadRequests(isSilent = false) {
 
     const all = await firstValueFrom(this.api.getGuestRequests(this.userId));
-    const open = all.filter(r => r.status !== 'CLOSED' && r.status !== 'ESCALATED');
+    const open = all.filter(r => r.status !== 'CLOSED');
 
     // merge update statuses & new ones
     for (const r of open) {
@@ -69,7 +69,11 @@ export class GuestDashboardComponent implements OnInit, OnDestroy {
   selectRequest(req: Request) { this.selectedRequest = {...req}; }
 
   async handleRequestCreated(newReq: Message) {
-    this.loadRequests(); 
+    await this.loadRequests(); 
+    if (this.requests.length > 0) {
+    this.selectedRequest = { ...this.requests[0] };
+  
+  }
   }
 
   async handleRequestClosed(reqId: string) {
