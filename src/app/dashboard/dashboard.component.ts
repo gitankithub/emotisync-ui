@@ -48,7 +48,7 @@ export class DashboardComponent {
       this.api.getAllRequests().subscribe({
         next: (res) => {
           this.requests = res ?? [];
-          console.log("Staff Requests:", this.requests);
+          console.log(`${user.role} Requests:`, this.requests);
         },
         error: (err) => {
           console.error("Failed to load staff requests", err);

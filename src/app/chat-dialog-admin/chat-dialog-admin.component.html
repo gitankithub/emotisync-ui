@@ -18,8 +18,7 @@
       [ngClass]="{
         'assistant-msg': msg.createdBy === UserRole.ASSISTANT,
         'user-msg': msg.createdBy !== UserRole.ASSISTANT
-      }"
-    >
+      }">
       <div class="bubble">
         <ng-container *ngIf="msg.createdBy === UserRole.ASSISTANT; else normal">
           <span class="bot-wrapper">

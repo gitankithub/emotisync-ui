@@ -8,8 +8,24 @@
   </div>
 
   <div class="chat-body" id="chat-body">
-    <div *ngFor="let msg of chatMessages" class="message" >
-      <div class="bubble">{{ msg}}</div>
+    <div
+      *ngFor="let msg of messages"
+      class="message"
+      [ngClass]="{
+        'assistant-msg': msg.createdBy === UserRole.ASSISTANT,
+        'user-msg': msg.createdBy !== UserRole.ASSISTANT
+      }">
+      <div class="bubble">
+        <ng-container *ngIf="msg.createdBy === UserRole.ASSISTANT; else normal">
+          <span class="bot-wrapper">
+            <mat-icon class="bot-icon">smart_toy</mat-icon>
+            <span class="bot-text">{{ msg.content }}</span>
+          </span>
+        </ng-container>
+        <ng-template #normal>
+          {{ msg.content }}
+        </ng-template>
+      </div>
     </div>
   </div>
 
