@@ -10,7 +10,7 @@ import { MatInputModule } from '@angular/material/input';
 import { ApiService } from '../services/api.service';
 import { ChatService } from '../services/chat.service';
 import { Reservation } from '../models/reservations.model';
-import { Request } from '../models/request.model';
+import { ServiceRequest } from '../models/request.model';
 import { MatDialog } from '@angular/material/dialog';
 import { ChatComponent } from '../chat/chat.component';
 import { Router } from '@angular/router';
@@ -27,7 +27,7 @@ import { LoginService } from '../services/login.service';
 })
 export class ChatQuestionnaireComponent implements OnInit, OnDestroy, AfterViewInit {
   @Input() reservation!: Reservation | null;
-  @Input() activeRequest: Request | null = null;
+  @Input() activeRequest: ServiceRequest | null = null;
   @Input() selectedRating: number = 0;
   @Output() requestCreated = new EventEmitter<Message>();
   @Output() requestClosed = new EventEmitter<string>();

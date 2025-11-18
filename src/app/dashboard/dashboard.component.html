@@ -2,35 +2,20 @@
   <div class="left-panel">
     <div class="top-bar">
       <h2>Open Requests</h2>
-      <div *ngIf="role === 'GUEST'">
+      <div>
         <button mat-raised-button (click)="loadRequests(user.userId)">Refresh</button>
       </div>
     </div>
-
-    <!-- <div class="request-list">
-      <mat-card *ngFor="let req of requests" (click)="selectRequest(req)"
-        [class.active]="req.requestId === selectedRequest?.requestId" class="req-card">
-        <div class="req-content">
-          <div>
-            <div class="req-id">{{ req.requestId }}</div>
-            <div class="req-type">{{ req.requestTitle }}</div>
-          </div>
-          <div>
-            <div class="req-type">Create at: {{ req.createdAt | date:'MMM d, h:mm a' }}</div>
-            <div class="req-type">Last Updated: {{ req.updatedAt | date:'MMM d, h:mm a' }}</div>
-          </div>
-          <div class="req-room">priority: {{ req.requestUrgency }}</div>
-        </div>
-      </mat-card>
-      <p *ngIf="!requests.length" class="no-data">No open requests yet.</p>
-    </div> -->
 
     <div class="cards-grid">
       <mat-card *ngFor="let req of requests" (click)="selectRequest(req)"
         [class.active]="req.requestId === selectedRequest?.requestId" class="request-card" appearance="outlined">
 
         <mat-card-header>
-          <mat-card-title class="card-title">{{ req.requestTitle }}</mat-card-title>
+          <mat-card-title class="card-title">
+            <span>{{ req.requestTitle }}</span>
+            <div class="req-id">#{{ req.requestId }}</div>
+          </mat-card-title>
         </mat-card-header>
 
         <mat-card-content class="card-content">
@@ -57,7 +42,7 @@
           </div>
         </mat-card-content>
 
-        <mat-card-footer class="card-footer">
+        <mat-card-footer *ngIf="role === 'STAFF'" class="card-footer">
           <mat-chip-set>
             <mat-chip>charming</mat-chip>
             <mat-chip>graceful</mat-chip>
@@ -67,9 +52,6 @@
       </mat-card>
     </div>
   </div>
-
-
-
   <div class="right-panel" *ngIf="selectedRequest">
     <app-chat-dialog *ngIf="role === 'STAFF'" [request]="selectedRequest" [threadId]="getThreadId(selectedRequest)"
       [userId]="userId" [role]="role" (closeChat)="closeChat()"></app-chat-dialog>

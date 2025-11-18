@@ -18,7 +18,8 @@ export interface UserThread {
   createdAt: string;
 }
 
-export interface Request {
+export interface ServiceRequest {
+  threadId: any;
   requestId?: string;
   requestTitle?: string;
   requestDescription: string;

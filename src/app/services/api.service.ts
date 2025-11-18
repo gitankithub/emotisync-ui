@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Request } from '../models/request.model';
+import { ServiceRequest } from '../models/request.model';
 import { Reservation } from '../models/reservations.model';
 import { Message } from '../models/message.model';
 import { firstValueFrom, Observable } from 'rxjs';
@@ -11,13 +11,13 @@ export class ApiService {
   private initialized = false;
 
   private reservations: Reservation[] = [];
-  private requests: Request[] = [];
+  private requests: ServiceRequest[] = [];
   private messages: Message[] = [];
 
   constructor(private http: HttpClient) { }
 
-  createRequest(payload: Request) {
-    return this.http.post<Request>('http://localhost:8080/api/requests', payload);
+  createRequest(payload: ServiceRequest) {
+    return this.http.post<ServiceRequest>('http://localhost:8080/api/requests', payload);
   }
 
   createMessage(payload: Message) {

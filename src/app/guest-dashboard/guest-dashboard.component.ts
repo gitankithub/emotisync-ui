@@ -6,7 +6,7 @@ import { Router } from '@angular/router';
 import { ApiService } from '../services/api.service';
 import { ChatQuestionnaireComponent } from '../chat-questionnaire/chat-questionnaire.component';
 import { LoginService } from '../services/login.service';
-import { Request } from '../models/request.model';
+import { ServiceRequest } from '../models/request.model';
 import { Reservation } from '../models/reservations.model';
 import { MatIconModule } from '@angular/material/icon';
 import { firstValueFrom } from 'rxjs';
@@ -21,8 +21,8 @@ import { Message } from '../models/message.model';
 })
 export class GuestDashboardComponent implements OnInit, OnDestroy {
   userId = '';
-  requests: Request[] = [];
-  selectedRequest: Request | null = null;
+  requests: ServiceRequest[] = [];
+  selectedRequest: ServiceRequest | null = null;
   selectedReservation: Reservation | null = null;
   private pollInterval: any;
   selectedRating: number = 0;
@@ -66,7 +66,7 @@ export class GuestDashboardComponent implements OnInit, OnDestroy {
   }
 
 
-  selectRequest(req: Request) { this.selectedRequest = {...req}; }
+  selectRequest(req: ServiceRequest) { this.selectedRequest = {...req}; }
 
   async handleRequestCreated(newReq: Message) {
     this.loadRequests(); 

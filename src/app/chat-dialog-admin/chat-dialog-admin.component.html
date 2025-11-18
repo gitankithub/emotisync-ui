@@ -13,7 +13,7 @@
 
   <div class="chat-body" id="chat-body">
     <div
-      *ngFor="let msg of chatMessages"
+      *ngFor="let msg of messages"
       class="message"
       [ngClass]="{
         'assistant-msg': msg.createdBy === UserRole.ASSISTANT,

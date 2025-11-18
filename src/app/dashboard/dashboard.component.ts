@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { ApiService } from '../services/api.service';
-import { Request } from '../models/request.model';
+import { ServiceRequest } from '../models/request.model';
 import { ChatDialogComponent } from '../chat-dialog/chat-dialog.component';
 import { Router } from '@angular/router';
 import { LoginService } from '../services/login.service';
@@ -22,8 +22,8 @@ import {MatChipsModule} from '@angular/material/chips';
 export class DashboardComponent {
   userId : string = '';
   role: string = '';
-  requests: Request[] = [];
-  selectedRequest: Request | null = null;
+  requests: ServiceRequest[] = [];
+  selectedRequest: ServiceRequest | null = null;
   user: any;
   chatMessages: Message[] = [];
 
@@ -63,7 +63,7 @@ export class DashboardComponent {
   }
 
 
-  selectRequest(req: Request) {
+  selectRequest(req: ServiceRequest) {
     this.selectedRequest = {...req};
   }
 
@@ -72,7 +72,7 @@ export class DashboardComponent {
     this.loadRequests(this.user.userId);
   }
 
-  getThreadId(req: Request): string {
+  getThreadId(req: ServiceRequest): string {
     return req.userThread?.threadId ?? ''
   }
 

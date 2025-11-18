@@ -90,6 +90,12 @@
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
 }
 
+.req-id {
+  font-size: 12px;
+  color: #666;
+  font-weight: 500;
+}
+
 /* CARD BASE */
 .request-card {
   border-radius: 16px !important;
@@ -120,7 +126,7 @@
 
 /* META INFO */
 .meta {
-  margin-top: 10px;
+  margin-top: 5px;
   display: flex;
   flex-direction: column;
   gap: 6px;
