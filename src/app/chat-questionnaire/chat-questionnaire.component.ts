@@ -14,7 +14,7 @@ import { Request } from '../models/request.model';
 import { MatDialog } from '@angular/material/dialog';
 import { ChatComponent } from '../chat/chat.component';
 import { Router } from '@angular/router';
-import { Message } from '../models/message.model';
+import { Message, UserRole } from '../models/message.model';
 import { LoginService } from '../services/login.service';
 
 
@@ -135,7 +135,7 @@ export class ChatQuestionnaireComponent implements OnInit, OnDestroy, AfterViewI
     const payload: Message = {
       content: this.buildDescription(),
       userId: this.reservation?.guestId ?? '',
-      createdBy:"GUEST"
+      createdBy:UserRole.GUEST
     };
 
     this.api.createMessage(payload).subscribe({

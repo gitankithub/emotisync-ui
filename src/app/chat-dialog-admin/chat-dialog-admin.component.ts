@@ -5,7 +5,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input';
 import { ApiService } from '../services/api.service';
-import { Message } from '../models/message.model';
+import { Message, UserRole } from '../models/message.model';
 
 @Component({
   selector: 'app-chat-dialog-admin',
@@ -15,14 +15,15 @@ import { Message } from '../models/message.model';
   styleUrls: ['./chat-dialog-admin.component.css']
 })
 export class ChatDialogAdminComponent implements OnInit {
+  UserRole = UserRole; // Expose enum to template
   @Input() request: any;
   @Input() threadId = '';
   @Input() userId :string = '';
   @Input() role: string = '';
   @Output() closeChat = new EventEmitter<void>();
 
-  chatMessages: string[] = [];
-  newMessage = '';
+  chatMessages: Message[] = [];
+  newMessage: string = '';
 
   constructor(private api: ApiService) {}
 
@@ -37,13 +38,11 @@ export class ChatDialogAdminComponent implements OnInit {
   
   loadThreadMessages(threadId: string) {
     this.chatMessages = [];
-    this.api.getMessagesByThreadId(threadId,this.userId,this.role).subscribe({
+    this.api.getMessagesByThreadId(threadId, "", this.role).subscribe({
       next: (res) => {
         res.sort((a, b) => new Date(a.time ?? '').getTime() - new Date(b.time ?? '').getTime());
         res.forEach(msg => {
-          if (msg.userId === this.request.assignedTo) {
-            this.chatMessages.push(msg.content);
-          }
+           this.chatMessages.push(msg);
         });
         console.log("Messages fetched:", res);
       },
@@ -55,13 +54,14 @@ export class ChatDialogAdminComponent implements OnInit {
 
   async sendMessage() {
    //api to send the admin message to the bot
-   this.chatMessages.push(this.newMessage)
+   
    const payload: Message = {
       content: this.newMessage,
       userId: this.request.assignedTo ?? '',
-      createdBy:"ADMIN",
+      createdBy: UserRole.ADMIN,
       threadId : this.threadId,
     };
+    this.chatMessages.push(payload)
 
     this.api.createMessage(payload).subscribe({
       next: (res) => {

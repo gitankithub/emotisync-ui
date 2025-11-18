@@ -10,11 +10,12 @@ import { LoginService } from '../services/login.service';
 import { User } from '../models/user.model';
 import { Message } from '../models/message.model';
 import { ChatDialogAdminComponent } from '../chat-dialog-admin/chat-dialog-admin.component';
+import {MatChipsModule} from '@angular/material/chips';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, MatCardModule, MatButtonModule, ChatDialogComponent, ChatDialogAdminComponent],
+  imports: [CommonModule, MatCardModule, MatButtonModule, ChatDialogComponent, ChatDialogAdminComponent, MatChipsModule],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css']
 })

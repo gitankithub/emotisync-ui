@@ -2,19 +2,47 @@
   <div class="chat-header">
     <h3>{{ request.requestTitle }}</h3>
     <div>
-      <button mat-icon-button (click)="openInNewTab()"><mat-icon>open_in_new</mat-icon></button>
-      <button mat-icon-button color="warn" (click)="closeChat.emit()"><mat-icon>close</mat-icon></button>
+      <button mat-icon-button (click)="openInNewTab()">
+        <mat-icon>open_in_new</mat-icon>
+      </button>
+      <button mat-icon-button color="warn" (click)="closeChat.emit()">
+        <mat-icon>close</mat-icon>
+      </button>
     </div>
   </div>
 
   <div class="chat-body" id="chat-body">
-    <div *ngFor="let msg of chatMessages" class="message" >
-      <div class="bubble">{{ msg}}</div>
+    <div
+      *ngFor="let msg of chatMessages"
+      class="message"
+      [ngClass]="{
+        'assistant-msg': msg.createdBy === UserRole.ASSISTANT,
+        'user-msg': msg.createdBy !== UserRole.ASSISTANT
+      }"
+    >
+      <div class="bubble">
+        <ng-container *ngIf="msg.createdBy === UserRole.ASSISTANT; else normal">
+          <span class="bot-wrapper">
+            <mat-icon class="bot-icon">smart_toy</mat-icon>
+            <span class="bot-text">{{ msg.content }}</span>
+          </span>
+        </ng-container>
+        <ng-template #normal>
+          {{ msg.content }}
+        </ng-template>
+      </div>
     </div>
   </div>
 
   <div class="chat-input">
-    <input matInput placeholder="Type your message..." [(ngModel)]="newMessage" (keyup.enter)="sendMessage()" />
-    <button mat-raised-button color="primary" (click)="sendMessage()">Send</button>
+    <input
+      matInput
+      placeholder="Type your message..."
+      [(ngModel)]="newMessage"
+      (keyup.enter)="sendMessage()"
+    />
+    <button mat-raised-button color="primary" (click)="sendMessage()">
+      Send
+    </button>
   </div>
 </div>

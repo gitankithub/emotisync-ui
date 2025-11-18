@@ -5,7 +5,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input';
 import { ApiService } from '../services/api.service';
-import { Message } from '../models/message.model';
+import { Message, UserRole } from '../models/message.model';
 
 @Component({
   selector: 'app-chat-dialog',
@@ -59,7 +59,7 @@ export class ChatDialogComponent implements OnInit {
    const payload: Message = {
       content: this.newMessage,
       userId: this.request.assignedTo ?? '',
-      createdBy:"STAFF",
+      createdBy: UserRole.STAFF,
       threadId : this.threadId,
     };
 

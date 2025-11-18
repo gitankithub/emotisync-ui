@@ -10,3 +10,65 @@
 .chat-input { position:sticky; bottom:0; display:flex; align-items:center; padding:12px; background:#fff; border-top:1px solid #ddd; }
 .chat-input input { flex:1; padding:10px 12px; border-radius:4px; border:1px solid #ccc; margin-right:10px; }
 .mat-mdc-icon-button .mdc-button__label, .mat-mdc-icon-button .mat-icon {color: white !important;}
+.chat-body {
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  overflow-y: auto;
+  height: calc(100vh - 200px);
+}
+
+/* Base bubble style */
+.message .bubble {
+  max-width: 70%;
+  padding: 10px 14px;
+  border-radius: 14px;
+  font-size: 14px;
+  line-height: 1.4;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+}
+
+/* Assistant (left side) */
+.assistant-msg {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.assistant-msg .bubble {
+  background-color: #e6f2ff; /* light blue */
+  color: #003366;
+  border-top-left-radius: 4px;
+}
+
+/* User message (right side) */
+.user-msg {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.user-msg .bubble {
+  background-color: #f0f0f0; /* light gray */
+  color: #333;
+  border-top-right-radius: 4px;
+}
+
+.bot-wrapper {
+  display: flex;
+  align-items: flex-start; /* aligns perfectly with multiline text */
+  gap: 6px;
+}
+
+.bot-icon {
+  font-size: 20px;
+  height: 20px;
+  width: 20px;
+  margin-top: 2px; /* fine-tune alignment */
+  color: #003366;
+}
+
+.bot-text {
+  flex: 1;
+  display: block;
+}
+

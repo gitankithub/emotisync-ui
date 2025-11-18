@@ -7,38 +7,74 @@
       </div>
     </div>
 
-    <div class="request-list">
-      <mat-card *ngFor="let req of requests" (click)="selectRequest(req)" [class.active]="req.requestId === selectedRequest?.requestId" class="req-card">
+    <!-- <div class="request-list">
+      <mat-card *ngFor="let req of requests" (click)="selectRequest(req)"
+        [class.active]="req.requestId === selectedRequest?.requestId" class="req-card">
         <div class="req-content">
           <div>
             <div class="req-id">{{ req.requestId }}</div>
             <div class="req-type">{{ req.requestTitle }}</div>
           </div>
+          <div>
+            <div class="req-type">Create at: {{ req.createdAt | date:'MMM d, h:mm a' }}</div>
+            <div class="req-type">Last Updated: {{ req.updatedAt | date:'MMM d, h:mm a' }}</div>
+          </div>
           <div class="req-room">priority: {{ req.requestUrgency }}</div>
         </div>
       </mat-card>
-
       <p *ngIf="!requests.length" class="no-data">No open requests yet.</p>
+    </div> -->
+
+    <div class="cards-grid">
+      <mat-card *ngFor="let req of requests" (click)="selectRequest(req)"
+        [class.active]="req.requestId === selectedRequest?.requestId" class="request-card" appearance="outlined">
+
+        <mat-card-header>
+          <mat-card-title class="card-title">{{ req.requestTitle }}</mat-card-title>
+        </mat-card-header>
+
+        <mat-card-content class="card-content">
+          <div class="meta">
+            <div class="meta-row">
+              <span class="label">Created:</span>
+              <span>{{ req.createdAt | date:'MMM d, h:mm a' }}</span>
+            </div>
+
+            <div class="meta-row">
+              <span class="label">Updated:</span>
+              <span>{{ req.updatedAt | date:'MMM d, h:mm a' }}</span>
+            </div>
+
+            <div class="meta-row">
+              <span class="label">Priority:</span>
+              <span class="priority" [ngClass]="req.requestUrgency">{{ req.requestUrgency }}</span>
+            </div>
+
+            <div class="meta-row">
+              <span class="label">Status:</span>
+              <span class="status-chip" [ngClass]="req.status">{{ req.status }}</span>
+            </div>
+          </div>
+        </mat-card-content>
+
+        <mat-card-footer class="card-footer">
+          <mat-chip-set>
+            <mat-chip>charming</mat-chip>
+            <mat-chip>graceful</mat-chip>
+            <mat-chip>sassy</mat-chip>
+          </mat-chip-set>
+        </mat-card-footer>
+      </mat-card>
     </div>
   </div>
 
-  <div class="right-panel" *ngIf="selectedRequest">
-    <app-chat-dialog
-      [request]="selectedRequest"
-      [threadId]="getThreadId(selectedRequest)"
-      [userId]="userId"
-      [role]="role"
-      (closeChat)="closeChat()"
-    ></app-chat-dialog>
-  </div>
+
 
   <div class="right-panel" *ngIf="selectedRequest">
-    <app-chat-dialog-admin
-      [request]="selectedRequest"
-      [threadId]="getThreadId(selectedRequest)"
-      [userId]="userId"
-      [role]="role"
-      (closeChat)="closeChat()"
-    ></app-chat-dialog-admin>
+    <app-chat-dialog *ngIf="role === 'STAFF'" [request]="selectedRequest" [threadId]="getThreadId(selectedRequest)"
+      [userId]="userId" [role]="role" (closeChat)="closeChat()"></app-chat-dialog>
+    <app-chat-dialog-admin *ngIf="role === 'ADMIN'" [request]="selectedRequest"
+      [threadId]="getThreadId(selectedRequest)" [userId]="userId" [role]="role"
+      (closeChat)="closeChat()"></app-chat-dialog-admin>
   </div>
 </div>
