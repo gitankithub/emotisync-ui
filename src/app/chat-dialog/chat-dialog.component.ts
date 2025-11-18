@@ -30,7 +30,7 @@ export class ChatDialogComponent implements OnInit, OnChanges {
   newMessage = '';
 
   private pollSubscription?: Subscription;
-  private readonly POLL_INTERVAL = 3000;
+  private readonly POLL_INTERVAL = 60000;
 
   constructor(private api: ApiService) {}
 
