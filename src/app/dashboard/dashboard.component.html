@@ -31,4 +31,14 @@
       (closeChat)="closeChat()"
     ></app-chat-dialog>
   </div>
+
+  <div class="right-panel" *ngIf="selectedRequest">
+    <app-chat-dialog-admin
+      [request]="selectedRequest"
+      [threadId]="getThreadId(selectedRequest)"
+      [userId]="userId"
+      [role]="role"
+      (closeChat)="closeChat()"
+    ></app-chat-dialog-admin>
+  </div>
 </div>

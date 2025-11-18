@@ -9,11 +9,12 @@ import { Router } from '@angular/router';
 import { LoginService } from '../services/login.service';
 import { User } from '../models/user.model';
 import { Message } from '../models/message.model';
+import { ChatDialogAdminComponent } from '../chat-dialog-admin/chat-dialog-admin.component';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, MatCardModule, MatButtonModule, ChatDialogComponent],
+  imports: [CommonModule, MatCardModule, MatButtonModule, ChatDialogComponent, ChatDialogAdminComponent],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css']
 })
