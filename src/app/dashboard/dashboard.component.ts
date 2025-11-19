@@ -10,22 +10,24 @@ import { LoginService } from '../services/login.service';
 import { User } from '../models/user.model';
 import { Message } from '../models/message.model';
 import { ChatDialogAdminComponent } from '../chat-dialog-admin/chat-dialog-admin.component';
-import {MatChipsModule} from '@angular/material/chips';
+import { MatChipsModule } from '@angular/material/chips';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, MatCardModule, MatButtonModule, ChatDialogComponent, ChatDialogAdminComponent, MatChipsModule],
+  imports: [CommonModule, MatCardModule, MatButtonModule, ChatDialogComponent, ChatDialogAdminComponent, MatChipsModule, MatProgressSpinnerModule],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css']
 })
 export class DashboardComponent {
-  userId : string = '';
+  userId: string = '';
   role: string = '';
   requests: ServiceRequest[] = [];
   selectedRequest: ServiceRequest | null = null;
   user: any;
   chatMessages: Message[] = [];
+  loading: boolean = true;
 
   constructor(private api: ApiService, private router: Router, private loginService: LoginService) {
   }
@@ -38,6 +40,7 @@ export class DashboardComponent {
   }
 
   loadRequests(user: User) {
+    this.loading = true;
 
     // reset requests before loading
     this.requests = [];
@@ -49,8 +52,10 @@ export class DashboardComponent {
         next: (res) => {
           this.requests = res ?? [];
           console.log(`${user.role} Requests:`, this.requests);
+          this.loading = false;
         },
         error: (err) => {
+          this.loading = false;
           console.error("Failed to load staff requests", err);
           this.requests = [];
         }
@@ -64,7 +69,7 @@ export class DashboardComponent {
 
 
   selectRequest(req: ServiceRequest) {
-    this.selectedRequest = {...req};
+    this.selectedRequest = { ...req };
   }
 
   closeChat() {
@@ -74,6 +79,22 @@ export class DashboardComponent {
 
   getThreadId(req: ServiceRequest): string {
     return req.userThread?.threadId ?? ''
+  }
+
+  updateStatus(reqId: string, status: string) {
+    this.loading = true
+    if (status !== 'undefined') {
+      this.api.updateStatus(reqId, status).subscribe({
+        next: response => {
+          this.loading = false;
+          console.log('Updated:', response);
+        },
+        error: (err) => {
+          console.error(err);
+          this.loading = false;
+        }
+      });
+    }
   }
 
 }

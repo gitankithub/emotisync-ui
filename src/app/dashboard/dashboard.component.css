@@ -27,10 +27,11 @@
 
 .top-bar {
   display: flex;
-  justify-content: space-between;
   align-items: center;
   margin-bottom: 16px;
   color: #084c3f;
+  padding-left: 10%;
+  gap: 60%;
 }
 
 .request-list {
@@ -88,6 +89,8 @@
   gap: 20px;
   padding-top: 10px;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  width: 80%;
+  padding-left: 10%;
 }
 
 .req-id {
@@ -245,4 +248,11 @@ mat-chip {
   .right-panel {
     height: 60vh;
   }
+}
+
+.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 80vh;
 }

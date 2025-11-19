@@ -8,10 +8,7 @@
   </div>
 
   <div class="chat-body" id="chat-body">
-    <div
-      *ngFor="let msg of messages"
-      class="message"
-      [ngClass]="{
+    <div *ngFor="let msg of messages" class="message" [ngClass]="{
         'assistant-msg': msg.createdBy === UserRole.ASSISTANT,
         'user-msg': msg.createdBy !== UserRole.ASSISTANT
       }">
@@ -27,10 +24,26 @@
         </ng-template>
       </div>
     </div>
+    <div *ngIf="(!isChatInputVisible && !isButtonClicked && request.status === 'ASSIGNED')">
+      <div *ngIf="!currentAction" class="action-buttons">
+        <mat-chip-set *ngFor="let action of getAvailableActions(request)">
+          <mat-chip (click)="handleAction(request.requestId!,action)">{{ action }}</mat-chip>
+        </mat-chip-set>
+      </div>
+    </div>
+    <div *ngIf="request.status !== 'ASSIGNED' || currentAction">
+      <span *ngIf="currentAction!" class="bot-text">Current request status is {{ currentAction }}</span>
+      <div class="action-buttons">
+        <mat-chip-set>
+          <mat-chip *ngFor="let nextAction of nextActionsMap[currentAction]">
+            {{ nextAction }}
+          </mat-chip>
+        </mat-chip-set>
+      </div>
+    </div>
   </div>
 
-  <div class="chat-input">
+  <div *ngIf="isChatInputVisible && isButtonClicked" class="chat-input">
     <input matInput placeholder="Type your message..." [(ngModel)]="newMessage" (keyup.enter)="sendMessage()" />
     <button mat-raised-button color="primary" (click)="sendMessage()">Send</button>
   </div>
-</div>

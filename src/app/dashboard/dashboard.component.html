@@ -1,62 +1,69 @@
-<div class="dashboard" [class.split-view]="selectedRequest">
-  <div class="left-panel">
-    <div class="top-bar">
-      <h2>Open Requests</h2>
-      <div>
-        <button mat-raised-button (click)="loadRequests(user)">Refresh</button>
+<section *ngIf="!loading; else loadingTemplate">
+  <div class="dashboard" [class.split-view]="selectedRequest">
+    <div class="left-panel">
+      <div class="top-bar">
+        <h2>Open Requests</h2>
+        <div>
+          <button mat-raised-button (click)="loadRequests(user)">Refresh</button>
+        </div>
+      </div>
+
+      <div class="cards-grid">
+        <mat-card *ngFor="let req of requests" [class.active]="req.requestId === selectedRequest?.requestId"
+          class="request-card" appearance="outlined">
+
+          <mat-card-header (click)="selectRequest(req)">
+            <mat-card-title class="card-title">
+              <span>{{ req.requestTitle }}</span>
+              <div class="req-id">#{{ req.requestId }}</div>
+            </mat-card-title>
+          </mat-card-header>
+
+          <mat-card-content class="card-content" (click)="selectRequest(req)">
+            <div class="meta">
+              <div class="meta-row">
+                <span class="label">Created:</span>
+                <span>{{ req.createdAt | date:'MMM d, h:mm a' }}</span>
+              </div>
+
+              <div class="meta-row">
+                <span class="label">Updated:</span>
+                <span>{{ req.updatedAt | date:'MMM d, h:mm a' }}</span>
+              </div>
+
+              <div class="meta-row">
+                <span class="label">Priority:</span>
+                <span class="priority" [ngClass]="req.requestUrgency">{{ req.requestUrgency }}</span>
+              </div>
+
+              <div class="meta-row">
+                <span class="label">Status:</span>
+                <span class="status-chip" [ngClass]="req.status">{{ req.status }}</span>
+              </div>
+            </div>
+          </mat-card-content>
+
+          <mat-card-footer *ngIf="(role === 'STAFF' && (req.status === 'ASSIGNED' || req.status === 'ESCALATED'))"
+            class="card-footer">
+            <mat-chip-set>
+              <mat-chip (click)="updateStatus(req.requestId!,'IN_PROGRESS')">Accept</mat-chip>
+            </mat-chip-set>
+          </mat-card-footer>
+        </mat-card>
       </div>
     </div>
-
-    <div class="cards-grid">
-      <mat-card *ngFor="let req of requests" (click)="selectRequest(req)"
-        [class.active]="req.requestId === selectedRequest?.requestId" class="request-card" appearance="outlined">
-
-        <mat-card-header>
-          <mat-card-title class="card-title">
-            <span>{{ req.requestTitle }}</span>
-            <div class="req-id">#{{ req.requestId }}</div>
-          </mat-card-title>
-        </mat-card-header>
-
-        <mat-card-content class="card-content">
-          <div class="meta">
-            <div class="meta-row">
-              <span class="label">Created:</span>
-              <span>{{ req.createdAt | date:'MMM d, h:mm a' }}</span>
-            </div>
-
-            <div class="meta-row">
-              <span class="label">Updated:</span>
-              <span>{{ req.updatedAt | date:'MMM d, h:mm a' }}</span>
-            </div>
-
-            <div class="meta-row">
-              <span class="label">Priority:</span>
-              <span class="priority" [ngClass]="req.requestUrgency">{{ req.requestUrgency }}</span>
-            </div>
-
-            <div class="meta-row">
-              <span class="label">Status:</span>
-              <span class="status-chip" [ngClass]="req.status">{{ req.status }}</span>
-            </div>
-          </div>
-        </mat-card-content>
-
-        <mat-card-footer *ngIf="role === 'STAFF'" class="card-footer">
-          <mat-chip-set>
-            <mat-chip>charming</mat-chip>
-            <mat-chip>graceful</mat-chip>
-            <mat-chip>sassy</mat-chip>
-          </mat-chip-set>
-        </mat-card-footer>
-      </mat-card>
+    <div class="right-panel" *ngIf="selectedRequest">
+      <app-chat-dialog *ngIf="role === 'STAFF'" [request]="selectedRequest" [threadId]="getThreadId(selectedRequest)"
+        [userId]="userId" [role]="role" (closeChat)="closeChat()"></app-chat-dialog>
+      <app-chat-dialog-admin *ngIf="role === 'ADMIN'" [request]="selectedRequest"
+        [threadId]="getThreadId(selectedRequest)" [userId]="userId" [role]="role"
+        (closeChat)="closeChat()"></app-chat-dialog-admin>
     </div>
   </div>
-  <div class="right-panel" *ngIf="selectedRequest">
-    <app-chat-dialog *ngIf="role === 'STAFF'" [request]="selectedRequest" [threadId]="getThreadId(selectedRequest)"
-      [userId]="userId" [role]="role" (closeChat)="closeChat()"></app-chat-dialog>
-    <app-chat-dialog-admin *ngIf="role === 'ADMIN'" [request]="selectedRequest"
-      [threadId]="getThreadId(selectedRequest)" [userId]="userId" [role]="role"
-      (closeChat)="closeChat()"></app-chat-dialog-admin>
+</section>
+
+<ng-template #loadingTemplate>
+  <div class="loading">
+    <mat-progress-spinner mode="indeterminate"></mat-progress-spinner>
   </div>
-</div>
+</ng-template>

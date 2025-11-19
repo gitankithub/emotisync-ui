@@ -8,11 +8,12 @@ import { ApiService } from '../services/api.service';
 import { Message, UserRole } from '../models/message.model';
 import { ServiceRequest } from '../models/request.model';
 import { interval, Subscription, switchMap } from 'rxjs';
+import { MatChipsModule } from '@angular/material/chips';
 
 @Component({
   selector: 'app-chat-dialog',
   standalone: true,
-  imports: [CommonModule, FormsModule, MatIconModule, MatButtonModule, MatInputModule],
+  imports: [CommonModule, FormsModule, MatIconModule, MatButtonModule, MatInputModule, MatChipsModule],
   templateUrl: './chat-dialog.component.html',
   styleUrls: ['./chat-dialog.component.css']
 })
@@ -28,19 +29,36 @@ export class ChatDialogComponent implements OnInit, OnChanges {
 
   messages: Message[] = [];
   newMessage = '';
+  isChatInputVisible: boolean = false;
+  isButtonClicked: boolean = false;
+  actions: string[] = ['ACCEPT', 'REJECT', 'MORE DETAILS NEEDED', 'REASSIGN'];
+  nextActionsMap: Record<string, string[]> = {
+    'ACCEPT': ['Mark as Completed', 'Add Note', 'Message Guest', 'Escalate', 'Reassign', 'Cancel'],
+    'REJECT': ['Assign to Another', 'Send Reason/Remark', 'Cancel'],
+    'MORE DETAILS NEEDED': ['Message Guest', 'Awaiting Guest Reply', 'Cancel/Close'],
+    'REASSIGN': ['Pick New Assignee', 'Confirm / Save', 'Add Note']
+  };
+  currentAction: string = '';
 
   private pollSubscription?: Subscription;
   private readonly POLL_INTERVAL = 60000;
 
-  constructor(private api: ApiService) {}
+  constructor(private api: ApiService) { }
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    if (this.request.status = 'IN_PROGRESS') {
+      this.currentAction = 'ACCEPT'
+    }
+
+  }
 
   ngOnChanges(changes: SimpleChanges): void {
     if ((changes['threadId'] && this.threadId) || (changes['request'] && this.request.threadId)) {
       this.stopPolling();
       this.messages = [];
       this.startPolling();
+      this.isChatInputVisible = false;
+      this.isButtonClicked = false;
     }
   }
 
@@ -126,5 +144,24 @@ export class ChatDialogComponent implements OnInit, OnChanges {
     const url = `${window.location.origin}/chat/${this.threadId}`;
     window.open(url, '_blank');
   }
-  
+
+  handleAction(reqId: string, action: string) {
+    this.currentAction = action;
+    this.isButtonClicked = true;
+    if (action !== 'ACCEPT') {
+      this.isChatInputVisible = true;
+    }
+    if (action !== 'undefined') {
+      this.api.updateStatus(reqId, action).subscribe({
+        next: response => console.log('Updated:', response),
+        error: err => console.error(err)
+      });
+    }
+
+  }
+
+  getAvailableActions(req: any): string[] {
+    return this.actions.filter(a => !(req.status === 'IN_PROGRESS' && a === 'ACCEPT'));
+  }
+
 }

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { ServiceRequest } from '../models/request.model';
 import { Reservation } from '../models/reservations.model';
 import { Message } from '../models/message.model';
@@ -57,8 +57,14 @@ export class ApiService {
     { params: { userId, userType } });
   }
 
-  // postMessages(threadId: string){
-  //   console.log('post');
-  // }
+  updateStatus(id: string, status: string): Observable<any> {
+    const headers = new HttpHeaders({ 'Content-Type': 'text/plain' });
+
+    return this.http.put<any>(
+      `http://localhost:8080/api/requests/${id}/status`,
+      status,
+      { headers }
+    );
+  }
   
 }
