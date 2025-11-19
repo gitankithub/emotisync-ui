@@ -23,8 +23,8 @@
           </div>
 
           <div class="req-status" [ngStyle]="getStatusStyle(req.status ?? '')">
-  {{ req.status | titlecase }}
-</div>
+            {{ req.status | titlecase }}
+          </div>
 
 
         </div>
@@ -38,8 +38,9 @@
 
   <!-- RIGHT PANEL: Chat + Questionnaire -->
   <div class="right-panel">
-    <app-chat-questionnaire [reservation]="selectedReservation" [selectedRating]="selectedRating" [activeRequest]="selectedRequest"
-      (requestCreated)="handleRequestCreated($event)" (requestClosed)="handleRequestClosed($event)">
+    <app-chat-questionnaire [reservation]="selectedReservation" [selectedRating]="selectedRating"
+      [activeRequest]="selectedRequest" (requestCreated)="handleRequestCreated($event)"
+      (requestClosed)="handleRequestClosed($event)">
     </app-chat-questionnaire>
   </div>
 

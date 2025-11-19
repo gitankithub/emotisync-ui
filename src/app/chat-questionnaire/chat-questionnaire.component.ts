@@ -1,6 +1,14 @@
 import {
-  Component, Input, Output, EventEmitter, ElementRef, ViewChild, OnInit, OnDestroy, AfterViewInit,
-  inject
+  Component,
+  Input,
+  Output,
+  EventEmitter,
+  ElementRef,
+  ViewChild,
+  OnInit,
+  OnDestroy,
+  AfterViewInit,
+  inject,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -17,15 +25,23 @@ import { Router } from '@angular/router';
 import { GuestFeedback, Message, UserRole } from '../models/message.model';
 import { LoginService } from '../services/login.service';
 
-
 @Component({
   selector: 'app-chat-questionnaire',
   standalone: true,
-  imports: [CommonModule, FormsModule, MatButtonModule, MatIconModule, MatInputModule, ChatComponent],
+  imports: [
+    CommonModule,
+    FormsModule,
+    MatButtonModule,
+    MatIconModule,
+    MatInputModule,
+    ChatComponent,
+  ],
   templateUrl: './chat-questionnaire.component.html',
-  styleUrls: ['./chat-questionnaire.component.css']
+  styleUrls: ['./chat-questionnaire.component.css'],
 })
-export class ChatQuestionnaireComponent implements OnInit, OnDestroy, AfterViewInit {
+export class ChatQuestionnaireComponent
+  implements OnInit, OnDestroy, AfterViewInit
+{
   @Input() reservation!: Reservation | null;
   @Input() activeRequest: ServiceRequest | null = null;
   @Input() selectedRating: number = 0;
@@ -43,7 +59,7 @@ export class ChatQuestionnaireComponent implements OnInit, OnDestroy, AfterViewI
   userChatInput = '';
   ratingGiven: boolean = false;
   isChatVisible = false;
-  userId : string = '';
+  userId: string = '';
   // stage: while request in progress or final rating
   stage: 'questionnaire' | 'in_progress' | 'final' = 'questionnaire';
   private messageDelay = 6000;
@@ -52,28 +68,35 @@ export class ChatQuestionnaireComponent implements OnInit, OnDestroy, AfterViewI
     'A staff member has been assigned to your request.',
     'Your request is currently in progress...',
     'Almost done! Your service will be completed shortly.',
-    'Service completed! We hope you’re satisfied with your stay.'
+    'Service completed! We hope you’re satisfied with your stay.',
   ];
 
   ratings = [
-    { value: 1, emoji: '😡', label: 'Very Bad' },
-    { value: 2, emoji: '😞', label: 'Bad' },
+    { value: 1, emoji: '😡', label: 'Angry' },
+    { value: 2, emoji: '😞', label: 'Sad' },
     { value: 3, emoji: '😐', label: 'Neutral' },
     { value: 4, emoji: '🙂', label: 'Good' },
-    { value: 5, emoji: '😃', label: 'Very Good' },
-    { value: 6, emoji: '🤩', label: 'Excellent' }
+    { value: 5, emoji: '😃', label: 'Happy' },
+    { value: 6, emoji: '🤩', label: 'Excited' },
   ];
 
   private dialog = inject(MatDialog);
-  constructor(private api: ApiService, private chatService: ChatService, private router: Router,private loginService :LoginService) { }
-
+  constructor(
+    private api: ApiService,
+    private chatService: ChatService,
+    private router: Router,
+    private loginService: LoginService
+  ) {}
 
   ngOnInit() {
-    if (this.activeRequest) this.loadThreadMessages(this.activeRequest.userThread?.threadId ?? '');
-    this.userId = this.loginService.getUser().userId
+    if (this.activeRequest)
+      this.loadThreadMessages(this.activeRequest.userThread?.threadId ?? '');
+    this.userId = this.loginService.getUser().userId;
   }
 
-  ngAfterViewInit() { this.scrollToBottomPopup(); }
+  ngAfterViewInit() {
+    this.scrollToBottomPopup();
+  }
 
   ngOnDestroy() {
     clearInterval(this.typingInterval);
@@ -82,10 +105,12 @@ export class ChatQuestionnaireComponent implements OnInit, OnDestroy, AfterViewI
 
   ngOnChanges() {
     console.log('selectedRating on init:', this.selectedRating);
-    console.log('reservation', this.reservation)
-    console.log('active request', this.activeRequest)
+    console.log('reservation', this.reservation);
+    console.log('active request', this.activeRequest);
     if (this.activeRequest) {
-      this.selectedOption = this.getSelectedOption(this.activeRequest.requestDescription)
+      this.selectedOption = this.getSelectedOption(
+        this.activeRequest.requestDescription
+      );
       this.loadThreadMessages(this.activeRequest.userThread?.threadId ?? '');
     }
   }
@@ -99,20 +124,20 @@ export class ChatQuestionnaireComponent implements OnInit, OnDestroy, AfterViewI
   getSelectedOption(description: string): string {
     const desc = description.toLowerCase();
 
-    if (desc.includes("clean")) return "Cleaning";
-    if (desc.includes("laundry")) return "Laundry";
-    if (desc.includes("towel")) return "Need Towels";
-    if (desc.includes("ac") || desc.includes("air conditioning")) return "AC Repair";
+    if (desc.includes('clean')) return 'Cleaning';
+    if (desc.includes('laundry')) return 'Laundry';
+    if (desc.includes('towel')) return 'Need Towels';
+    if (desc.includes('ac') || desc.includes('air conditioning'))
+      return 'AC Repair';
 
-    return ""; // nothing matched
+    return ''; // nothing matched
   }
 
   //build the description to send to the api
   buildDescription(): string {
-    const roomType = this.reservation?.roomType
-    const roomNumber = this.reservation?.roomNumber
+    const roomType = this.reservation?.roomType;
+    const roomNumber = this.reservation?.roomNumber;
     switch (this.selectedOption) {
-
       case 'Cleaning':
         return `Guest requested room cleaning for ${roomType} - ${roomNumber}.`;
 
@@ -131,54 +156,73 @@ export class ChatQuestionnaireComponent implements OnInit, OnDestroy, AfterViewI
   }
 
   getDefaultFeedbackText(): string {
-  if (this.selectedRating >= 4) {
-    return "Thank you for your feedback!";
-  } else {
-    return "We’re sorry for any inconvenience. Our team will assist you.";
+    switch (this.selectedRating) {
+      case 1:
+        return "We're really sorry you're feeling angry. If you'd like support, our team is here for you.";
+      case 2:
+        return "Sorry you're feeling down. Let us know if there's anything we can do to help!";
+      case 3:
+        return "Thank you for sharing. If there's anything you'd like to talk about, we're ready to listen.";
+      case 4:
+        return "Glad to hear you're feeling okay! If you have suggestions, we'd love to hear them.";
+      case 5:
+        return "Great to hear you're happy today! Thanks for your feedback!";
+      case 6:
+        return "Fantastic! We're thrilled you're feeling excited. Thank you for sharing your positivity!";
+      default:
+        return "Thank you for your feedback!";
+    }
   }
-}
+
+
 
   //submit the request
   submitRequest() {
     const feedback: GuestFeedback = {
-    guestId: this.reservation?.guestId ?? '',
-    feedbackText: this.getDefaultFeedbackText() || '',
-    rating: String(this.selectedRating)
-  };
+      guestId: this.reservation?.guestId ?? '',
+      feedbackText: this.getDefaultFeedbackText() || '',
+      rating: String(this.selectedRating),
+    };
     const payload: Message = {
       content: this.buildDescription(),
       userId: this.reservation?.guestId ?? '',
-      createdBy:UserRole.GUEST,
-      guestFeedback: feedback
+      createdBy: UserRole.GUEST,
+      guestFeedback: feedback,
     };
 
     this.api.createMessage(payload).subscribe({
       next: (res) => {
-        console.log('Request created:', res)
+        console.log('Request created:', res);
         this.requestCreated.emit(res);
         // this.loadThreadMessages(res.threadId ?? '')
       },
-      error: (err) => console.error('Error:', err)
+      error: (err) => console.error('Error:', err),
     });
   }
 
   //load the messages based on the thread id
   loadThreadMessages(threadId: string) {
     this.chatMessages = [];
-    this.api.getMessagesByThreadId(threadId,this.userId ?? '',"GUEST").subscribe({
-      next: (res) => {
-        res.sort((a, b) => new Date(a.time ?? '').getTime() - new Date(b.time ?? '').getTime());
-        res.forEach(msg => {
-          if (msg.userId === this.userId && msg.createdBy === "ASSISTANT") {
-            this.chatMessages.push(msg);
-          }
-        });
-        console.log("Messages fetched:", res);
-      },
-      error: (err) => {
-        console.error("Failed to fetch messages", err);
-      }
-    });
+    this.api
+      .getMessagesByThreadId(threadId, this.userId ?? '', 'GUEST')
+      .subscribe({
+        next: (res) => {
+          res.sort(
+            (a, b) =>
+              new Date(a.time ?? '').getTime() -
+              new Date(b.time ?? '').getTime()
+          );
+          res.forEach((msg) => {
+            if (msg.userId === this.userId && msg.createdBy === 'ASSISTANT') {
+              this.chatMessages.push(msg);
+            }
+          });
+          console.log('Messages fetched:', res);
+        },
+        error: (err) => {
+          console.error('Failed to fetch messages', err);
+        },
+      });
   }
 
   /** Final rating clicked — close request */
@@ -190,8 +234,9 @@ export class ChatQuestionnaireComponent implements OnInit, OnDestroy, AfterViewI
     setTimeout(() => {
       if (this.popupScroll?.nativeElement) {
         try {
-          this.popupScroll.nativeElement.scrollTop = this.popupScroll.nativeElement.scrollHeight;
-        } catch { }
+          this.popupScroll.nativeElement.scrollTop =
+            this.popupScroll.nativeElement.scrollHeight;
+        } catch {}
       }
     }, 100);
   }
@@ -216,5 +261,4 @@ export class ChatQuestionnaireComponent implements OnInit, OnDestroy, AfterViewI
   setRating(rating: number) {
     this.selectedRating = rating;
   }
-
 }

@@ -15,9 +15,15 @@ import { Message } from '../models/message.model';
 @Component({
   selector: 'app-guest-dashboard',
   standalone: true,
-  imports: [CommonModule, MatCardModule, MatButtonModule, ChatQuestionnaireComponent, MatIconModule],
+  imports: [
+    CommonModule,
+    MatCardModule,
+    MatButtonModule,
+    ChatQuestionnaireComponent,
+    MatIconModule,
+  ],
   templateUrl: './guest-dashboard.component.html',
-  styleUrls: ['./guest-dashboard.component.css']
+  styleUrls: ['./guest-dashboard.component.css'],
 })
 export class GuestDashboardComponent implements OnInit, OnDestroy {
   userId = '';
@@ -27,28 +33,36 @@ export class GuestDashboardComponent implements OnInit, OnDestroy {
   private pollInterval: any;
   selectedRating: number = 0;
 
-  constructor(private api: ApiService, private router: Router, private loginService: LoginService) { }
+  constructor(
+    private api: ApiService,
+    private router: Router,
+    private loginService: LoginService
+  ) {}
 
   async ngOnInit() {
-    this.selectedRequest = null
+    this.selectedRequest = null;
     const navState: any = history.state;
-    this.userId = navState?.username || this.loginService.getUser() || '6916598b2dea9cced0f1da33';
+    this.userId =
+      navState?.username ||
+      this.loginService.getUser() ||
+      '6916598b2dea9cced0f1da33';
     if (navState?.reservation) this.selectedReservation = navState.reservation;
     if (navState?.selectedRating) this.selectedRating = navState.selectedRating;
     await this.loadRequests();
     this.pollInterval = setInterval(() => this.loadRequests(true), 5000);
   }
 
-  ngOnDestroy() { clearInterval(this.pollInterval); }
+  ngOnDestroy() {
+    clearInterval(this.pollInterval);
+  }
 
   async loadRequests(isSilent = false) {
-
     const all = await firstValueFrom(this.api.getGuestRequests(this.userId));
-    const open = all.filter(r => r.status !== 'CLOSED');
+    const open = all.filter((r) => r.status !== 'CLOSED');
 
     // merge update statuses & new ones
     for (const r of open) {
-      const existing = this.requests.find(x => x.requestId === r.requestId);
+      const existing = this.requests.find((x) => x.requestId === r.requestId);
       if (existing) {
         existing.status = r.status;
       } else {
@@ -58,22 +72,22 @@ export class GuestDashboardComponent implements OnInit, OnDestroy {
     }
 
     // remove closed
-    this.requests = this.requests.filter(r =>
-      open.find(x => x.requestId === r.requestId)
+    this.requests = this.requests.filter((r) =>
+      open.find((x) => x.requestId === r.requestId)
     );
 
     if (!isSilent) console.log('requests loaded', this.requests);
   }
 
-
-  selectRequest(req: ServiceRequest) { this.selectedRequest = {...req}; }
+  selectRequest(req: ServiceRequest) {
+    this.selectedRequest = { ...req };
+  }
 
   async handleRequestCreated(newReq: Message) {
-    await this.loadRequests(); 
+    await this.loadRequests();
     if (this.requests.length > 0) {
-    this.selectedRequest = { ...this.requests[0] };
-  
-  }
+      this.selectedRequest = { ...this.requests[0] };
+    }
   }
 
   async handleRequestClosed(reqId: string) {
@@ -94,18 +108,17 @@ export class GuestDashboardComponent implements OnInit, OnDestroy {
   getStatusStyle(status: string) {
     switch (status) {
       case 'open':
-        return { background: '#1E88E5', color: '#fff' };  // Blue
+        return { background: '#1E88E5', color: '#fff' }; // Blue
       case 'assigned':
-        return { background: '#8E24AA', color: '#fff' };  // Purple
+        return { background: '#8E24AA', color: '#fff' }; // Purple
       case 'in_progress':
-        return { background: '#FB8C00', color: '#fff' };  // Orange
+        return { background: '#FB8C00', color: '#fff' }; // Orange
       case 'completed':
-        return { background: '#43A047', color: '#fff' };  // Green
+        return { background: '#43A047', color: '#fff' }; // Green
       case 'escalated':
-        return { background: '#E53935', color: '#fff' };  // Red
+        return { background: '#E53935', color: '#fff' }; // Red
       default:
         return { background: '#084c3f', color: '#fff' };
     }
   }
-
 }
