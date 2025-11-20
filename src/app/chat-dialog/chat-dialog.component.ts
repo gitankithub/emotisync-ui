@@ -181,6 +181,8 @@ export class ChatDialogComponent implements OnInit, OnChanges {
         );
         this.messages = [...res];
         console.log('Messages fetched:', res);
+        this.currentActionList = this.getAvailableActions(this.request.status);
+        this.startPolling();
       },
       error: (err) => {
         console.error('Failed to fetch messages', err);
@@ -284,15 +286,7 @@ export class ChatDialogComponent implements OnInit, OnChanges {
       }
 
       // The updateStatus API call is generic for updates
-      this.api.updateStatus(reqId, statusUpdate).subscribe({
-        next: (response: ServiceRequest) => {
-          this.request.status = response.status;
-          this.currentAction = action.description;
-          console.log('Request status updated:', response);
-          this.currentActionList = this.getAvailableActions(this.request.status);
-        },
-        error: (err) => console.error(err),
-      });
+      this.sendMessage()
     }
   }
 

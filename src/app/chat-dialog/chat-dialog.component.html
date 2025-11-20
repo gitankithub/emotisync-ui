@@ -29,12 +29,6 @@
         <mat-chip-set *ngFor="let action of currentActionList">
           <mat-chip (click)="handleAction(request.requestId!, action)">{{ action.actionType }}</mat-chip>
         </mat-chip-set>
-        <div class="bubble">
-          <span *ngIf="currentAction" class="bot-wrapper">
-            <mat-icon class="bot-icon">smart_toy</mat-icon>
-            <span class="bot-text">{{ currentAction }}</span>
-          </span>
-        </div>
       </div>
     </div>
   </div>
