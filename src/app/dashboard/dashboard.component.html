@@ -54,10 +54,10 @@
     </div>
     <div class="right-panel" *ngIf="selectedRequest">
       <app-chat-dialog *ngIf="role === 'STAFF'" [request]="selectedRequest" [threadId]="getThreadId(selectedRequest)"
-        [userId]="userId" [role]="role" (closeChat)="closeChat()"></app-chat-dialog>
+        [userId]="userId" [role]="role" (closeChat)="closeChat($event)"></app-chat-dialog>
       <app-chat-dialog-admin *ngIf="role === 'ADMIN'" [request]="selectedRequest"
         [threadId]="getThreadId(selectedRequest)" [userId]="userId" [role]="role"
-        (closeChat)="closeChat()"></app-chat-dialog-admin>
+        (closeChat)="closeChat($event)"></app-chat-dialog-admin>
     </div>
   </div>
 </section>

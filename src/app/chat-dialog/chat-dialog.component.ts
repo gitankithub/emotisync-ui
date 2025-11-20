@@ -17,6 +17,8 @@ import { ActionDetail, Message, UserRole } from '../models/message.model';
 import { ServiceRequest } from '../models/request.model';
 import { interval, Subscription, switchMap } from 'rxjs';
 import { MatChipsModule } from '@angular/material/chips';
+import { User } from '../models/user.model';
+import { LoginService } from '../services/login.service';
 
 @Component({
   selector: 'app-chat-dialog',
@@ -39,14 +41,16 @@ export class ChatDialogComponent implements OnInit, OnChanges {
   @Input() threadId = '';
   @Input() userId = '';
   @Input() role = '';
-  @Output() closeChat = new EventEmitter<void>();
+  @Output() closeChat = new EventEmitter<User>();
 
   currentActionList: ActionDetail[] = [];
+  chatMsg: string = '';
 
   messages: Message[] = [];
   newMessage = '';
   currentStatus: string = '';
   isChatInputVisible: boolean = false;
+  user!: User;
   nextActionsMap: Record<string, ActionDetail[]> = {
     ASSIGNED: [
       {
@@ -141,16 +145,19 @@ export class ChatDialogComponent implements OnInit, OnChanges {
         description: 'Await guest reply',
         isInputRequired: false,
         disabled: true,
-      }
+      },
     ],
   };
   private pollSubscription?: Subscription;
   private readonly POLL_INTERVAL = 60000;
 
-  constructor(private api: ApiService) { }
+  constructor(private api: ApiService, private loginService: LoginService) {}
 
   ngOnInit(): void {
-    this.currentActionList = this.getAvailableActions(this.request.status);
+    this.user = this.loginService.getUser();
+    this.currentActionList = this.getAvailableActions(
+      this.request.status ?? ''
+    );
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -163,8 +170,9 @@ export class ChatDialogComponent implements OnInit, OnChanges {
       this.startPolling();
       this.isChatInputVisible = false;
     }
-    this.currentActionList = this.getAvailableActions(this.request.status);
-
+    this.currentActionList = this.getAvailableActions(
+      this.request.status ?? ''
+    );
   }
 
   ngOnDestroy(): void {
@@ -181,7 +189,9 @@ export class ChatDialogComponent implements OnInit, OnChanges {
         );
         this.messages = [...res];
         console.log('Messages fetched:', res);
-        this.currentActionList = this.getAvailableActions(this.request.status);
+        this.currentActionList = this.getAvailableActions(
+          this.request.status ?? ''
+        );
       },
       error: (err) => {
         console.error('Failed to fetch messages', err);
@@ -189,28 +199,28 @@ export class ChatDialogComponent implements OnInit, OnChanges {
     });
   }
 
-  sendMessage(msg: string, status: string): void {
-    let updateMsg;
-    if (msg) {
-      updateMsg = 'Staff responded to this service request and  updated status with ' + status + ' and provided message: ' + msg;
+  sendMessage(): void {
+    let content = '';
+    if (this.chatMsg && this.chatMsg.trim()) {
+      content = this.newMessage
+        ? `${this.chatMsg}. Staff Note: "${this.newMessage}"`
+        : this.chatMsg;
     } else {
-      updateMsg = 'Staff responded to this service request and updated status with ' + status;
+      content = this.newMessage;
     }
-    console.log(updateMsg);
-    if (!updateMsg.trim()) return;
     const payload: Message = {
-      content: updateMsg,
+      content: content,
       userId: this.request.assignedTo ?? '',
       createdBy: UserRole.STAFF,
       threadId: this.threadId,
     };
     this.messages.push(payload);
-    
 
     this.api.createMessage(payload).subscribe({
       next: (res) => {
         console.log('Message sent:', res);
-    this.newMessage = '';
+        this.newMessage = '';
+        this.chatMsg = '';
         this.loadThreadMessages(this.threadId);
       },
       error: (err) => console.error('Error sending message:', err),
@@ -260,46 +270,59 @@ export class ChatDialogComponent implements OnInit, OnChanges {
     window.open(url, '_blank');
   }
 
-  handleAction(reqId: string, action: ActionDetail) {
+  handleAction(action: ActionDetail) {
     if (action) {
       let statusUpdate = action.actionType;
+      let staffName = this.user.name || 'Staff';
+      let chatMsg = '';
+
       switch (action.actionType) {
         case 'ACCEPT':
           statusUpdate = 'IN_PROGRESS';
+          chatMsg = `${staffName} accepted this request and has started working on it.`;
           break;
         case 'REJECT':
           statusUpdate = 'REJECTED';
+          chatMsg = `${staffName} rejected this request.`;
           break;
         case 'MORE DETAILS NEEDED':
-          // Open message input UI.
+          chatMsg = `${staffName} requested more details from the guest.`;
           break;
         case 'REASSIGN':
           statusUpdate = 'REASSIGNED';
+          chatMsg = `${staffName} reassigned the request to another staff member.`;
           break;
         case 'MARK COMPLETED':
           statusUpdate = 'COMPLETED';
+          chatMsg = `${staffName} marked this request as completed.`;
           break;
         case 'MESSAGE TO GUEST':
-          // Open message input UI.
+          chatMsg = `${staffName} sent a message to the guest regarding this request.`;
           break;
         case 'CANCEL':
           statusUpdate = 'CANCELLED';
+          chatMsg = `${staffName} cancelled this request.`;
           break;
         default:
-          statusUpdate = 'ASSIGNED';
+          chatMsg = `${staffName} took an action on this request.`;
           break;
       }
+      this.request.status = statusUpdate;
       this.currentStatus = statusUpdate;
+       // The updateStatus API call is generic for updates
+      this.chatMsg = chatMsg;
+      
       if (action.isInputRequired) {
         this.isChatInputVisible = true;
+      } else {
+        this.sendMessage();
+        this.isChatInputVisible = false;
       }
-      // The updateStatus API call is generic for updates
-      if (!action.isInputRequired)
-        this.sendMessage(this.newMessage, this.currentStatus);
+     
     }
   }
 
-  getAvailableActions(status: any): ActionDetail[] {
+  getAvailableActions(status: string): ActionDetail[] {
     return this.nextActionsMap[status] || [];
   }
 }

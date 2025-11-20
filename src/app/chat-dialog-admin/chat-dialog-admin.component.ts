@@ -10,6 +10,8 @@ import { interval, Subscription, switchMap } from 'rxjs';
 import { ApiService } from '../services/api.service';
 import { Message, UserRole } from '../models/message.model';
 import { ServiceRequest } from '../models/request.model';
+import { LoginService } from '../services/login.service';
+import { User } from '../models/user.model';
 
 @Component({
   selector: 'app-chat-dialog-admin',
@@ -32,17 +34,19 @@ export class ChatDialogAdminComponent implements OnInit, OnChanges, OnDestroy {
   @Input() threadId = '';
   @Input() userId = '';
   @Input() role = '';
-  @Output() closeChat = new EventEmitter<void>();
+  @Output() closeChat = new EventEmitter<User>();
 
   messages: Message[] = [];
   newMessage = '';
-
+  user!:User;
   private pollSubscription?: Subscription;
   private readonly POLL_INTERVAL = 60000;
 
-  constructor(private api: ApiService) {}
+  constructor(private api: ApiService, private loginService: LoginService) {}
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.user = this.loginService.getUser();
+  }
 
   ngOnChanges(changes: SimpleChanges): void {
     if ((changes['threadId'] && this.threadId) || (changes['request'] && this.request.threadId)) {

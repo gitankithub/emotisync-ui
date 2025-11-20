@@ -2,8 +2,7 @@
   <div class="chat-header">
     <h3>{{ request.requestTitle }}</h3>
     <div>
-      <button mat-icon-button (click)="openInNewTab()"><mat-icon>open_in_new</mat-icon></button>
-      <button mat-icon-button color="warn" (click)="closeChat.emit()"><mat-icon>close</mat-icon></button>
+      <button mat-icon-button color="warn" (click)="closeChat.emit(user)"><mat-icon>close</mat-icon></button>
     </div>
   </div>
 
@@ -24,15 +23,16 @@
         </ng-template>
       </div>
     </div>
-    <div class="action-buttons">
-      <div *ngFor="let action of currentActionList">
-        <mat-chip-set>
-          <mat-chip (click)="handleAction(request.requestId!, action)">{{ action.actionType }}</mat-chip>
-        </mat-chip-set>
-      </div>
+  </div>
+  <div class="button-container">
+    <div class="button-item" *ngFor="let action of currentActionList">
+      <mat-chip-set>
+        <mat-chip (click)="handleAction(action)">{{ action.actionType }}</mat-chip>
+      </mat-chip-set>
     </div>
   </div>
   <div *ngIf="isChatInputVisible" class="chat-input">
-    <input matInput placeholder="Type your message..." [(ngModel)]="newMessage" (keyup.enter)="sendMessage(newMessage,currentStatus)" />
-    <button mat-raised-button color="primary" (click)="sendMessage(newMessage, currentStatus)">Send</button>
+    <input matInput placeholder="Type your message..." [(ngModel)]="newMessage"
+      (keyup.enter)="sendMessage()" />
+    <button mat-raised-button color="primary" (click)="sendMessage()">Send</button>
   </div>

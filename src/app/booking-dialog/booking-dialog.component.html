@@ -56,14 +56,8 @@
     </div>&nbsp;
 
     <!-- Feedback Response -->
-    <p *ngIf="selectedRating >= 4 && data.status !== 'COMPLETED'">
-      Thank you for your feedback! 🙏
-    </p>
-
-    <p *ngIf="(selectedRating ?? 0) < 4 && (selectedRating ?? 0) > 0
-              && (data.status !== 'COMPLETED')">
-      We’re sorry for any inconvenience. Our team will assist you shortly.
-      Please click help for further assistance.
+    <p *ngIf="data.status !== 'COMPLETED'">
+      {{getDefaultFeedbackText(selectedRating)}}
     </p>
 
     <!-- Actions -->

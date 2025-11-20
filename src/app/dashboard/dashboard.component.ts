@@ -72,9 +72,9 @@ export class DashboardComponent {
     this.selectedRequest = { ...req };
   }
 
-  closeChat() {
+  closeChat($event: User) {
     this.selectedRequest = null;
-    this.loadRequests(this.user.userId);
+    this.loadRequests($event);
   }
 
   getThreadId(req: ServiceRequest): string {

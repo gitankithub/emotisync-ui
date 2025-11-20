@@ -116,7 +116,6 @@ export class ChatQuestionnaireComponent
       );
       this.stopPolling();
       this.startPolling(this.activeRequest);
-      //this.loadThreadMessages(this.activeRequest.userThread?.threadId ?? '');
     }
   }
 
@@ -219,10 +218,7 @@ export class ChatQuestionnaireComponent
     }
   }
 
-
-
   //submit the request
-
   submitRequest() {
     this.startTemporarySequence();
     const feedback: GuestFeedback = {
