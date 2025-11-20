@@ -87,7 +87,7 @@ export class ChatDialogComponent implements OnInit, OnChanges {
     const payload: Message = {
       content: this.newMessage,
       userId: this.request.assignedTo ?? '',
-      createdBy: UserRole.ADMIN,
+      createdBy: UserRole.STAFF,
       threadId: this.threadId,
     };
     this.messages.push(payload);

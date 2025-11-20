@@ -40,12 +40,11 @@ import { LoginService } from '../services/login.service';
   styleUrls: ['./chat-questionnaire.component.css'],
 })
 export class ChatQuestionnaireComponent
-  implements OnInit, OnDestroy, AfterViewInit
-{
+  implements OnInit, OnDestroy, AfterViewInit {
   @Input() reservation!: Reservation | null;
   @Input() activeRequest: ServiceRequest | null = null;
   @Input() selectedRating: number = 0;
-  @Output() requestCreated = new EventEmitter<Message>();
+  @Output() requestCreated = new EventEmitter<Message | null>();
   @Output() requestClosed = new EventEmitter<string>();
   @ViewChild('popupScroll') popupScroll!: ElementRef;
 
@@ -60,6 +59,8 @@ export class ChatQuestionnaireComponent
   ratingGiven: boolean = false;
   isChatVisible = false;
   userId: string = '';
+  private sequenceInterval: any;
+  private currentSeqIndex = 0;
   // stage: while request in progress or final rating
   stage: 'questionnaire' | 'in_progress' | 'final' = 'questionnaire';
   private messageDelay = 6000;
@@ -86,7 +87,7 @@ export class ChatQuestionnaireComponent
     private chatService: ChatService,
     private router: Router,
     private loginService: LoginService
-  ) {}
+  ) { }
 
   ngOnInit() {
     if (this.activeRequest)
@@ -177,6 +178,7 @@ export class ChatQuestionnaireComponent
 
 
   //submit the request
+
   submitRequest() {
     const feedback: GuestFeedback = {
       guestId: this.reservation?.guestId ?? '',
@@ -189,14 +191,17 @@ export class ChatQuestionnaireComponent
       createdBy: UserRole.GUEST,
       guestFeedback: feedback,
     };
-
+    this.startTemporarySequence();
     this.api.createMessage(payload).subscribe({
       next: (res) => {
         console.log('Request created:', res);
         this.requestCreated.emit(res);
+        this.stopTemporarySequence();
         // this.loadThreadMessages(res.threadId ?? '')
       },
-      error: (err) => console.error('Error:', err),
+      error: (err) => {
+        console.error('Error:', err)
+      }
     });
   }
 
@@ -236,9 +241,9 @@ export class ChatQuestionnaireComponent
         try {
           this.popupScroll.nativeElement.scrollTop =
             this.popupScroll.nativeElement.scrollHeight;
-        } catch {}
+        } catch { }
       }
-    }, 100);
+    }, 50);
   }
 
   openMiniChat() {
@@ -256,9 +261,35 @@ export class ChatQuestionnaireComponent
     this.stage = 'in_progress'; // directly open as chat view (no options)
     this.selectedOption = null;
     this.selectedRating = 0;
+    this.requestCreated.emit(null);
   }
 
   setRating(rating: number) {
     this.selectedRating = rating;
   }
+
+  private startTemporarySequence() {
+    this.chatMessages = [];
+    this.currentSeqIndex = 0;
+
+    this.isTyping = true;
+
+    this.sequenceInterval = setInterval(() => {
+      if (this.currentSeqIndex >= this.sequence.length) return;
+
+      this.chatMessages.push({
+        content: this.sequence[this.currentSeqIndex]
+      });
+
+      this.currentSeqIndex++;
+      this.scrollToBottomPopup();
+
+    }, 2000); // 1 second
+  }
+
+  private stopTemporarySequence() {
+    clearInterval(this.sequenceInterval);
+    this.isTyping = false;
+  }
+
 }

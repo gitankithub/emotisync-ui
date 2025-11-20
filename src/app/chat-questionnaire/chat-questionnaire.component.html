@@ -35,8 +35,8 @@
       <h3>How can we help you today?</h3>
 
       <div class="options">
-        <button *ngFor="let opt of options" [disabled]="activeRequest" [class.selected]="selectedOption === opt" (click)="selectOption(opt)"
-          class="option-btn">
+        <button *ngFor="let opt of options" [disabled]="activeRequest" [class.selected]="selectedOption === opt"
+          (click)="selectOption(opt)" class="option-btn">
           {{ opt }}
         </button>
       </div>
@@ -45,10 +45,11 @@
       <div *ngIf="!activeRequest" class="submit-section">
         <button mat-flat-button (click)="submitRequest()" [disabled]="!selectedOption">Submit </button>
       </div>
+      
       <!-- </div> -->
 
       <!-- Step 3: Bot active -->
-      <div *ngIf="activeRequest" class="bot-section">
+      <div *ngIf="activeRequest || isTyping" class="bot-section">
         <div *ngFor="let m of chatMessages" class="bot">
           <div class="msg-bubble">{{ m.content }}</div>
         </div>

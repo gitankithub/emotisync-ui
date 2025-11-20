@@ -83,11 +83,16 @@ export class GuestDashboardComponent implements OnInit, OnDestroy {
     this.selectedRequest = { ...req };
   }
 
-  async handleRequestCreated(newReq: Message) {
+  async handleRequestCreated(newReq: Message | null) {
+    if (newReq === null){
+      this.selectedRequest = null
+    }
+    else{
     await this.loadRequests();
     if (this.requests.length > 0) {
       this.selectedRequest = { ...this.requests[0] };
     }
+  }
   }
 
   async handleRequestClosed(reqId: string) {

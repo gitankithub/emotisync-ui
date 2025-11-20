@@ -8,8 +8,8 @@ export interface GuestFeedback {
 export interface Message {
   messageId?: string;
   threadId?: string;
-  userId: string;
-  createdBy: UserRole;
+  userId?: string;
+  createdBy?: UserRole;
   visibility?: UserRole[];
   content: string;
   guestFeedback?: GuestFeedback;
