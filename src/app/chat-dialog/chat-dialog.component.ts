@@ -45,14 +45,15 @@ export class ChatDialogComponent implements OnInit, OnChanges {
 
   messages: Message[] = [];
   newMessage = '';
+  currentStatus: string = '';
   isChatInputVisible: boolean = false;
-  isButtonClicked: boolean = false;
   nextActionsMap: Record<string, ActionDetail[]> = {
     ASSIGNED: [
       {
         actionType: 'ACCEPT',
         description: 'Accept and proceed',
         isInputRequired: false,
+        notes: 'Asigned to a staff',
         disabled: false,
       },
       {
@@ -65,8 +66,8 @@ export class ChatDialogComponent implements OnInit, OnChanges {
       {
         actionType: 'MORE DETAILS NEEDED',
         description: 'Request more details from the initiator',
-        isInputRequired: false,
-        disabled: false,
+        isInputRequired: true,
+        disabled: true,
       },
       {
         actionType: 'REASSIGN',
@@ -143,12 +144,10 @@ export class ChatDialogComponent implements OnInit, OnChanges {
       }
     ],
   };
-  currentAction: string = '';
-
   private pollSubscription?: Subscription;
   private readonly POLL_INTERVAL = 60000;
 
-  constructor(private api: ApiService) {}
+  constructor(private api: ApiService) { }
 
   ngOnInit(): void {
     this.currentActionList = this.getAvailableActions(this.request.status);
@@ -163,8 +162,9 @@ export class ChatDialogComponent implements OnInit, OnChanges {
       this.messages = [];
       this.startPolling();
       this.isChatInputVisible = false;
-      this.isButtonClicked = false;
     }
+    this.currentActionList = this.getAvailableActions(this.request.status);
+
   }
 
   ngOnDestroy(): void {
@@ -182,7 +182,6 @@ export class ChatDialogComponent implements OnInit, OnChanges {
         this.messages = [...res];
         console.log('Messages fetched:', res);
         this.currentActionList = this.getAvailableActions(this.request.status);
-        this.startPolling();
       },
       error: (err) => {
         console.error('Failed to fetch messages', err);
@@ -190,20 +189,28 @@ export class ChatDialogComponent implements OnInit, OnChanges {
     });
   }
 
-  sendMessage(): void {
-    if (!this.newMessage.trim()) return;
+  sendMessage(msg: string, status: string): void {
+    let updateMsg;
+    if (msg) {
+      updateMsg = 'Staff responded to this service request and  updated status with ' + status + ' and provided message: ' + msg;
+    } else {
+      updateMsg = 'Staff responded to this service request and updated status with ' + status;
+    }
+    console.log(updateMsg);
+    if (!updateMsg.trim()) return;
     const payload: Message = {
-      content: this.newMessage,
+      content: updateMsg,
       userId: this.request.assignedTo ?? '',
       createdBy: UserRole.STAFF,
       threadId: this.threadId,
     };
     this.messages.push(payload);
+    
 
     this.api.createMessage(payload).subscribe({
       next: (res) => {
         console.log('Message sent:', res);
-        this.newMessage = '';
+    this.newMessage = '';
         this.loadThreadMessages(this.threadId);
       },
       error: (err) => console.error('Error sending message:', err),
@@ -258,35 +265,37 @@ export class ChatDialogComponent implements OnInit, OnChanges {
       let statusUpdate = action.actionType;
       switch (action.actionType) {
         case 'ACCEPT':
-         statusUpdate = 'IN_PROGRESS';
+          statusUpdate = 'IN_PROGRESS';
           break;
         case 'REJECT':
-          // Custom logic for reject (if needed)
+          statusUpdate = 'REJECTED';
           break;
         case 'MORE DETAILS NEEDED':
-          // Custom logic for requesting more details
+          // Open message input UI.
           break;
         case 'REASSIGN':
-          // Custom logic for reassign
+          statusUpdate = 'REASSIGNED';
           break;
         case 'MARK COMPLETED':
-          // Custom logic for marking as completed
+          statusUpdate = 'COMPLETED';
           break;
         case 'MESSAGE TO GUEST':
-          // Open message input UI, etc.
+          // Open message input UI.
           break;
         case 'CANCEL':
-          // Logic for cancel
-        case 'COMPLETED':
-          // Logic for cancel
+          statusUpdate = 'CANCELLED';
           break;
         default:
-          // Optional: fallback for unknown actions
+          statusUpdate = 'ASSIGNED';
           break;
       }
-
+      this.currentStatus = statusUpdate;
+      if (action.isInputRequired) {
+        this.isChatInputVisible = true;
+      }
       // The updateStatus API call is generic for updates
-      this.sendMessage()
+      if (!action.isInputRequired)
+        this.sendMessage(this.newMessage, this.currentStatus);
     }
   }
 

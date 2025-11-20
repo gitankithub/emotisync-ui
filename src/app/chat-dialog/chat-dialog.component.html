@@ -24,15 +24,15 @@
         </ng-template>
       </div>
     </div>
-    <div>
-      <div class="action-buttons">
-        <mat-chip-set *ngFor="let action of currentActionList">
+    <div class="action-buttons">
+      <div *ngFor="let action of currentActionList">
+        <mat-chip-set>
           <mat-chip (click)="handleAction(request.requestId!, action)">{{ action.actionType }}</mat-chip>
         </mat-chip-set>
       </div>
     </div>
   </div>
-  <div *ngIf="isChatInputVisible && isButtonClicked" class="chat-input">
-    <input matInput placeholder="Type your message..." [(ngModel)]="newMessage" (keyup.enter)="sendMessage()" />
-    <button mat-raised-button color="primary" (click)="sendMessage()">Send</button>
+  <div *ngIf="isChatInputVisible" class="chat-input">
+    <input matInput placeholder="Type your message..." [(ngModel)]="newMessage" (keyup.enter)="sendMessage(newMessage,currentStatus)" />
+    <button mat-raised-button color="primary" (click)="sendMessage(newMessage, currentStatus)">Send</button>
   </div>
