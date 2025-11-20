@@ -23,4 +23,12 @@ export enum UserRole {
   ASSISTANT = 'ASSISTANT'
 }
 
+export interface ActionDetail {
+  actionType: string;
+  description: string;
+  isInputRequired: boolean;
+  notes?: string;
+  disabled: boolean;
+}
+
 

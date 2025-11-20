@@ -66,10 +66,8 @@ export class ChatQuestionnaireComponent
   private messageDelay = 6000;
   private sequence = [
     'We’ve received your request. Please hold on...',
-    'A staff member has been assigned to your request.',
-    'Your request is currently in progress...',
-    'Almost done! Your service will be completed shortly.',
-    'Service completed! We hope you’re satisfied with your stay.',
+    'We are assigning a staff member to assist you.',
+    'A staff member has been assigned to your request.'
   ];
 
   ratings = [
@@ -180,6 +178,7 @@ export class ChatQuestionnaireComponent
   //submit the request
 
   submitRequest() {
+    this.startTemporarySequence();
     const feedback: GuestFeedback = {
       guestId: this.reservation?.guestId ?? '',
       feedbackText: this.getDefaultFeedbackText() || '',
@@ -191,13 +190,12 @@ export class ChatQuestionnaireComponent
       createdBy: UserRole.GUEST,
       guestFeedback: feedback,
     };
-    this.startTemporarySequence();
+    
     this.api.createMessage(payload).subscribe({
       next: (res) => {
         console.log('Request created:', res);
         this.requestCreated.emit(res);
         this.stopTemporarySequence();
-        // this.loadThreadMessages(res.threadId ?? '')
       },
       error: (err) => {
         console.error('Error:', err)
@@ -284,7 +282,7 @@ export class ChatQuestionnaireComponent
       this.currentSeqIndex++;
       this.scrollToBottomPopup();
 
-    }, 2000); // 1 second
+    }, 1000);
   }
 
   private stopTemporarySequence() {

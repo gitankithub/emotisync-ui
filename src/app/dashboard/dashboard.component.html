@@ -43,12 +43,12 @@
             </div>
           </mat-card-content>
 
-          <mat-card-footer *ngIf="(role === 'STAFF' && (req.status === 'ASSIGNED' || req.status === 'ESCALATED'))"
+          <!-- <mat-card-footer *ngIf="(role === 'STAFF' && (req.status === 'ASSIGNED' || req.status === 'ESCALATED'))"
             class="card-footer">
             <mat-chip-set>
               <mat-chip (click)="updateStatus(req.requestId!,'IN_PROGRESS')">Accept</mat-chip>
             </mat-chip-set>
-          </mat-card-footer>
+          </mat-card-footer> -->
         </mat-card>
       </div>
     </div>

@@ -30,7 +30,6 @@ export class GuestDashboardComponent implements OnInit, OnDestroy {
   requests: ServiceRequest[] = [];
   selectedRequest: ServiceRequest | null = null;
   selectedReservation: Reservation | null = null;
-  private pollInterval: any;
   selectedRating: number = 0;
 
   constructor(
@@ -42,19 +41,13 @@ export class GuestDashboardComponent implements OnInit, OnDestroy {
   async ngOnInit() {
     this.selectedRequest = null;
     const navState: any = history.state;
-    this.userId =
-      navState?.username ||
-      this.loginService.getUser() ||
-      '6916598b2dea9cced0f1da33';
+    this.userId = navState?.username || this.loginService.getUser();
     if (navState?.reservation) this.selectedReservation = navState.reservation;
     if (navState?.selectedRating) this.selectedRating = navState.selectedRating;
     await this.loadRequests();
-    this.pollInterval = setInterval(() => this.loadRequests(true), 5000);
   }
 
-  ngOnDestroy() {
-    clearInterval(this.pollInterval);
-  }
+  ngOnDestroy() {}
 
   async loadRequests(isSilent = false) {
     const all = await firstValueFrom(this.api.getGuestRequests(this.userId));
@@ -84,26 +77,14 @@ export class GuestDashboardComponent implements OnInit, OnDestroy {
   }
 
   async handleRequestCreated(newReq: Message | null) {
-    if (newReq === null){
-      this.selectedRequest = null
+    if (newReq === null) {
+      this.selectedRequest = null;
+    } else {
+      await this.loadRequests();
+      if (this.requests.length > 0) {
+        this.selectedRequest = { ...this.requests[0] };
+      }
     }
-    else{
-    await this.loadRequests();
-    if (this.requests.length > 0) {
-      this.selectedRequest = { ...this.requests[0] };
-    }
-  }
-  }
-
-  async handleRequestClosed(reqId: string) {
-    // if (reqId === 'new') {
-    //   this.selectedRequest = null;
-    //   return;
-    // }
-    // // update status to completed via API then reload
-    // await this.api.updateRequestStatus(reqId, 'completed');
-    // await this.loadRequests();
-    // if (this.selectedRequest?.requestId === reqId) this.selectedRequest = null;
   }
 
   redirectToHome() {
