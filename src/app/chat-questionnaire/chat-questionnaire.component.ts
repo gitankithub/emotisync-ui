@@ -278,6 +278,7 @@ export class ChatQuestionnaireComponent
     const content = `The guest has submitted the final service rating of ${r} with feedback: "${finalFeedbackText}". Please proceed to close the request.`;
 
     const payload: Message = {
+      threadId: this.activeRequest?.userThread?.threadId,
       content: content,
       userId: this.reservation?.guestId ?? '',
       createdBy: UserRole.GUEST,

@@ -16,9 +16,17 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, MatCardModule, MatButtonModule, ChatDialogComponent, ChatDialogAdminComponent, MatChipsModule, MatProgressSpinnerModule],
+  imports: [
+    CommonModule,
+    MatCardModule,
+    MatButtonModule,
+    ChatDialogComponent,
+    ChatDialogAdminComponent,
+    MatChipsModule,
+    MatProgressSpinnerModule,
+  ],
   templateUrl: './dashboard.component.html',
-  styleUrls: ['./dashboard.component.css']
+  styleUrls: ['./dashboard.component.css'],
 })
 export class DashboardComponent {
   userId: string = '';
@@ -29,14 +37,17 @@ export class DashboardComponent {
   chatMessages: Message[] = [];
   loading: boolean = true;
 
-  constructor(private api: ApiService, private router: Router, private loginService: LoginService) {
-  }
+  constructor(
+    private api: ApiService,
+    private router: Router,
+    private loginService: LoginService
+  ) {}
 
   ngOnInit() {
-    this.user = this.loginService.getUser()
-    this.role = this.user.role
-    this.userId = this.user.userId
-    this.loadRequests(this.user)
+    this.user = this.loginService.getUser();
+    this.role = this.user.role;
+    this.userId = this.user.userId;
+    this.loadRequests(this.user);
   }
 
   loadRequests(user: User) {
@@ -45,28 +56,33 @@ export class DashboardComponent {
     // reset requests before loading
     this.requests = [];
 
-    if (user.role === 'STAFF' || user.role === 'ADMIN'
-    ) {
+    if (user.role === 'STAFF' || user.role === 'ADMIN') {
       // 🔹 Staff → load staff requests
       this.api.getAllRequests().subscribe({
         next: (res) => {
-          this.requests = res ?? [];
+          this.requests = this.sortedRequests(res) ?? [];
           console.log(`${user.role} Requests:`, this.requests);
           this.loading = false;
         },
         error: (err) => {
           this.loading = false;
-          console.error("Failed to load staff requests", err);
+          console.error('Failed to load staff requests', err);
           this.requests = [];
-        }
+        },
       });
-
     } else {
-      console.warn("Unknown role:", user.role);
+      console.warn('Unknown role:', user.role);
       this.requests = [];
     }
   }
 
+  private sortedRequests(requests: ServiceRequest[]): ServiceRequest[] {
+    return requests.slice().sort((a, b) => {
+      const dateA = a.updatedAt ? new Date(a.updatedAt).getTime() : 0;
+      const dateB = b.updatedAt ? new Date(b.updatedAt).getTime() : 0;
+      return dateB - dateA;
+    });
+  }
 
   selectRequest(req: ServiceRequest) {
     this.selectedRequest = { ...req };
@@ -78,23 +94,22 @@ export class DashboardComponent {
   }
 
   getThreadId(req: ServiceRequest): string {
-    return req.userThread?.threadId ?? ''
+    return req.userThread?.threadId ?? '';
   }
 
   updateStatus(reqId: string, status: string) {
-    this.loading = true
+    this.loading = true;
     if (status !== 'undefined') {
       this.api.updateStatus(reqId, status).subscribe({
-        next: response => {
+        next: (response) => {
           this.loading = false;
           console.log('Updated:', response);
         },
         error: (err) => {
           console.error(err);
           this.loading = false;
-        }
+        },
       });
     }
   }
-
 }

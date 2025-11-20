@@ -52,7 +52,7 @@ export class ChatDialogComponent implements OnInit, OnChanges {
   isChatInputVisible: boolean = false;
   user!: User;
   nextActionsMap: Record<string, ActionDetail[]> = {
-    ASSIGNED: [
+    "ASSIGNED": [
       {
         actionType: 'ACCEPT',
         description: 'Accept and proceed',
@@ -81,7 +81,7 @@ export class ChatDialogComponent implements OnInit, OnChanges {
         disabled: false,
       },
     ],
-    IN_PROGRESS: [
+    "IN_PROGRESS": [
       {
         actionType: 'MARK COMPLETED',
         description: 'Mark as completed',
@@ -110,7 +110,7 @@ export class ChatDialogComponent implements OnInit, OnChanges {
         disabled: false,
       },
     ],
-    REJECT: [
+    "REJECT": [
       {
         actionType: 'ASSIGN ANOTHER',
         description: 'Assign to another team member',
@@ -297,6 +297,7 @@ export class ChatDialogComponent implements OnInit, OnChanges {
           chatMsg = `${staffName} marked this request as completed.`;
           break;
         case 'MESSAGE TO GUEST':
+          statusUpdate = 'IN_PROGRESS';
           chatMsg = `${staffName} sent a message to the guest regarding this request.`;
           break;
         case 'CANCEL':
