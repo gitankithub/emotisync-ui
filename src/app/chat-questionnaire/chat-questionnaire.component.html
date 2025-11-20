@@ -29,10 +29,7 @@
           </button>
         </div>
         <div *ngIf="selectedRating">
-          <p *ngIf="selectedRating >= 4">Thank you for your feedback! 🙏</p>
-          <p *ngIf="selectedRating < 4">
-            We’re sorry for any inconvenience. Our team will assist you.
-          </p>
+          <p>{{getDefaultFeedbackText()}}</p>
       </div>
       </div>
       <h3>How can we help you today?</h3>
