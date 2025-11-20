@@ -115,7 +115,6 @@ export class ChatQuestionnaireComponent
         this.activeRequest.requestDescription
       );
       this.stopPolling();
-      // this.chatMessages = [];
       this.startPolling(this.activeRequest);
       //this.loadThreadMessages(this.activeRequest.userThread?.threadId ?? '');
     }
@@ -237,7 +236,7 @@ export class ChatQuestionnaireComponent
       createdBy: UserRole.GUEST,
       guestFeedback: feedback,
     };
-    
+
     this.api.createMessage(payload).subscribe({
       next: (res) => {
         console.log('Request created:', res);
@@ -277,8 +276,36 @@ export class ChatQuestionnaireComponent
 
   /** Final rating clicked — close request */
   submitFinalRating(r: number) {
-    //api call to send the final feedback & close the request and open the new request
+    this.selectedRating = r;
+    const finalFeedbackText = this.getDefaultFeedbackText();
+
+    const content = `The guest has submitted the final service rating of ${r} with feedback: "${finalFeedbackText}". Please proceed to close the request.`;
+
+    const payload: Message = {
+      content: content,
+      userId: this.reservation?.guestId ?? '',
+      createdBy: UserRole.GUEST,
+      guestFeedback: {
+        guestId: this.reservation?.guestId ?? '',
+        rating: String(r),
+        feedbackText: finalFeedbackText
+      }
+    };
+
+    this.api.createMessage(payload).subscribe({
+      next: (res) => {
+        console.log("Final rating message sent:", res);
+        this.requestCreated.emit(null);
+        this.activeRequest = null;
+        this.chatMessages = [];
+        this.selectedRating = 0;
+      },
+      error: (err) => {
+        console.error("Error submitting final rating:", err);
+      }
+    });
   }
+
 
   private scrollToBottomPopup() {
     setTimeout(() => {
