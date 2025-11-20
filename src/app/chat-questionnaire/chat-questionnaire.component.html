@@ -58,13 +58,14 @@
           <span></span><span></span><span></span>
         </div>
 
-        <div *ngIf="stage === 'final'" class="final-section">
+        <div *ngIf="activeRequest?.status === 'COMPLETED'" class="final-section">
           <p>How would you rate this service?</p>
           <div class="emoji-bar">
-            <button *ngFor="let r of [1,2,3,4,5]" (click)="selectFinalRating(r)">
-              {{ ['😞','😐','🙂','😃','🤩'][r-1] }}
-            </button>
+          <button *ngFor="let r of ratings" (click)="submitFinalRating(r.value)" [class.active]="r.value === selectedRating">
+            {{ r.emoji }}
+          </button>
           </div>
+        </div>
         </div>
       </div>
     </div>

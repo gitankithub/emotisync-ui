@@ -24,6 +24,7 @@ import { ChatComponent } from '../chat/chat.component';
 import { Router } from '@angular/router';
 import { GuestFeedback, Message, UserRole } from '../models/message.model';
 import { LoginService } from '../services/login.service';
+import { interval, Subscription, switchMap } from 'rxjs';
 
 @Component({
   selector: 'app-chat-questionnaire',
@@ -80,6 +81,8 @@ export class ChatQuestionnaireComponent
   ];
 
   private dialog = inject(MatDialog);
+  private pollSubscription?: Subscription;
+  private readonly POLL_INTERVAL = 60000;
   constructor(
     private api: ApiService,
     private chatService: ChatService,
@@ -100,6 +103,7 @@ export class ChatQuestionnaireComponent
   ngOnDestroy() {
     clearInterval(this.typingInterval);
     clearInterval(this.botTimer);
+    this.stopPolling();
   }
 
   ngOnChanges() {
@@ -110,10 +114,53 @@ export class ChatQuestionnaireComponent
       this.selectedOption = this.getSelectedOption(
         this.activeRequest.requestDescription
       );
-      this.loadThreadMessages(this.activeRequest.userThread?.threadId ?? '');
+      this.stopPolling();
+      // this.chatMessages = [];
+      this.startPolling(this.activeRequest);
+      //this.loadThreadMessages(this.activeRequest.userThread?.threadId ?? '');
     }
   }
 
+  startPolling(activeRequest: ServiceRequest): void {
+    if (!activeRequest.userThread?.threadId) return;
+    this.loadThreadMessages(activeRequest.userThread?.threadId);
+    this.pollSubscription = interval(this.POLL_INTERVAL)
+      .pipe(switchMap(() => this.pollForNewMessages(this.activeRequest)))
+      .subscribe(newMessages => this.appendUniqueMessages(newMessages));
+  }
+
+  pollForNewMessages(activeRequest: ServiceRequest | null) {
+    return this.api.getMessagesByThreadId(activeRequest?.userThread?.threadId ?? '', this.userId, UserRole.GUEST);
+  }
+
+  appendUniqueMessages(newMessages: Message[]): void {
+    if (this.chatMessages.length === 0) {
+      this.chatMessages = newMessages.filter(
+        msg => msg.userId === this.userId && msg.createdBy === 'ASSISTANT'
+      );
+      return;
+    }
+
+    const existingIds = new Set(this.chatMessages.map(m => m.messageId));
+
+    for (const msg of newMessages) {
+      const isAssistantMsg =
+        msg.userId === this.userId && msg.createdBy === 'ASSISTANT';
+
+      if (isAssistantMsg && !existingIds.has(msg.messageId)) {
+        this.chatMessages.push(msg);
+        existingIds.add(msg.messageId);
+      }
+    }
+  }
+
+
+  stopPolling(): void {
+    if (this.pollSubscription) {
+      this.pollSubscription.unsubscribe();
+      this.pollSubscription = undefined;
+    }
+  }
   //option selection
   selectOption(opt: string) {
     this.selectedOption = opt;
@@ -229,7 +276,7 @@ export class ChatQuestionnaireComponent
   }
 
   /** Final rating clicked — close request */
-  selectFinalRating(r: number) {
+  submitFinalRating(r: number) {
     //api call to send the final feedback & close the request and open the new request
   }
 

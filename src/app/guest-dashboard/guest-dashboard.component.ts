@@ -45,6 +45,7 @@ export class GuestDashboardComponent implements OnInit, OnDestroy {
     if (navState?.reservation) this.selectedReservation = navState.reservation;
     if (navState?.selectedRating) this.selectedRating = navState.selectedRating;
     await this.loadRequests();
+    // this.pollInterval = setInterval(() => this.loadRequests(true), 5000);
   }
 
   ngOnDestroy() {}
