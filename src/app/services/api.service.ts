@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { ServiceRequest } from '../models/request.model';
 import { Reservation } from '../models/reservations.model';
-import { ChatMessage, ChatResponse, Message } from '../models/message.model';
+import { BestMatchScore, ChatMessage, ChatResponse, Message } from '../models/message.model';
 import { firstValueFrom, Observable } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
@@ -80,6 +80,15 @@ export class ApiService {
 
   closeSession(chatRequestId: string) {
     return this.http.get<any[]>(`http://localhost:8080/api/chatQueries/close/${chatRequestId}`);
+  }
+
+  checkExistingServiceRequest(payload: ChatMessage): Observable<BestMatchScore> {
+    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+    return this.http.post<any>(
+      `http://localhost:8080/api/chatQueries/checkExistingRequest`,
+      payload,
+      { headers }
+    );
   }
   
 }

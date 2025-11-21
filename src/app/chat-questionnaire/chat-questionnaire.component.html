@@ -18,7 +18,7 @@
     </div>
   </div>
 
-  <div class="chat-body" #popupScroll>
+  <div class="chat-body" #chatBody id="chat-body">
 
     <div class="initial-rating">
       <div *ngIf="!activeRequest">
@@ -46,7 +46,11 @@
         <button mat-flat-button (click)="submitRequest()" [disabled]="!selectedOption">Submit </button>
       </div>
 
-      <!-- </div> -->
+      <div *ngIf="alertMessage" class="bot-section">
+        <div class="bot">
+          <div class="msg-bubble">{{ alertMessage }}</div>
+        </div>
+      </div>
 
       <!-- Step 3: Bot active -->
       <div *ngIf="activeRequest || isTyping" class="bot-section">

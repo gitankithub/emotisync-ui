@@ -22,9 +22,15 @@ import { ServiceRequest } from '../models/request.model';
 import { MatDialog } from '@angular/material/dialog';
 import { ChatComponent } from '../chat/chat.component';
 import { Router } from '@angular/router';
-import { GuestFeedback, Message, UserRole } from '../models/message.model';
+import {
+  BestMatchScore,
+  ChatMessage,
+  GuestFeedback,
+  Message,
+  UserRole,
+} from '../models/message.model';
 import { LoginService } from '../services/login.service';
-import { interval, Subscription, switchMap } from 'rxjs';
+import { firstValueFrom, interval, Subscription, switchMap } from 'rxjs';
 
 @Component({
   selector: 'app-chat-questionnaire',
@@ -40,14 +46,13 @@ import { interval, Subscription, switchMap } from 'rxjs';
   templateUrl: './chat-questionnaire.component.html',
   styleUrls: ['./chat-questionnaire.component.css'],
 })
-export class ChatQuestionnaireComponent
-  implements OnInit, OnDestroy, AfterViewInit {
+export class ChatQuestionnaireComponent implements OnInit, OnDestroy {
+  @ViewChild('chatBody') chatBody!: ElementRef<HTMLDivElement>;
   @Input() reservation!: Reservation | null;
   @Input() activeRequest: ServiceRequest | null = null;
   @Input() selectedRating: number = 0;
   @Output() requestCreated = new EventEmitter<Message | null>();
   @Output() requestClosed = new EventEmitter<string>();
-  @ViewChild('popupScroll') popupScroll!: ElementRef;
 
   options = ['Cleaning', 'Laundry', 'AC Repair', 'Need Towels'];
   selectedOption: string | null = null;
@@ -62,13 +67,14 @@ export class ChatQuestionnaireComponent
   userId: string = '';
   private sequenceInterval: any;
   private currentSeqIndex = 0;
+  alertMessage: string = '';
   // stage: while request in progress or final rating
   stage: 'questionnaire' | 'in_progress' | 'final' = 'questionnaire';
   private messageDelay = 6000;
   private sequence = [
     'We’ve received your request. Please hold on...',
     'We are assigning a staff member to assist you.',
-    'A staff member has been assigned to your request.'
+    'A staff member has been assigned to your request.',
   ];
 
   ratings = [
@@ -79,7 +85,7 @@ export class ChatQuestionnaireComponent
     { value: 5, emoji: '😃', label: 'Happy' },
     { value: 6, emoji: '🤩', label: 'Excited' },
   ];
-  finalRating : number = 0;
+  finalRating: number = 0;
 
   private dialog = inject(MatDialog);
   private pollSubscription?: Subscription;
@@ -95,10 +101,6 @@ export class ChatQuestionnaireComponent
     if (this.activeRequest)
       this.loadThreadMessages(this.activeRequest.userThread?.threadId ?? '');
     this.userId = this.loginService.getUser().userId;
-  }
-
-  ngAfterViewInit() {
-    this.scrollToBottomPopup();
   }
 
   ngOnDestroy() {
@@ -125,22 +127,26 @@ export class ChatQuestionnaireComponent
     this.loadThreadMessages(activeRequest.userThread?.threadId);
     this.pollSubscription = interval(this.POLL_INTERVAL)
       .pipe(switchMap(() => this.pollForNewMessages(this.activeRequest)))
-      .subscribe(newMessages => this.appendUniqueMessages(newMessages));
+      .subscribe((newMessages) => this.appendUniqueMessages(newMessages));
   }
 
   pollForNewMessages(activeRequest: ServiceRequest | null) {
-    return this.api.getMessagesByThreadId(activeRequest?.userThread?.threadId ?? '', this.userId, UserRole.GUEST);
+    return this.api.getMessagesByThreadId(
+      activeRequest?.userThread?.threadId ?? '',
+      this.userId,
+      UserRole.GUEST
+    );
   }
 
   appendUniqueMessages(newMessages: Message[]): void {
     if (this.chatMessages.length === 0) {
       this.chatMessages = newMessages.filter(
-        msg => msg.userId === this.userId && msg.createdBy === 'ASSISTANT'
+        (msg) => msg.userId === this.userId && msg.createdBy === 'ASSISTANT'
       );
       return;
     }
 
-    const existingIds = new Set(this.chatMessages.map(m => m.messageId));
+    const existingIds = new Set(this.chatMessages.map((m) => m.messageId));
 
     for (const msg of newMessages) {
       const isAssistantMsg =
@@ -152,7 +158,6 @@ export class ChatQuestionnaireComponent
       }
     }
   }
-
 
   stopPolling(): void {
     if (this.pollSubscription) {
@@ -215,12 +220,14 @@ export class ChatQuestionnaireComponent
       case 6:
         return "Fantastic! We're thrilled you're feeling excited. Thank you for sharing your positivity!";
       default:
-        return "";
+        return '';
     }
   }
 
   //submit the request
-  submitRequest() {
+  async submitRequest() {
+    this.alertMessage = '';
+    if (await this.checkIfRequestExists()) return;
     this.startTemporarySequence();
     const feedback: GuestFeedback = {
       guestId: this.reservation?.guestId ?? '',
@@ -241,9 +248,37 @@ export class ChatQuestionnaireComponent
         this.stopTemporarySequence();
       },
       error: (err) => {
-        console.error('Error:', err)
-      }
+        console.error('Error:', err);
+        this.alertMessage = 'Sorry, I couldn’t complete your request. Let’s try again together.';
+      },
     });
+  }
+
+  private async checkIfRequestExists(): Promise<boolean> {
+    this.isTyping = true;
+    const payload: ChatMessage = {
+      message: this.buildDescription(),
+      senderId: this.reservation?.guestId ?? '',
+      createdBy: UserRole.GUEST,
+      timestamp: new Date().toISOString(),
+    };
+
+    try {
+      const response: BestMatchScore = await firstValueFrom(
+        this.api.checkExistingServiceRequest(payload)
+      );
+      if (response && response.bestScore >= 0.7) {
+        this.alertMessage = `You already have an active request for "${response.bestMatch.requestTitle}" (Status: ${response.bestMatch.status}). Please review your existing requests before adding a new one. To get support on an existing request, please use the chat assistant and mention your request type—for example, “Laundry Pickup” or “Room Cleaning”—when you start the conversation.`;
+      } else {
+        this.alertMessage = '';
+      }
+      
+    } catch (error) {
+      this.alertMessage = 'Sorry, I couldn’t complete your request. Let’s try again together.';
+      console.error('Error checking existing requests:', error);
+    }
+    this.isTyping = false;
+    return this.alertMessage !== '';
   }
 
   //load the messages based on the thread id
@@ -286,31 +321,31 @@ export class ChatQuestionnaireComponent
       guestFeedback: {
         guestId: this.reservation?.guestId ?? '',
         rating: String(r),
-        feedbackText: finalFeedbackText
-      }
+        feedbackText: finalFeedbackText,
+      },
     };
 
     this.api.createMessage(payload).subscribe({
       next: (res) => {
-        console.log("Final rating message sent:", res);
-        this.requestCreated.emit(res)
+        console.log('Final rating message sent:', res);
+        this.requestCreated.emit(res);
       },
       error: (err) => {
-        console.error("Error submitting final rating:", err);
-      }
+        console.error('Error submitting final rating:', err);
+      },
     });
   }
 
+  scrollToBottom(): void {
+    if (this.chatBody) {
+      const el = this.chatBody.nativeElement;
+      el.scrollTop = el.scrollHeight;
+    }
+  }
 
-  private scrollToBottomPopup() {
-    setTimeout(() => {
-      if (this.popupScroll?.nativeElement) {
-        try {
-          this.popupScroll.nativeElement.scrollTop =
-            this.popupScroll.nativeElement.scrollHeight;
-        } catch { }
-      }
-    }, 50);
+  // This lifecycle runs after every change, including new messages
+  ngAfterViewChecked(): void {
+    this.scrollToBottom();
   }
 
   openMiniChat() {
@@ -345,12 +380,10 @@ export class ChatQuestionnaireComponent
       if (this.currentSeqIndex >= this.sequence.length) return;
 
       this.chatMessages.push({
-        content: this.sequence[this.currentSeqIndex]
+        content: this.sequence[this.currentSeqIndex],
       });
 
       this.currentSeqIndex++;
-      this.scrollToBottomPopup();
-
     }, 1000);
   }
 
@@ -358,5 +391,4 @@ export class ChatQuestionnaireComponent
     clearInterval(this.sequenceInterval);
     this.isTyping = false;
   }
-
 }

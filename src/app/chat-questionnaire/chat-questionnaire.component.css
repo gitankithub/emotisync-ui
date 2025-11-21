@@ -92,6 +92,7 @@
 
 .submit-section {
   text-align: center;
+  padding-bottom: 1rem;
 }
 
 .submit-section button{
@@ -352,4 +353,26 @@ background-color: #084c3f;
   margin-top: 15px;
   font-size: 1rem;
   color: #444;
+}
+
+/* Base bubble style */
+.message .bubble {
+  max-width: 70%;
+  padding: 10px 14px;
+  border-radius: 14px;
+  font-size: 14px;
+  line-height: 1.4;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+}
+
+/* Assistant (left side) */
+.assistant-msg {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.assistant-msg .bubble {
+  background-color: #e6f2ff; /* light blue */
+  color: #003366;
+  border-top-left-radius: 4px;
 }

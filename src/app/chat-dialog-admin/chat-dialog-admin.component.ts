@@ -1,5 +1,7 @@
 import { 
-  Component, EventEmitter, Input, OnInit, OnChanges, Output, SimpleChanges, OnDestroy 
+  Component, EventEmitter, Input, OnInit, OnChanges, Output, SimpleChanges, OnDestroy, 
+  ElementRef,
+  ViewChild
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -27,6 +29,7 @@ import { User } from '../models/user.model';
   styleUrls: ['./chat-dialog-admin.component.css']
 })
 export class ChatDialogAdminComponent implements OnInit, OnChanges, OnDestroy {
+  @ViewChild('chatBody') chatBody!: ElementRef<HTMLDivElement>;
 
   UserRole = UserRole;
 
@@ -128,9 +131,16 @@ export class ChatDialogAdminComponent implements OnInit, OnChanges, OnDestroy {
     }
   }
 
-  scrollBottom(): void {
-    const el = document.getElementById('chat-body');
-    if (el) el.scrollTop = el.scrollHeight;
+  scrollToBottom(): void {
+    if (this.chatBody) {
+      const el = this.chatBody.nativeElement;
+      el.scrollTop = el.scrollHeight;
+    }
+  }
+
+  // This lifecycle runs after every change, including new messages
+  ngAfterViewChecked(): void {
+    this.scrollToBottom();
   }
 
   openInNewTab(): void {

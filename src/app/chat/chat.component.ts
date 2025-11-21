@@ -41,10 +41,9 @@ export class ChatComponent implements OnInit, OnDestroy {
 
   /** Send message to backend & handle bot response */
   async sendMessage() {
-    // Simulate bot typing delay
-    this.isTyping = true;
     const text = this.userInput.trim();
     if (!text) return;
+    this.isTyping = true;
     const requestPayload: ChatMessage = this.buildPayload(text, UserRole.GUEST);
     this.messages.push(requestPayload);
     this.scrollToBottom();

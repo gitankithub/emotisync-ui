@@ -1,3 +1,5 @@
+import { ServiceRequest } from "./request.model";
+
 export interface GuestFeedback {
   feedbackId?: string;
   guestId: string;
@@ -53,5 +55,11 @@ export interface ChatMessage {
   status?: string;          // Optional if not always set
   timestamp?: string;        // ISO8601 string, or Date
 }
+
+export interface BestMatchScore {
+  bestScore: number;
+  bestMatch: ServiceRequest;
+}
+
 
 

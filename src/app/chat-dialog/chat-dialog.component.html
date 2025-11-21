@@ -6,7 +6,7 @@
     </div>
   </div>
 
-  <div class="chat-body" id="chat-body">
+  <div class="chat-body" #chatBody id="chat-body">
     <div *ngFor="let msg of messages" class="message" [ngClass]="{
         'assistant-msg': msg.createdBy === UserRole.ASSISTANT,
         'user-msg': msg.createdBy !== UserRole.ASSISTANT

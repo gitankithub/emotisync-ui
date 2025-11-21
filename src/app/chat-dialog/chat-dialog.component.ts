@@ -1,11 +1,13 @@
 import {
   Component,
+  ElementRef,
   EventEmitter,
   Input,
   OnChanges,
   OnInit,
   Output,
   SimpleChanges,
+  ViewChild,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -35,6 +37,7 @@ import { LoginService } from '../services/login.service';
   styleUrls: ['./chat-dialog.component.css'],
 })
 export class ChatDialogComponent implements OnInit, OnChanges {
+  @ViewChild('chatBody') chatBody!: ElementRef<HTMLDivElement>;
   UserRole = UserRole;
 
   @Input() request!: ServiceRequest;
@@ -53,7 +56,7 @@ export class ChatDialogComponent implements OnInit, OnChanges {
   isChatInputVisible: boolean = false;
   user!: User;
   nextActionsMap: Record<string, ActionDetail[]> = {
-    "ASSIGNED": [
+    ASSIGNED: [
       {
         actionType: 'ACCEPT',
         description: 'Accept and proceed',
@@ -82,7 +85,7 @@ export class ChatDialogComponent implements OnInit, OnChanges {
         disabled: false,
       },
     ],
-    "IN_PROGRESS": [
+    IN_PROGRESS: [
       {
         actionType: 'MARK COMPLETED',
         description: 'Mark as completed',
@@ -312,20 +315,31 @@ export class ChatDialogComponent implements OnInit, OnChanges {
       }
       this.request.status = statusUpdate;
       this.currentStatus = statusUpdate;
-       // The updateStatus API call is generic for updates
+      // The updateStatus API call is generic for updates
       this.chatMsg = chatMsg;
-      
+
       if (action.isInputRequired) {
         this.isChatInputVisible = true;
       } else {
         this.sendMessage();
         this.isChatInputVisible = false;
       }
-     
     }
   }
 
   getAvailableActions(status: string): ActionDetail[] {
     return this.nextActionsMap[status] || [];
+  }
+
+  scrollToBottom(): void {
+    if (this.chatBody) {
+      const el = this.chatBody.nativeElement;
+      el.scrollTop = el.scrollHeight;
+    }
+  }
+
+  // This lifecycle runs after every change, including new messages
+  ngAfterViewChecked(): void {
+    this.scrollToBottom();
   }
 }
