@@ -62,7 +62,7 @@
           <p>How would you rate this service?</p>
           <div class="emoji-bar">
             <button *ngFor="let r of ratings" (click)="submitFinalRating(r.value)"
-              [class.active]="r.value === selectedRating">
+              [class.active]="r.value === finalRating">
               {{ r.emoji }}
             </button>
           </div>
