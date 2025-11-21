@@ -48,9 +48,9 @@ export class ChatComponent implements OnInit, OnDestroy {
     const requestPayload: ChatMessage = this.buildPayload(text, UserRole.GUEST);
     this.messages.push(requestPayload);
     this.scrollToBottom();
+    this.userInput = '';
     this.api.sendUserMessage(requestPayload).subscribe({
       next: (res) => {
-        this.userInput = '';
         console.log('Final rating message sent:', res);
         this.chatResponse = res;
         const responseReply = this.buildPayload(

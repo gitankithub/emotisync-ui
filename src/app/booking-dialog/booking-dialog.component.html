@@ -75,6 +75,7 @@
         <mat-icon>chat</mat-icon>
         Help?
       </button>
+      <app-chat *ngIf="isChatVisible" class="slide-in-chat" (closeChat)="closeMiniChat()"></app-chat>
     </div>
   </div>
 </div>

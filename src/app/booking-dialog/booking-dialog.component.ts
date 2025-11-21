@@ -12,6 +12,7 @@ import { MatInputModule } from '@angular/material/input';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ChatService } from '../services/chat.service';
+import { ChatComponent } from '../chat/chat.component';
 
 @Component({
   selector: 'app-booking-dialog',
@@ -25,6 +26,7 @@ import { ChatService } from '../services/chat.service';
     MatInputModule,
     DatePipe,
     FormsModule,
+    ChatComponent
   ],
   templateUrl: './booking-dialog.component.html',
   styleUrls: ['./booking-dialog.component.css'],
@@ -46,6 +48,7 @@ export class BookingDialogComponent {
     { value: 5, emoji: '😃', label: 'Great' },
     { value: 6, emoji: '🤩', label: 'Excellent' },
   ];
+  isChatVisible: boolean = false;
 
   setRating(value: number) {
     this.selectedRating = value;
@@ -69,6 +72,7 @@ export class BookingDialogComponent {
 
   //Help button action — redirects to Guest Dashboard with reservation context
   redirectToHelp() {
+    if(this.data.status === "CHECKED_IN"){
     this.chatService.setReservationContext(this.data, this.selectedRating ?? 0);
     this.dialogRef.close();
     this.router.navigate(['/guest-dashboard'], {
@@ -78,6 +82,10 @@ export class BookingDialogComponent {
         selectedRating: this.selectedRating,
       },
     });
+  }
+  else if(this.data.status === "BOOKED"){
+    this.openMiniChat()
+  }
   }
 
   getDefaultFeedbackText(selectedRating: number): string {
@@ -102,5 +110,13 @@ export class BookingDialogComponent {
   //get hotel image by hotel id
   getImagePath(reservationId: string): string {
     return `assets/images/${reservationId}.jpg`;
+  }
+
+  openMiniChat() {
+    this.isChatVisible = true;
+  }
+
+  closeMiniChat() {
+    this.isChatVisible = false;
   }
 }

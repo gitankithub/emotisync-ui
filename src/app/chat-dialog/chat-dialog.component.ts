@@ -111,7 +111,7 @@ export class ChatDialogComponent implements OnInit, OnChanges {
         disabled: false,
       },
     ],
-    "REJECT": [
+    "REJECTED": [
       {
         actionType: 'ASSIGN ANOTHER',
         description: 'Assign to another team member',
@@ -216,11 +216,11 @@ export class ChatDialogComponent implements OnInit, OnChanges {
       threadId: this.threadId,
     };
     this.messages.push(payload);
-
+    this.newMessage = '';
     this.api.createMessage(payload).subscribe({
       next: (res) => {
         console.log('Message sent:', res);
-        this.newMessage = '';
+        // this.newMessage = '';
         this.chatMsg = '';
         this.loadThreadMessages(this.threadId);
         this.statusUpdated.emit();

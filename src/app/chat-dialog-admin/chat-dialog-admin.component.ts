@@ -85,11 +85,10 @@ export class ChatDialogAdminComponent implements OnInit, OnChanges, OnDestroy {
       threadId: this.threadId,
     };
     this.messages.push(payload);
-
+    this.newMessage = '';
     this.api.createMessage(payload).subscribe({
       next: (res) => {
         console.log('Message sent:', res);
-        this.newMessage = '';
         this.loadThreadMessages(this.threadId);
       },
       error: (err) => console.error('Error sending message:', err)
