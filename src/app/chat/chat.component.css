@@ -2,8 +2,7 @@
   position: fixed;
   bottom: 0;
   right: 0;
-  width: 340px;
-  height: 460px;
+  width: 600px;
   background: #ffffff;
   border-radius: 12px 12px 0 0;
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
@@ -36,29 +35,65 @@
 }
 
 .chat-body {
-  flex: 1;
-  padding: 1rem;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
   overflow-y: auto;
-  background: #f7f9fa;
+  height: calc(100vh - 200px);
 }
 
-.user .msg {
-  background: #084c3f;
-  color: white;
-  padding: 0.6rem 0.9rem;
-  border-radius: 12px 12px 0 12px;
-  margin: 0.3rem 0;
-  align-self: flex-end;
-  max-width: 80%;
+/* Base bubble style */
+.message .bubble {
+  max-width: 70%;
+  padding: 10px 14px;
+  border-radius: 14px;
+  font-size: 14px;
+  line-height: 1.4;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
 }
 
-.bot .msg {
-  background: #e8f5e9;
-  color: #084c3f;
-  padding: 0.6rem 0.9rem;
-  border-radius: 12px 12px 12px 0;
-  margin: 0.3rem 0;
-  max-width: 80%;
+/* Assistant (left side) */
+.assistant-msg {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.assistant-msg .bubble {
+  background-color: #e6f2ff; /* light blue */
+  color: #003366;
+  border-top-left-radius: 4px;
+}
+
+/* User message (right side) */
+.user-msg {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.user-msg .bubble {
+  background-color: #f0f0f0; /* light gray */
+  color: #333;
+  border-top-right-radius: 4px;
+}
+
+.bot-wrapper {
+  display: flex;
+  align-items: flex-start; /* aligns perfectly with multiline text */
+  gap: 6px;
+}
+
+.bot-icon {
+  font-size: 20px;
+  height: 20px;
+  width: 20px;
+  margin-top: 2px; /* fine-tune alignment */
+  color: #003366;
+}
+
+.bot-text {
+  flex: 1;
+  display: block;
 }
 
 .typing {
@@ -67,14 +102,15 @@
   margin-top: 0.5rem;
 }
 .typing span {
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
   background: #084c3f;
   border-radius: 50%;
   animation: blink 1.4s infinite both;
 }
 .typing span:nth-child(2) { animation-delay: 0.2s; }
 .typing span:nth-child(3) { animation-delay: 0.4s; }
+.typing span:nth-child(4) { animation-delay: 0.6s; }
 @keyframes blink {
   0%, 80%, 100% { opacity: 0.3; transform: translateY(0); }
   40% { opacity: 1; transform: translateY(-3px); }

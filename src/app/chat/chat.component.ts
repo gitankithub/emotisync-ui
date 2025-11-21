@@ -1,80 +1,120 @@
-import { Component, EventEmitter, Output, OnDestroy } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Output,
+  OnDestroy,
+  OnInit,
+  ElementRef,
+  ViewChild,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { ApiService } from '../services/api.service';
+import { ChatMessage, ChatResponse, UserRole } from '../models/message.model';
+import { User } from '../models/user.model';
+import { LoginService } from '../services/login.service';
 
 @Component({
   selector: 'app-chat',
   standalone: true,
   imports: [CommonModule, FormsModule, MatIconModule, MatButtonModule],
   templateUrl: './chat.component.html',
-  styleUrls: ['./chat.component.css']
+  styleUrls: ['./chat.component.css'],
 })
-export class ChatComponent implements OnDestroy {
+export class ChatComponent implements OnInit, OnDestroy {
+  @ViewChild('chatBody') chatBody!: ElementRef<HTMLDivElement>;
   @Output() closeChat = new EventEmitter<void>();
-
-  messages: { sender: 'user' | 'bot'; text: string }[] = [];
+  chatResponse!: ChatResponse;
+  messages: ChatMessage[] = [];
   userInput: string = '';
   isTyping = false;
-  typingTimer: any;
+  user!: User;
+  UserRole = UserRole;
 
-  constructor(private api: ApiService) {}
+  constructor(private api: ApiService, private loginService: LoginService) {}
+
+  ngOnInit(): void {
+    this.user = this.loginService.getUser();
+  }
 
   /** Send message to backend & handle bot response */
   async sendMessage() {
-    const text = this.userInput.trim();
-    if (!text) return;
-
-    // Push user message
-    this.messages.push({ sender: 'user', text });
-    this.userInput = '';
-    this.scrollToBottom();
-
     // Simulate bot typing delay
     this.isTyping = true;
-
-    // Send to backend (mocked here)
-    const botReply = await this.getBotReply(text);
-
-    // Simulate natural delay
-    clearTimeout(this.typingTimer);
-    this.typingTimer = setTimeout(() => {
-      this.isTyping = false;
-      this.messages.push({ sender: 'bot', text: botReply });
-      this.scrollToBottom();
-    }, 1500);
+    const text = this.userInput.trim();
+    if (!text) return;
+    const requestPayload: ChatMessage = this.buildPayload(text, UserRole.GUEST);
+    this.messages.push(requestPayload);
+    this.scrollToBottom();
+    this.api.sendUserMessage(requestPayload).subscribe({
+      next: (res) => {
+        this.userInput = '';
+        console.log('Final rating message sent:', res);
+        this.chatResponse = res;
+        const responseReply = this.buildPayload(
+          res.assistantReply,
+          UserRole.ASSISTANT
+        );
+        this.messages.push(responseReply);
+        // Simulate bot typing delay
+        this.isTyping = false;
+        this.scrollToBottom();
+      },
+      error: (err) => {
+        this.userInput = '';
+        console.error('Error sending chat mesage..', err);
+        const errorPayload = this.buildPayload(
+          'Sorry, there was an error processing your message. Please try again later.',
+          UserRole.ASSISTANT
+        );
+        this.messages.push(errorPayload);
+        this.isTyping = false;
+        this.scrollToBottom();
+      },
+    });
   }
 
-  /** Mock API for bot reply (replace with real API later) */
-  async getBotReply(userText: string): Promise<string> {
-    try {
-      // Example: call real backend later
-      // const response = await this.api.sendToChatBot(userText);
-      // return response.reply;
-      const lower = userText.toLowerCase();
-      if (lower.includes('room')) return 'Your room service request has been noted 🏨';
-      if (lower.includes('food')) return 'Our restaurant is open 24/7 🍽️';
-      if (lower.includes('thanks')) return 'You’re most welcome! 😊';
-      return 'I’m here to help with anything related to your stay.';
-    } catch {
-      return 'Sorry, I’m having trouble connecting right now.';
+  async doPause() {
+    console.log('Start');
+    await new Promise((resolve) => setTimeout(resolve, 1000)); // pauses for 1 second
+    console.log('End');
+  }
+
+  private buildPayload(message: string, createdBy: UserRole): ChatMessage {
+    return {
+      chatRequestId: this.chatResponse?.chatRequest?.id ?? '',
+      message: message,
+      senderId: this.user?.userId ?? '',
+      createdBy: createdBy,
+      timestamp: new Date().toISOString(),
+    };
+  }
+
+  scrollToBottom(): void {
+    if (this.chatBody) {
+      const el = this.chatBody.nativeElement;
+      el.scrollTop = el.scrollHeight;
     }
   }
 
-  scrollToBottom() {
-    setTimeout(() => {
-      const container = document.querySelector('.chat-body');
-      if (container) container.scrollTop = container.scrollHeight;
-    }, 100);
+  // This lifecycle runs after every change, including new messages
+  ngAfterViewChecked(): void {
+    this.scrollToBottom();
   }
 
   close() {
+    this.isTyping = false;
+    this.chatResponse = undefined as any;
+    this.messages = [];
+    if (this.chatResponse && this.chatResponse.chatRequest){
+      this.api.closeSession(this.chatResponse.chatRequest.id ?? '');
+    }
     this.closeChat.emit();
   }
 
   ngOnDestroy() {
-    clearTimeout(this.typingTimer);
+    this.close();
   }
 }

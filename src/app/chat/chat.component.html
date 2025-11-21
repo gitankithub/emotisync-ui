@@ -9,19 +9,39 @@
     </button>
   </div>
 
-  <div class="chat-body">
-    <div *ngFor="let msg of messages" [ngClass]="msg.sender">
-      <div class="msg">{{ msg.text }}</div>
+  <div class="chat-body" #chatBody id="chat-body">
+    <div *ngFor="let msg of messages" class="message" [ngClass]="{
+        'assistant-msg': msg.createdBy === UserRole.ASSISTANT,
+        'user-msg': msg.createdBy !== UserRole.ASSISTANT
+      }">
+      <div class="bubble">
+        <ng-container *ngIf="msg.createdBy === UserRole.ASSISTANT; else normal">
+          <span class="bot-wrapper">
+            <mat-icon class="bot-icon">smart_toy</mat-icon>
+            <span class="bot-text">{{ msg.message }}</span>
+          </span>
+        </ng-container>
+        <ng-template #normal>
+          {{ msg.message }}
+        </ng-template>
+      </div>
     </div>
-
-    <div *ngIf="isTyping" class="typing">
-      <span></span><span></span><span></span>
+    <div *ngIf="isTyping" class="message assistant-msg">
+      <div class="bubble">
+        <div class="bot-wrapper">
+          <mat-icon class="bot-icon">smart_toy</mat-icon>
+          <span class="bot-text">
+            <span class="typing">
+              <span></span><span></span><span></span>
+            </span>
+          </span>
+        </div>
+      </div>
     </div>
   </div>
-
   <div class="chat-input">
     <input [(ngModel)]="userInput" (keyup.enter)="sendMessage()" placeholder="Type your message..." />
-    <button mat-icon-button color="primary" (click)="sendMessage()">
+    <button mat-icon-button color="primary" disabled="{{isTyping}}" (click)="sendMessage()">
       <mat-icon>send</mat-icon>
     </button>
   </div>

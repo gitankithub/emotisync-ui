@@ -2,11 +2,13 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { ServiceRequest } from '../models/request.model';
 import { Reservation } from '../models/reservations.model';
-import { Message } from '../models/message.model';
+import { ChatMessage, ChatResponse, Message } from '../models/message.model';
 import { firstValueFrom, Observable } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class ApiService {
+
+ 
   private mockUrl = 'assets/mockData.json';
   private initialized = false;
 
@@ -65,6 +67,19 @@ export class ApiService {
       status,
       { headers }
     );
+  }
+
+  sendUserMessage(payload: ChatMessage): Observable<ChatResponse> {
+    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+    return this.http.post<any>(
+      `http://localhost:8080/api/chatQueries/message`,
+      payload,
+      { headers }
+    );
+  }
+
+  closeSession(chatRequestId: string) {
+    return this.http.get<any[]>(`http://localhost:8080/api/chatQueries/close/${chatRequestId}`);
   }
   
 }
