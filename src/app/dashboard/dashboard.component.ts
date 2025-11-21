@@ -112,4 +112,7 @@ export class DashboardComponent {
       });
     }
   }
+  refreshLeftPanel(){
+    this.loadRequests(this.user);
+  }
 }
