@@ -1,4 +1,5 @@
-<section *ngIf="!loading; else loadingTemplate">
+<!-- <section *ngIf="!loading; else loadingTemplate"> -->
+  <section>
   <div class="dashboard" [class.split-view]="selectedRequest">
     <div class="left-panel">
       <div class="top-bar">
@@ -54,7 +55,7 @@
     </div>
     <div class="right-panel" *ngIf="selectedRequest">
       <app-chat-dialog *ngIf="role === 'STAFF'" [request]="selectedRequest" [threadId]="getThreadId(selectedRequest)"
-        [userId]="userId" [role]="role" (closeChat)="closeChat($event)"></app-chat-dialog>
+        [userId]="userId" [role]="role" (closeChat)="closeChat($event)"(statusUpdated)="refreshLeftPanel()"></app-chat-dialog>
       <app-chat-dialog-admin *ngIf="role === 'ADMIN'" [request]="selectedRequest"
         [threadId]="getThreadId(selectedRequest)" [userId]="userId" [role]="role"
         (closeChat)="closeChat($event)"></app-chat-dialog-admin>
@@ -62,8 +63,8 @@
   </div>
 </section>
 
-<ng-template #loadingTemplate>
+<!-- <ng-template #loadingTemplate>
   <div class="loading">
     <mat-progress-spinner mode="indeterminate"></mat-progress-spinner>
   </div>
-</ng-template>
+</ng-template> -->

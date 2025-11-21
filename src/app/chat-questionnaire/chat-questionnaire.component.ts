@@ -79,6 +79,7 @@ export class ChatQuestionnaireComponent
     { value: 5, emoji: '😃', label: 'Happy' },
     { value: 6, emoji: '🤩', label: 'Excited' },
   ];
+  finalRating : number = 0;
 
   private dialog = inject(MatDialog);
   private pollSubscription?: Subscription;
@@ -214,7 +215,7 @@ export class ChatQuestionnaireComponent
       case 6:
         return "Fantastic! We're thrilled you're feeling excited. Thank you for sharing your positivity!";
       default:
-        return "Thank you for your feedback!";
+        return "";
     }
   }
 
@@ -272,7 +273,7 @@ export class ChatQuestionnaireComponent
 
   /** Final rating clicked — close request */
   submitFinalRating(r: number) {
-    this.selectedRating = r;
+    this.finalRating = r;
     const finalFeedbackText = this.getDefaultFeedbackText();
 
     const content = `The guest has submitted the final service rating of ${r} with feedback: "${finalFeedbackText}". Please proceed to close the request.`;
@@ -292,10 +293,7 @@ export class ChatQuestionnaireComponent
     this.api.createMessage(payload).subscribe({
       next: (res) => {
         console.log("Final rating message sent:", res);
-        this.requestCreated.emit(null);
-        this.activeRequest = null;
-        this.chatMessages = [];
-        this.selectedRating = 0;
+        this.requestCreated.emit(res)
       },
       error: (err) => {
         console.error("Error submitting final rating:", err);

@@ -49,28 +49,20 @@ export class GuestDashboardComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {}
 
-  async loadRequests(isSilent = false) {
+  async loadRequests() {
     const all = await firstValueFrom(this.api.getGuestRequests(this.userId));
-    const open = all.filter((r) => r.status !== 'CLOSED');
 
-    // merge update statuses & new ones
-    for (const r of open) {
+    for (const r of all) {
       const existing = this.requests.find((x) => x.requestId === r.requestId);
       if (existing) {
         existing.status = r.status;
       } else {
-        // new request — add to top
         this.requests.unshift(r);
       }
     }
-
-    // remove closed
-    this.requests = this.requests.filter((r) =>
-      open.find((x) => x.requestId === r.requestId)
-    );
-
-    if (!isSilent) console.log('requests loaded', this.requests);
+    console.log('requests loaded', this.requests);
   }
+
 
   selectRequest(req: ServiceRequest) {
     this.selectedRequest = { ...req };
@@ -80,12 +72,24 @@ export class GuestDashboardComponent implements OnInit, OnDestroy {
     if (newReq === null) {
       this.selectedRequest = null;
     } else {
-      await this.loadRequests();
-      if (this.requests.length > 0) {
-        this.selectedRequest = { ...this.requests[0] };
-      }
+      await this.loadRequests(); // refresh the latest requests
+
+      // Find request matching the message's threadId
+      const matchedRequest = this.requests.find(
+        (req) => req.userThread?.threadId === newReq.threadId
+      );
+
+      // Set selectedRequest to matched request, else keep existing behavior
+      this.selectedRequest = matchedRequest
+        ? { ...matchedRequest }
+        : this.requests.length > 0
+          ? { ...this.requests[0] }
+          : null;
+
+      console.log('Selected Request:', this.selectedRequest);
     }
   }
+
 
   redirectToHome() {
     this.router.navigate(['/reservations']);

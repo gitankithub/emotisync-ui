@@ -95,7 +95,7 @@ export class BookingDialogComponent {
       case 6:
         return "Fantastic! We're thrilled you're feeling excited. Thank you for sharing your positivity!";
       default:
-        return 'Thank you for your feedback!';
+        return '';
     }
   }
 

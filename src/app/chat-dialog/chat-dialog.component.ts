@@ -42,6 +42,7 @@ export class ChatDialogComponent implements OnInit, OnChanges {
   @Input() userId = '';
   @Input() role = '';
   @Output() closeChat = new EventEmitter<User>();
+  @Output() statusUpdated = new EventEmitter<void>();
 
   currentActionList: ActionDetail[] = [];
   chatMsg: string = '';
@@ -222,6 +223,7 @@ export class ChatDialogComponent implements OnInit, OnChanges {
         this.newMessage = '';
         this.chatMsg = '';
         this.loadThreadMessages(this.threadId);
+        this.statusUpdated.emit();
       },
       error: (err) => console.error('Error sending message:', err),
     });
