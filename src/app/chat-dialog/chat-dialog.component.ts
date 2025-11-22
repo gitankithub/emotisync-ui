@@ -291,6 +291,7 @@ export class ChatDialogComponent implements OnInit, OnChanges {
           chatMsg = `${staffName} rejected this request.`;
           break;
         case 'MORE DETAILS NEEDED':
+          statusUpdate = 'IN_PROGRESS';
           chatMsg = `${staffName} requested more details from the guest.`;
           break;
         case 'REASSIGN':
