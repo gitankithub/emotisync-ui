@@ -1,7 +1,14 @@
-import { 
-  Component, EventEmitter, Input, OnInit, OnChanges, Output, SimpleChanges, OnDestroy, 
+import {
+  Component,
+  EventEmitter,
+  Input,
+  OnInit,
+  OnChanges,
+  Output,
+  SimpleChanges,
+  OnDestroy,
   ElementRef,
-  ViewChild
+  ViewChild,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -14,7 +21,10 @@ import { Message, UserRole } from '../models/message.model';
 import { ServiceRequest } from '../models/request.model';
 import { LoginService } from '../services/login.service';
 import { User } from '../models/user.model';
-import { RequestAnalysis, RequestAnalysisComponent } from '../requet-analysis/request-analysis.component';
+import {
+  RequestAnalysis,
+  RequestAnalysisComponent,
+} from '../requet-analysis/request-analysis.component';
 import { MatCard, MatCardModule } from '@angular/material/card';
 
 @Component({
@@ -26,10 +36,10 @@ import { MatCard, MatCardModule } from '@angular/material/card';
     MatIconModule,
     MatButtonModule,
     MatInputModule,
-    RequestAnalysisComponent
+    RequestAnalysisComponent,
   ],
   templateUrl: './chat-dialog-admin.component.html',
-  styleUrls: ['./chat-dialog-admin.component.css']
+  styleUrls: ['./chat-dialog-admin.component.css'],
 })
 export class ChatDialogAdminComponent implements OnInit, OnChanges, OnDestroy {
   @ViewChild('chatBody') chatBody!: ElementRef<HTMLDivElement>;
@@ -45,7 +55,7 @@ export class ChatDialogAdminComponent implements OnInit, OnChanges, OnDestroy {
 
   messages: Message[] = [];
   newMessage = '';
-  user!:User;
+  user!: User;
   private pollSubscription?: Subscription;
   private readonly POLL_INTERVAL = 30000;
 
@@ -53,16 +63,19 @@ export class ChatDialogAdminComponent implements OnInit, OnChanges, OnDestroy {
 
   ngOnInit(): void {
     this.user = this.loginService.getUser();
-    if(this.request.status === 'CLOSED'){
-      this.loadRequestAnalysis();
-    }
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if ((changes['threadId'] && this.threadId) || (changes['request'] && this.request.threadId)) {
+    if (
+      (changes['threadId'] && this.threadId) ||
+      (changes['request'] && this.request.threadId)
+    ) {
       this.stopPolling();
       this.messages = [];
       this.startPolling();
+      if (this.request.status === 'CLOSED') {
+        this.loadRequestAnalysis();
+      }
     }
   }
 
@@ -75,14 +88,15 @@ export class ChatDialogAdminComponent implements OnInit, OnChanges, OnDestroy {
     this.api.getMessagesByThreadId(threadId, '', this.role).subscribe({
       next: (res) => {
         res.sort(
-          (a, b) => new Date(a.time ?? '').getTime() - new Date(b.time ?? '').getTime()
+          (a, b) =>
+            new Date(a.time ?? '').getTime() - new Date(b.time ?? '').getTime()
         );
         this.messages = [...res];
         console.log('Messages fetched:', res);
       },
       error: (err) => {
         console.error('Failed to fetch messages', err);
-      }
+      },
     });
   }
 
@@ -101,7 +115,7 @@ export class ChatDialogAdminComponent implements OnInit, OnChanges, OnDestroy {
         console.log('Message sent:', res);
         this.loadThreadMessages(this.threadId);
       },
-      error: (err) => console.error('Error sending message:', err)
+      error: (err) => console.error('Error sending message:', err),
     });
   }
 
@@ -110,7 +124,7 @@ export class ChatDialogAdminComponent implements OnInit, OnChanges, OnDestroy {
     this.loadThreadMessages(this.threadId);
     this.pollSubscription = interval(this.POLL_INTERVAL)
       .pipe(switchMap(() => this.pollForNewMessages()))
-      .subscribe(newMessages => this.appendUniqueMessages(newMessages));
+      .subscribe((newMessages) => this.appendUniqueMessages(newMessages));
   }
 
   stopPolling(): void {
@@ -129,7 +143,7 @@ export class ChatDialogAdminComponent implements OnInit, OnChanges, OnDestroy {
       this.messages = [...newMessages];
       return;
     }
-    const existingIds = new Set(this.messages.map(m => m.messageId));
+    const existingIds = new Set(this.messages.map((m) => m.messageId));
     for (const msg of newMessages) {
       if (!existingIds.has(msg.messageId)) {
         this.messages.push(msg);
@@ -161,8 +175,8 @@ export class ChatDialogAdminComponent implements OnInit, OnChanges, OnDestroy {
         this.requestAnalysisData = res;
       },
       error: (error) => {
-        console.log(error)
-      }
+        console.log(error);
+      },
     });
   }
 }

@@ -85,6 +85,41 @@ export class ChatDialogComponent implements OnInit, OnChanges {
         disabled: false,
       },
     ],
+    ESCALATED: [
+      {
+        actionType: 'MARK COMPLETED',
+        description: 'Mark as completed',
+        isInputRequired: false,
+        disabled: false,
+      },
+      {
+        actionType: 'REJECT',
+        description: 'Reject the request',
+        isInputRequired: true,
+        notes: 'State the reason for rejection',
+        disabled: false,
+      },
+      {
+        actionType: 'MORE DETAILS NEEDED',
+        description: 'Request more details from the initiator',
+        isInputRequired: true,
+        disabled: true,
+      },
+      {
+        actionType: 'REASSIGN',
+        description: 'Assign to another team member',
+        isInputRequired: true,
+        notes: 'Select new assignee',
+        disabled: false,
+      },
+      {
+        actionType: 'MESSAGE GUEST',
+        description: 'Send a message to the guest',
+        isInputRequired: true,
+        notes: 'Type your message',
+        disabled: false,
+      }
+    ],
     IN_PROGRESS: [
       {
         actionType: 'MARK COMPLETED',
