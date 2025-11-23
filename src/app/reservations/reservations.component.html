@@ -1,6 +1,6 @@
 <section class="booking-section" *ngIf="!loading; else loadingTemplate">
   <h2 class="title header-row">
-    <span>Reservations Dashboard</span>
+    <span>{{user.role}}: {{user.name}} - Reservations Dashboard</span>
     <button *ngIf="this.hasOpenRequests" class="right-section" (click)="goToRequests()" mat-flat-button color="primary">
       <mat-icon>history</mat-icon>
       Your Requests

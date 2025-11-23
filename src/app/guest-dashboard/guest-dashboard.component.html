@@ -5,34 +5,48 @@
 
     <!-- Top Bar -->
     <div class="action-bar">
-      <h3>My Service Requests</h3>
+      <h3>{{user.role}}: {{user.name}} - Open Requests</h3>
       <button class="home" (click)="redirectToHome()">
         <mat-icon>home</mat-icon>
       </button>
     </div>
+    <div class="cards-grid">
+        <mat-card *ngFor="let req of requests" [class.active]="req.requestId === selectedRequest?.requestId"
+          class="request-card" appearance="outlined">
+
+          <mat-card-header (click)="selectRequest(req)">
+            <mat-card-title class="card-title">
+              <span>{{ req.requestTitle }}</span>
+              <div class="req-id">#{{ req.requestId }}</div>
+            </mat-card-title>
+          </mat-card-header>
+
+          <mat-card-content class="card-content" (click)="selectRequest(req)">
+            <div class="meta">
+              <div class="meta-row">
+                <span class="label">Status:</span>
+                <span class="status-chip" [ngClass]="req.status">{{ req.status }}</span>
+              </div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </div>
 
     <!-- Request List -->
-    <div class="request-list">
-
+    <!-- <div class="request-list">
       <mat-card *ngFor="let req of requests" class="req-card" (click)="selectRequest(req)"
         [class.active]="req.requestId === selectedRequest?.requestId">
-
         <div class="req-content">
           <div>
             <div class="req-id">{{ req.requestTitle }}</div>
           </div>
-
           <div class="req-status" [ngStyle]="getStatusStyle(req.status ?? '')">
             {{ req.status | titlecase }}
           </div>
-
-
         </div>
-
       </mat-card>
-
       <p *ngIf="!requests.length" class="no-data">No active service requests.</p>
-    </div>
+    </div> -->
 
   </div>
 

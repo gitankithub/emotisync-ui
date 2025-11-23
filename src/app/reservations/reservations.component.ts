@@ -27,7 +27,7 @@ import { BookingDialogComponent } from '../booking-dialog/booking-dialog.compone
 })
 export class ReservationsComponent implements OnInit {
 
-  guestId: string = '';
+  user!: User;
   reservations: any[] = [];
 
   activeReservations: any[] = [];
@@ -46,13 +46,12 @@ export class ReservationsComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    const user: User = this.loginService.getUser();
-    if (!user) {
+    this.user = this.loginService.getUser();
+    if (!this.user) {
       this.router.navigate(['/login']);
       return;
     }
 
-    this.guestId = user.userId;
     this.loadReservations();
     this.loadRequests();
   }
@@ -61,7 +60,7 @@ export class ReservationsComponent implements OnInit {
   loadReservations() {
     this.loading = true;
 
-    this.api.getGuestReservations(this.guestId).subscribe({
+    this.api.getGuestReservations(this.user.userId).subscribe({
       next: (res: any[]) => {
         this.reservations = res || [];
         this.sortReservations();
@@ -93,7 +92,7 @@ export class ReservationsComponent implements OnInit {
 
   // load requests
   loadRequests() {
-    this.api.getGuestRequests(this.guestId).subscribe({
+    this.api.getGuestRequests(this.user.userId).subscribe({
       next: (requests: any[]) => {
         if(requests)
           this.hasOpenRequests = true;
@@ -120,7 +119,7 @@ export class ReservationsComponent implements OnInit {
     const firstReservation = this.activeReservations[0];
     this.router.navigate(['/guest-dashboard'], {
       state: {
-        username: this.guestId,
+        username: this.user.userId,
         reservation: firstReservation,
         selectedRating: null
       } 

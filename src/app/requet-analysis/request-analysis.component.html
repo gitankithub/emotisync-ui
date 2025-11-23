@@ -1,0 +1,45 @@
+<mat-card *ngIf="analysis" class="request-card">
+  <mat-card-title class="card-title">
+    Sentiment & Attitude Analysis
+  </mat-card-title>
+  <mat-card-content>
+    <div class="summary">{{ analysis.summary }}</div>
+    <mat-chip-set class="metrics-row">
+      <mat-chip color="primary" selected>
+        <b>Guest Sentiment:</b> {{ analysis.guestSentimentScore ?? 'N/A' }} / 5
+      </mat-chip>
+      <mat-chip color="primary" selected>
+        <b>Guest Attitude:</b> {{ analysis.guestAttitude ?? 'N/A' }}
+      </mat-chip>
+      <mat-chip color="primary" selected>
+        <b>Staff Sentiment:</b> {{ analysis.staffSentimentScore ?? 'N/A' }} / 5
+      </mat-chip>
+      <mat-chip color="primary" selected>
+        <b>Staff Attitude:</b> {{ analysis.staffAttitude ?? 'N/A' }}
+      </mat-chip>
+      <mat-chip [color]="analysis.slaBreached ? 'warn' : 'accent'" selected>
+        <b>SLA Breached:</b>
+        <span [ngClass]="{'breached': analysis.slaBreached, 'notbreached': !analysis.slaBreached}">
+          {{ analysis.slaBreached ? 'Yes' : 'No' }}
+        </span>
+      </mat-chip>
+      <mat-chip color="accent" selected>
+        <b>Response Delay:</b>
+        {{ analysis.responseDelayMinutes !== null ? analysis.responseDelayMinutes + ' min' : 'N/A' }}
+      </mat-chip>
+    </mat-chip-set>
+
+    <div *ngIf="analysis.mainComplaint">
+      <b>Main Complaint:</b> {{ analysis.mainComplaint }}
+    </div>
+    <div *ngIf="analysis.improvementSuggestion">
+      <b>Suggestion:</b> {{ analysis.improvementSuggestion }}
+    </div>
+    <div *ngIf="analysis.escalationReason">
+      <b>Escalation Reason:</b> {{ analysis.escalationReason }}
+    </div>
+    <div *ngIf="analysis.emotionalKeywords.length">
+      <b>Emotional Keywords:</b> {{ analysis.emotionalKeywords.join(', ') }}
+    </div>
+  </mat-card-content>
+</mat-card>

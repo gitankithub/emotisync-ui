@@ -3,13 +3,13 @@
   <div class="dashboard" [class.split-view]="selectedRequest">
     <div class="left-panel">
       <div class="top-bar">
-        <h2>Open Requests</h2>
-        <div>
+        <h2>{{user.role}}: {{user.name}} - Open Requests</h2>
+        <div class="left-item">
           <button mat-raised-button (click)="loadRequests(user)">Refresh</button>
         </div>
       </div>
 
-      <div class="cards-grid">
+      <div class="cards-grid" [class.single-column]="selectedRequest">
         <mat-card *ngFor="let req of requests" [class.active]="req.requestId === selectedRequest?.requestId"
           class="request-card" appearance="outlined">
 
@@ -43,13 +43,6 @@
               </div>
             </div>
           </mat-card-content>
-
-          <!-- <mat-card-footer *ngIf="(role === 'STAFF' && (req.status === 'ASSIGNED' || req.status === 'ESCALATED'))"
-            class="card-footer">
-            <mat-chip-set>
-              <mat-chip (click)="updateStatus(req.requestId!,'IN_PROGRESS')">Accept</mat-chip>
-            </mat-chip-set>
-          </mat-card-footer> -->
         </mat-card>
       </div>
     </div>

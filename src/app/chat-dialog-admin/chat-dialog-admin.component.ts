@@ -14,6 +14,8 @@ import { Message, UserRole } from '../models/message.model';
 import { ServiceRequest } from '../models/request.model';
 import { LoginService } from '../services/login.service';
 import { User } from '../models/user.model';
+import { RequestAnalysis, RequestAnalysisComponent } from '../requet-analysis/request-analysis.component';
+import { MatCard, MatCardModule } from '@angular/material/card';
 
 @Component({
   selector: 'app-chat-dialog-admin',
@@ -23,7 +25,8 @@ import { User } from '../models/user.model';
     FormsModule,
     MatIconModule,
     MatButtonModule,
-    MatInputModule
+    MatInputModule,
+    RequestAnalysisComponent
   ],
   templateUrl: './chat-dialog-admin.component.html',
   styleUrls: ['./chat-dialog-admin.component.css']
@@ -37,18 +40,22 @@ export class ChatDialogAdminComponent implements OnInit, OnChanges, OnDestroy {
   @Input() threadId = '';
   @Input() userId = '';
   @Input() role = '';
+  @Input() requestAnalysisData: RequestAnalysis | null = null;
   @Output() closeChat = new EventEmitter<User>();
 
   messages: Message[] = [];
   newMessage = '';
   user!:User;
   private pollSubscription?: Subscription;
-  private readonly POLL_INTERVAL = 60000;
+  private readonly POLL_INTERVAL = 30000;
 
   constructor(private api: ApiService, private loginService: LoginService) {}
 
   ngOnInit(): void {
     this.user = this.loginService.getUser();
+    if(this.request.status === 'CLOSED'){
+      this.loadRequestAnalysis();
+    }
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -146,5 +153,16 @@ export class ChatDialogAdminComponent implements OnInit, OnChanges, OnDestroy {
   openInNewTab(): void {
     const url = `${window.location.origin}/chat/${this.threadId}`;
     window.open(url, '_blank');
+  }
+
+  loadRequestAnalysis() {
+    return this.api.loadRequestAnalysis(this.request.requestId).subscribe({
+      next: (res) => {
+        this.requestAnalysisData = res;
+      },
+      error: (error) => {
+        console.log(error)
+      }
+    });
   }
 }

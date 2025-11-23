@@ -11,6 +11,7 @@ import { Reservation } from '../models/reservations.model';
 import { MatIconModule } from '@angular/material/icon';
 import { firstValueFrom } from 'rxjs';
 import { Message } from '../models/message.model';
+import { User } from '../models/user.model';
 
 @Component({
   selector: 'app-guest-dashboard',
@@ -26,7 +27,7 @@ import { Message } from '../models/message.model';
   styleUrls: ['./guest-dashboard.component.css'],
 })
 export class GuestDashboardComponent implements OnInit, OnDestroy {
-  userId = '';
+  user!: User;
   requests: ServiceRequest[] = [];
   selectedRequest: ServiceRequest | null = null;
   selectedReservation: Reservation | null = null;
@@ -41,7 +42,7 @@ export class GuestDashboardComponent implements OnInit, OnDestroy {
   async ngOnInit() {
     this.selectedRequest = null;
     const navState: any = history.state;
-    this.userId = navState?.username || this.loginService.getUser();
+    this.user = this.loginService.getUser();
     if (navState?.reservation) this.selectedReservation = navState.reservation;
     if (navState?.selectedRating) this.selectedRating = navState.selectedRating;
     await this.loadRequests();
@@ -50,7 +51,7 @@ export class GuestDashboardComponent implements OnInit, OnDestroy {
   ngOnDestroy() {}
 
   async loadRequests() {
-    const all = await firstValueFrom(this.api.getGuestRequests(this.userId));
+    const all = await firstValueFrom(this.api.getGuestRequests(this.user.userId));
 
     for (const r of all) {
       const existing = this.requests.find((x) => x.requestId === r.requestId);

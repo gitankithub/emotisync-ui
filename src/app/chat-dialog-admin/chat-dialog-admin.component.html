@@ -29,8 +29,11 @@
       </div>
     </div>
   </div>
-
-  <div class="chat-input">
+  <div *ngIf="request.status === 'CLOSED'; else elseBlock">
+    <app-request-analysis [analysis]="requestAnalysisData"></app-request-analysis>
+  </div>
+  <ng-template #elseBlock>
+    <div class="chat-input">
     <input
       matInput
       placeholder="Type your message..."
@@ -41,4 +44,5 @@
       Send
     </button>
   </div>
+  </ng-template>
 </div>

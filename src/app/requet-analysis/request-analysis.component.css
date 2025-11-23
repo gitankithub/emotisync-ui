@@ -1,0 +1,46 @@
+
+/* CARD BASE */
+.request-card {
+  border-radius: 16px !important;
+  padding: 5px !important;
+  cursor: pointer;
+  transition: 0.2s ease;
+  border: 1px solid #084c3f;
+  background: #ffffff;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+}
+
+.card-title {
+    font-size: 20px;
+    font-weight: 600;
+    color: #084c3f;
+    padding: 5px 0px 5px 15px;
+}
+
+.summary {
+    margin-bottom: 10px;
+    color: #003366;
+}
+
+.metrics-row {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+mat-chip {
+  font-size: 1em;
+  min-height: 36px;
+  padding: 0 16px;
+}
+
+.breached {
+  color: #c00000;
+  font-weight: bold;
+}
+.notbreached {
+  color: #177600;
+  font-weight: bold;
+}

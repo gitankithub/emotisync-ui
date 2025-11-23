@@ -60,7 +60,7 @@
 .req-id {
   font-weight: 600;
   color: #003366;              
-  font-size: 16px;
+  font-size: 12px;
 }
 
 .req-type {
@@ -138,3 +138,115 @@
     height: 60vh;
   }
 }
+
+.cards-grid {
+  display: flex;
+  flex-direction: column;         /* Stack vertically, one per row */
+  gap: 20px;                      /* Space between cards */
+  width: 100%;                    /* Use full container width */
+  padding: 0;                     /* Remove extra padding */
+}
+
+
+.card-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: #084c3f;
+}
+
+/* META INFO */
+.meta {
+  margin-top: 5px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 14px;
+}
+
+.meta-row {
+  display: flex;
+  gap: 6px;
+}
+
+.label {
+  color: #5b6a66;
+  font-weight: 500;
+}
+
+/* PRIORITY COLORS */
+.priority {
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+/* Light priority background */
+.priority.routine {
+  color: #084c3f;
+  background: #e9f3f1;
+  padding: 2px 8px;
+  border-radius: 6px;
+}
+
+.priority.urgent {
+  color: #8b5b00;
+  background: #fff4d6;
+  padding: 2px 8px;
+  border-radius: 6px;
+}
+
+.priority.high {
+  color: #a84300;
+  background: #ffe5cc;
+  padding: 2px 8px;
+  border-radius: 6px;
+}
+
+/* STATUS CHIPS */
+.status-chip {
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+/* normal statuses */
+.status-chip.OPEN {
+  background: #e3f6f1;
+  color: #084c3f;
+  border: 1px solid #9ed7c9;
+}
+
+.status-chip.IN_PROGRESS {
+  background: #fff4d6;
+  color: #8b5b00;
+  border: 1px solid #f5d18b;
+}
+
+.status-chip.CANCELLED {
+  background: #f4e7e7;
+  color: #7a2f2f;
+  border: 1px solid #d8b3b3;
+}
+
+
+.status-chip.ASSIGNED {
+  background: #e7f1ff;
+  color: #0b3d91;
+  border: 1px solid #aac8ff;
+}
+
+.status-chip.COMPLETED {
+  background: #e6f5e8;
+  color: #1f7a34;
+  border: 1px solid #9ed3a6;
+}
+
+/* 🔥 Escalated — Red */
+.status-chip.ESCALATED {
+  background: #ffe5e5;
+  color: #c70000;
+  border: 1px solid #ff9c9c;
+}
+

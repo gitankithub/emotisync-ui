@@ -2,13 +2,17 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { ServiceRequest } from '../models/request.model';
 import { Reservation } from '../models/reservations.model';
-import { BestMatchScore, ChatMessage, ChatResponse, Message } from '../models/message.model';
+import {
+  BestMatchScore,
+  ChatMessage,
+  ChatResponse,
+  Message,
+} from '../models/message.model';
 import { firstValueFrom, Observable } from 'rxjs';
+import { RequestAnalysis } from '../requet-analysis/request-analysis.component';
 
 @Injectable({ providedIn: 'root' })
 export class ApiService {
-
- 
   private mockUrl = 'assets/mockData.json';
   private initialized = false;
 
@@ -16,14 +20,20 @@ export class ApiService {
   private requests: ServiceRequest[] = [];
   private messages: Message[] = [];
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient) {}
 
   createRequest(payload: ServiceRequest) {
-    return this.http.post<ServiceRequest>('http://localhost:8080/api/requests', payload);
+    return this.http.post<ServiceRequest>(
+      'http://localhost:8080/api/requests',
+      payload
+    );
   }
 
   createMessage(payload: Message) {
-    return this.http.post<Message>('http://localhost:8080/api/messages', payload);
+    return this.http.post<Message>(
+      'http://localhost:8080/api/messages',
+      payload
+    );
   }
 
   getAllUsers() {
@@ -48,15 +58,19 @@ export class ApiService {
     );
   }
 
-   getAllRequests() {
-    return this.http.get<any[]>(
-      `http://localhost:8080/api/requests`
-    );
+  getAllRequests() {
+    return this.http.get<any[]>(`http://localhost:8080/api/requests`);
   }
-  
-  getMessagesByThreadId(threadId: string, userId: string = "", userType: string): Observable<Message[]> {
-    return this.http.get<Message[]>(`http://localhost:8080/api/messages/thread/${threadId}`,
-    { params: { userId, userType } });
+
+  getMessagesByThreadId(
+    threadId: string,
+    userId: string = '',
+    userType: string
+  ): Observable<Message[]> {
+    return this.http.get<Message[]>(
+      `http://localhost:8080/api/messages/thread/${threadId}`,
+      { params: { userId, userType } }
+    );
   }
 
   updateStatus(id: string, status: string): Observable<any> {
@@ -79,10 +93,14 @@ export class ApiService {
   }
 
   closeSession(chatRequestId: string) {
-    return this.http.get<any[]>(`http://localhost:8080/api/chatQueries/close/${chatRequestId}`);
+    return this.http.get<any[]>(
+      `http://localhost:8080/api/chatQueries/close/${chatRequestId}`
+    );
   }
 
-  checkExistingServiceRequest(payload: ChatMessage): Observable<BestMatchScore> {
+  checkExistingServiceRequest(
+    payload: ChatMessage
+  ): Observable<BestMatchScore> {
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     return this.http.post<any>(
       `http://localhost:8080/api/chatQueries/checkExistingRequest`,
@@ -90,5 +108,10 @@ export class ApiService {
       { headers }
     );
   }
-  
+
+  loadRequestAnalysis(requestId: string | undefined): Observable<RequestAnalysis> {
+    return this.http.get<RequestAnalysis>(
+      `http://localhost:8080/api/request-analysis/${requestId}`
+    );
+  }
 }

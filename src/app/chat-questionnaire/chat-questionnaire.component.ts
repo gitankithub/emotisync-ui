@@ -70,7 +70,7 @@ export class ChatQuestionnaireComponent implements OnInit, OnDestroy {
   alertMessage: string = '';
   // stage: while request in progress or final rating
   stage: 'questionnaire' | 'in_progress' | 'final' = 'questionnaire';
-  private messageDelay = 6000;
+  private messageDelay = 3000;
   private sequence = [
     'We’ve received your request. Please hold on...',
     'We are assigning a staff member to assist you.',
@@ -123,6 +123,7 @@ export class ChatQuestionnaireComponent implements OnInit, OnDestroy {
   }
 
   startPolling(activeRequest: ServiceRequest): void {
+    console.log('Starting polling for new messages...');
     if (!activeRequest.userThread?.threadId) return;
     this.loadThreadMessages(activeRequest.userThread?.threadId);
     this.pollSubscription = interval(this.POLL_INTERVAL)
@@ -160,6 +161,7 @@ export class ChatQuestionnaireComponent implements OnInit, OnDestroy {
   }
 
   stopPolling(): void {
+    console.log('Stopping polling for new messages...');
     if (this.pollSubscription) {
       this.pollSubscription.unsubscribe();
       this.pollSubscription = undefined;
