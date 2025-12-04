@@ -100,12 +100,6 @@ export class ChatDialogComponent implements OnInit, OnChanges {
         disabled: false,
       },
       {
-        actionType: 'MORE DETAILS NEEDED',
-        description: 'Request more details from the initiator',
-        isInputRequired: true,
-        disabled: true,
-      },
-      {
         actionType: 'REASSIGN',
         description: 'Assign to another team member',
         isInputRequired: true,
@@ -126,6 +120,12 @@ export class ChatDialogComponent implements OnInit, OnChanges {
         description: 'Mark as completed',
         isInputRequired: false,
         disabled: false,
+      },
+      {
+        actionType: 'MORE DETAILS NEEDED',
+        description: 'Request more details from the initiator',
+        isInputRequired: true,
+        disabled: true,
       },
       {
         actionType: 'MESSAGE GUEST',
@@ -188,7 +188,7 @@ export class ChatDialogComponent implements OnInit, OnChanges {
     ],
   };
   private pollSubscription?: Subscription;
-  private readonly POLL_INTERVAL = 30000;
+  private readonly POLL_INTERVAL = 3000;
 
   constructor(private api: ApiService, private loginService: LoginService) {}
 
@@ -337,7 +337,7 @@ export class ChatDialogComponent implements OnInit, OnChanges {
           statusUpdate = 'COMPLETED';
           chatMsg = `${staffName} marked this request as completed.`;
           break;
-        case 'MESSAGE TO GUEST':
+        case 'MESSAGE GUEST':
           statusUpdate = 'IN_PROGRESS';
           chatMsg = `${staffName} sent a message to the guest regarding this request.`;
           break;

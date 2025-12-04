@@ -89,7 +89,7 @@ export class ChatQuestionnaireComponent implements OnInit, OnDestroy {
 
   private dialog = inject(MatDialog);
   private pollSubscription?: Subscription;
-  private readonly POLL_INTERVAL = 60000;
+  private readonly POLL_INTERVAL = 3000;
   constructor(
     private api: ApiService,
     private chatService: ChatService,
