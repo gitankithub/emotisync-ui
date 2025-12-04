@@ -229,7 +229,7 @@ export class ChatQuestionnaireComponent implements OnInit, OnDestroy {
   //submit the request
   async submitRequest() {
     this.alertMessage = '';
-    if (await this.checkIfRequestExists()) return;
+    //if (await this.checkIfRequestExists()) return;
     this.startTemporarySequence();
     const feedback: GuestFeedback = {
       guestId: this.reservation?.guestId ?? '',
